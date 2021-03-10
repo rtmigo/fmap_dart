@@ -79,7 +79,7 @@ class FileAndStat {
       assert(prevLastModified == null || item.stat.modified.isAfterOrSame(prevLastModified));
 
       if (_DEBUG_LOGGING)
-        print("Deleting file ${item.file.path}");
+        print("Deleting file ${item.file.path} LMT ${item.file.lastModifiedSync()}");
 
       if (deleteFile != null)
         deleteFile(item.file);
