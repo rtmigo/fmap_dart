@@ -136,7 +136,7 @@ void main() {
 
     // первый элемент точно был удален, последний точно остался
     expect(await sample.cache.readBytes("0"), isNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    expect(await sample.cache.readBytes("99"), isNotNull); // fails on windows
   });
 
   test('clearing on start by size', () async {
