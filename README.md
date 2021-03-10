@@ -31,7 +31,7 @@ void main() async {
   assert (await diskCache.readBytes("firstKey") == [1, 2, 3]);
   assert (await diskCache.readBytes("secondKey") == [90, 60, 90]);
 
-  // let's delete the second one
+  // let's delete the second item
   await diskCache.delete("secondKey");
   // it's null again
   assert (await diskCache.readBytes("secondKey") == null);
