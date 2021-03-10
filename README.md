@@ -3,7 +3,6 @@
 ![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
 
 ``` dart
-
 import 'dart:typed_data';
 import 'package:disk_cache/disk_cache.dart';
 import 'package:path/path.dart' as pathlib;
@@ -11,10 +10,10 @@ import 'dart:io';
 
 void main() async {
   // choosing the cache directory name
-  final cacheDir = Directory(pathlib.join(Directory.systemTemp.path, "myCache"));
+  String cacheDirPath = pathlib.join(Directory.systemTemp.path, "myCache");
 
   // creating the cache
-  final diskCache = DiskCache(cacheDir);
+  final diskCache = DiskCache(Directory(cacheDirPath));
 
   // reading bytes from cache
   Uint8List? firstBytes = await diskCache.readBytes("firstKey");
@@ -39,5 +38,4 @@ void main() async {
 
   // if we restart the program, we'll see that "firstKey" still returns [1,2,3]
 }
-
 ```

@@ -5,10 +5,10 @@ import 'dart:io';
 
 void main() async {
   // choosing the cache directory name
-  final cacheDir = Directory(pathlib.join(Directory.systemTemp.path, "myCache"));
+  String cacheDirPath = pathlib.join(Directory.systemTemp.path, "myCache");
 
   // creating the cache
-  final diskCache = DiskCache(cacheDir);
+  final diskCache = DiskCache(Directory(cacheDirPath));
 
   // reading bytes from cache
   Uint8List? firstBytes = await diskCache.readBytes("firstKey");
