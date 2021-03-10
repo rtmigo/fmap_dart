@@ -18,7 +18,9 @@ String badHashFunc(String data) {
 }
 
 class SampleWithData {
-  static Future<SampleWithData> create() async {
+  static Future<SampleWithData> create({longerDelays=false}) async {
+
+
     final theDir = Directory.systemTemp.createTempSync();
 
     var theCache = DiskCache(theDir, maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024, keyToHash: badHashFunc);
@@ -28,7 +30,28 @@ class SampleWithData {
     for (var i = 0; i < 100; ++i) {
       var key = i.toString();
       allKeys.add(key);
-      Future.delayed(Duration(milliseconds: 25));
+
+      if (i!=0)
+        if (longerDelays && (i==1||i==98)) {
+
+          // making a longer pause between 0..1 and 98..99
+          //
+          // TL;DR Last-modification times on FAT are rounded to nearest 2 seconds.
+          // If we want to compare files by LMT, we need to make 2+ seconds delays between
+          // writing operations.
+          //
+          // https://stackoverflow.com/a/11547476
+          // File time stamps on FAT drives are rounded to the nearest two seconds (even number)
+          // when the file is written to the drive. The file time stamps on NTFS drives are rounded
+          // to the nearest 100 nanoseconds when the file is written to the drive. Consequently,
+          // file time stamps on FAT drives always end with an even number of seconds, while file
+          // time stamps on NTFS drives can end with either even or odd number of seconds.
+
+          await Future.delayed(Duration(milliseconds: 2050));
+        }
+        else
+          await Future.delayed(Duration(milliseconds: 25));
+
       await theCache.writeBytes(key, List.filled(1024, 0));
     }
 
@@ -125,8 +148,10 @@ void main() {
     expect(findEmptySubdir(theDir), null); // пустых подкаталогов не осталось
   });
 
+
+
   test('clearing on start by count', () async {
-    final sample = await SampleWithData.create();
+    final sample = await SampleWithData.create(longerDelays: true);
 
     // оставляем только 50 новейших файлов
     await DiskCache(sample.cache.directory, maxCount: 50, keyToHash: sample.cache.keyToHash).initialized;
@@ -140,7 +165,7 @@ void main() {
   });
 
   test('clearing on start by size', () async {
-    final sample = await SampleWithData.create();
+    final sample = await SampleWithData.create(longerDelays: true);
 
     // оставляем только 52 килобайта
     await DiskCache(sample.cache.directory, maxSizeBytes: 52 * 1024, keyToHash: sample.cache.keyToHash).initialized;
@@ -152,10 +177,12 @@ void main() {
     // первый элемент точно был удален, последний точно остался
     expect(await sample.cache.readBytes("0"), isNull);
     expect(await sample.cache.readBytes("99"), isNotNull);
+
+
   });
 
   test('clearing on start by size and count', () async {
-    final sample = await SampleWithData.create();
+    final sample = await SampleWithData.create(longerDelays: true);
 
     // оставляем только 52 килобайта
     await DiskCache(sample.cache.directory, maxSizeBytes: 47 * 1024, maxCount: 45, keyToHash: sample.cache.keyToHash)
