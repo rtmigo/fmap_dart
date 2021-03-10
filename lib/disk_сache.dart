@@ -170,14 +170,27 @@ String stringToMd5(String data) {
 
 typedef String KeyToHash(String s);
 
+bool isDirectoryNotEmptyException(FileSystemException e)
+{
+  // https://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html
+  if (Platform.isLinux && e.osError?.errorCode == 39)
+    return true;
+
+  // there is no evident source of macOS errors in 2021 O_O
+  if (Platform.isMacOS && e.osError?.errorCode == 66)
+    return true;
+
+  return false;
+}
+
 void deleteDirIfEmptySync(Directory d) {
   try {
     d.deleteSync(recursive: false);
   } on FileSystemException catch (e) {
-    const DIRECTORY_NOT_EMPTY = 66;
-    if (e.osError?.errorCode != DIRECTORY_NOT_EMPTY)
-      print(
-          "WARNING: Got unexpected osError.errorCode=${e.osError?.errorCode} trying to remove directory.");
+
+    if (!isDirectoryNotEmptyException(e))
+      print("WARNING: Got unexpected osError.errorCode=${e.osError?.errorCode} "
+            "trying to remove directory.");
   }
 }
 
