@@ -171,6 +171,8 @@ void main() {
     final sample = await SampleWithData.create(lmtMatters: true);
 
     expect(await sample.countItemsInCache(), 100);
+    expect(await sample.cache.readBytes("0"), isNotNull);
+    expect(await sample.cache.readBytes("99"), isNotNull);
 
     sample.cache.compactSync(maxCount: 55);
 
@@ -186,6 +188,8 @@ void main() {
     final sample = await SampleWithData.create(lmtMatters: true);
 
     expect(await sample.countItemsInCache(), 100);
+    expect(await sample.cache.readBytes("0"), isNotNull);
+    expect(await sample.cache.readBytes("99"), isNotNull);
 
     sample.cache.compactSync(maxSizeBytes: 52 * 1024); // max sum size = 52 KiB
 
@@ -204,6 +208,8 @@ void main() {
     final sample = await SampleWithData.create(lmtMatters: true);
 
     expect(await sample.countItemsInCache(), 100);
+    expect(await sample.cache.readBytes("0"), isNotNull);
+    expect(await sample.cache.readBytes("99"), isNotNull);
 
     sample.cache.compactSync(maxSizeBytes: 47 * 1024, maxCount: 45); // max sum size = 52 KiB
 
