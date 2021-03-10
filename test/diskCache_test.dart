@@ -65,6 +65,8 @@ class SampleWithData {
       } else
         await Future.delayed(Duration(milliseconds: 25));
 
+      print("Creating file at ${DateTime.now()}");
+
       await theCache.writeBytes(key, List.filled(1024, 0));
     }
 
