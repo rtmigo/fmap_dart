@@ -31,6 +31,17 @@ void removeRandomItems(Directory dir, int count, FileSystemEntityType type) {
   for (final f in files.take(count)) f.deleteSync();
 }
 
+// On Ubuntu at GitHub Actions file LMTs seems to be rounded to seconds.
+//
+// On Windows they're quantized too (not sure how exactly).
+//    https://stackoverflow.com/a/11547476
+//    File time stamps on FAT drives are rounded to the nearest two seconds (even number)
+//    when the file is written to the drive. The file time stamps on NTFS drives are rounded
+//    to the nearest 100 nanoseconds when the file is written to the drive. Consequently,
+//    file time stamps on FAT drives always end with an even number of seconds, while file
+//    time stamps on NTFS drives can end with either even or odd number of seconds.
+
+
 class SampleWithData {
   static Future<SampleWithData> create({lmtMatters = false}) async {
     final longerDelays = lmtMatters; // && Platform.isWindows;
