@@ -9,6 +9,8 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:path/path.dart' as paths;
 
+const _DEBUG_LOGGING = true;
+
 extension DateTimeCmp on DateTime {
   bool isBeforeOrSame(DateTime b) => this.isBefore(b) || this.isAtSameMomentAs(b);
 
@@ -75,6 +77,9 @@ class FileAndStat {
       var item = files[i];
       // assert that the files are sorted from old to new
       assert(prevLastModified == null || item.stat.modified.isAfterOrSame(prevLastModified));
+
+      if (_DEBUG_LOGGING)
+        print("Deleting file ${item.file.path}");
 
       if (deleteFile != null)
         deleteFile(item.file);

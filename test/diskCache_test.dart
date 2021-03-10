@@ -1,6 +1,8 @@
+// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
+// SPDX-License-Identifier: BSD-3-Clause
+
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 import 'package:crypto/crypto.dart' as crypto;
 import "package:test/test.dart";
 import 'package:disk_cache/disk_сache.dart';
@@ -20,26 +22,23 @@ String badHashFunc(String data) {
 }
 
 /// Removes random files or directories from the [dir]
-void removeRandomItems(Directory dir, int count, FileSystemEntityType type)
-{
-  List<FileSystemEntity> files = <FileSystemEntity>[]; 
+void removeRandomItems(Directory dir, int count, FileSystemEntityType type) {
+  List<FileSystemEntity> files = <FileSystemEntity>[];
   for (final entry in dir.listSync(recursive: true))
-    if (FileSystemEntity.typeSync(entry.path)==type)
-      files.add(entry);
-  assert(files.length>=count);  
+    if (FileSystemEntity.typeSync(entry.path) == type) files.add(entry);
+  assert(files.length >= count);
   files.shuffle();
-  for (final f in files.take(count))
-    f.deleteSync();
+  for (final f in files.take(count)) f.deleteSync();
 }
 
 class SampleWithData {
   static Future<SampleWithData> create({lmtMatters = false}) async {
-    final longerDelays = lmtMatters;// && Platform.isWindows;
+    final longerDelays = lmtMatters; // && Platform.isWindows;
 
     final theDir = Directory.systemTemp.createTempSync();
 
     var theCache = DiskCache(theDir,
-         keyToHash: badHashFunc); // maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024,
+        keyToHash: badHashFunc); // maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024,
 
     Set<String> allKeys = Set<String>();
 
@@ -94,8 +93,6 @@ Directory? findEmptySubdir(Directory d) {
 }
 
 void main() {
-
-
   test('files: saving and reading', () async {
     final theDir = Directory.systemTemp.createTempSync();
     final path = theDir.path + "/temp";
@@ -123,8 +120,8 @@ void main() {
     final theDir = Directory.systemTemp.createTempSync();
     //print(theDir);
 
-    final cache =
-        DiskCache(theDir, keyToHash: badHashFunc); // maxCount: 1000, maxSizeBytes: 10 * 1024 * 1024,
+    final cache = DiskCache(theDir,
+        keyToHash: badHashFunc); // maxCount: 1000, maxSizeBytes: 10 * 1024 * 1024,
 
     Set<Directory> allSubdirs = Set<Directory>();
     Set<String> allKeys = Set<String>();
@@ -222,7 +219,6 @@ void main() {
     expect(await sample.cache.readBytes("99"), isNotNull);
   });
 
-
   //
   // test('clearing on start by size', () async {
   //   final sample = await SampleWithData.create(lmtMatters: true);
@@ -259,8 +255,6 @@ void main() {
 
   // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
 
-
-
   test('clearing on start by size and count', () async {
     final sample = await SampleWithData.create();
 
@@ -270,12 +264,7 @@ void main() {
 
     //int countStillOk = 0;
     //for (int i=0; i<100; ++i)
-      //if (await cache.readBytes(i.toString())!=null)
-        //countStillOk
-
-
-
+    //if (await cache.readBytes(i.toString())!=null)
+    //countStillOk
   });
-
-
 }
