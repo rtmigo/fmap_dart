@@ -57,8 +57,18 @@ class FileAndStat {
       int maxCount = JS_MAX_SAFE_INTEGER,
       DeleteFile? deleteFile}) {
     //
+
+    files = files.toList();
+
     FileAndStat.sortByLastModifiedDesc(files); // now they are sorted by time
     int sumSize = FileAndStat.sumSize(files);
+
+    if (_DEBUG_LOGGING)
+      {
+        print("ALL THE FILE LMTS");
+        for (var f in files)
+          print("- "+f.file.lastModifiedSync().toString());
+      }
 
     DateTime? prevLastModified;
 
