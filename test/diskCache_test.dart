@@ -35,15 +35,7 @@ int countFiles(Directory dir) {
   return dir.listSync(recursive: true).where((e) => FileSystemEntity.isFileSync(e.path)).length;
 }
 
-// On Ubuntu at GitHub Actions file LMTs seems to be rounded to seconds.
-//
-// On Windows they're quantized too (not sure how exactly).
-//    https://stackoverflow.com/a/11547476
-//    File time stamps on FAT drives are rounded to the nearest two seconds (even number)
-//    when the file is written to the drive. The file time stamps on NTFS drives are rounded
-//    to the nearest 100 nanoseconds when the file is written to the drive. Consequently,
-//    file time stamps on FAT drives always end with an even number of seconds, while file
-//    time stamps on NTFS drives can end with either even or odd number of seconds.
+
 
 
 class SampleWithData {
