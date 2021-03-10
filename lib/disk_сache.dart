@@ -86,25 +86,6 @@ class FileAndStat {
       assert(files.length == i);
       sumSize -= item.stat.size;
     }
-
-    // iterating files from old to new
-    // for (int i = files.length - 1; i >= 0; --i) {
-    //   // we update sumSize and files.length on each iteration
-    //   if (!tooLarge(sumSize, maxSumSize) && !tooLarge(files.length, maxCount)) break; // todo move into for
-    //
-    //   var item = files[i];
-    //   // assert that the files are sorted from old to new
-    //   assert(prevLastModified == null || isAfterOrSame(item.stat.modified, prevLastModified));
-    //
-    //   if (deleteFile != null)
-    //     deleteFile(item.file);
-    //   else
-    //     item.file.deleteSync();
-    //
-    //   files.removeAt(i);
-    //   assert(files.length == i);
-    //   sumSize -= item.stat.size;
-    // }
   }
 }
 
