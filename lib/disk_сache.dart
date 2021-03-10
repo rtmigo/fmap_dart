@@ -9,9 +9,11 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:path/path.dart' as paths;
 
-bool isBeforeOrSame(DateTime a, DateTime b) => a.isBefore(b) || a.isAtSameMomentAs(b);
+extension DateTimeCmp on DateTime {
+  bool isBeforeOrSame(DateTime b) => this.isBefore(b) || this.isAtSameMomentAs(b);
+  bool isAfterOrSame(DateTime b) => this.isAfter(b) || this.isAtSameMomentAs(b);
+}
 
-bool isAfterOrSame(DateTime a, DateTime b) => a.isAfter(b) || a.isAtSameMomentAs(b);
 
 // todo предусмотреть и протестировать совершенно рандомное удаление файлов системой
 
@@ -40,7 +42,7 @@ class FileAndStat {
   static void sortByLastModifiedDesc(List<FileAndStat> files) {
     if (files.length >= 2) {
       files.sort((FileAndStat a, FileAndStat b) => -a.stat.modified.compareTo(b.stat.modified));
-      assert(isAfterOrSame(files[0].stat.modified, files[1].stat.modified));
+      assert(files[0].stat.modified.isAfterOrSame(files[1].stat.modified));
     }
   }
 
@@ -49,26 +51,31 @@ class FileAndStat {
   }
 
   static void _deleteOldest(List<FileAndStat> files,
-      {int maxSumSize = JS_MAX_SAFE_INTEGER, int maxCount = JS_MAX_SAFE_INTEGER, DeleteFile? deleteFile}) {
+      {int maxSumSize = JS_MAX_SAFE_INTEGER,
+      int maxCount = JS_MAX_SAFE_INTEGER,
+      DeleteFile? deleteFile}) {
     //
     FileAndStat.sortByLastModifiedDesc(files); // now they are sorted by time
     int sumSize = FileAndStat.sumSize(files);
 
     DateTime? prevLastModified;
 
-    bool tooLarge(int x, int max) {
-      if (x > JS_MAX_SAFE_INTEGER) throw Exception("Integer overflow!"); // wow, we're dealing with zillion bytes cache?
-      return x > max;
-    }
+    // bool tooLarge(int x, int max) {
+    //   if (x > JS_MAX_SAFE_INTEGER) throw Exception("Integer overflow!"); // wow, we're dealing with zillion bytes cache?
+    //   return x > max;
+    // }
 
-    // iterating files from old to new
-    for (int i = files.length - 1; i >= 0; --i) {
+    //iterating files from old to new
+    for (int i = files.length - 1;
+        i >= 0 && (sumSize > maxSumSize || files.length > maxCount);
+        --i)
+    {
       // we update sumSize and files.length on each iteration
-      if (!tooLarge(sumSize, maxSumSize) && !tooLarge(files.length, maxCount)) break; // todo move into for
+//      if (!tooLarge(sumSize, maxSumSize) && !tooLarge(files.length, maxCount)) break; // todo move into for
 
       var item = files[i];
       // assert that the files are sorted from old to new
-      assert(prevLastModified == null || isAfterOrSame(item.stat.modified, prevLastModified));
+      assert(prevLastModified == null || item.stat.modified.isAfterOrSame(prevLastModified));
 
       if (deleteFile != null)
         deleteFile(item.file);
@@ -79,6 +86,25 @@ class FileAndStat {
       assert(files.length == i);
       sumSize -= item.stat.size;
     }
+
+    // iterating files from old to new
+    // for (int i = files.length - 1; i >= 0; --i) {
+    //   // we update sumSize and files.length on each iteration
+    //   if (!tooLarge(sumSize, maxSumSize) && !tooLarge(files.length, maxCount)) break; // todo move into for
+    //
+    //   var item = files[i];
+    //   // assert that the files are sorted from old to new
+    //   assert(prevLastModified == null || isAfterOrSame(item.stat.modified, prevLastModified));
+    //
+    //   if (deleteFile != null)
+    //     deleteFile(item.file);
+    //   else
+    //     item.file.deleteSync();
+    //
+    //   files.removeAt(i);
+    //   assert(files.length == i);
+    //   sumSize -= item.stat.size;
+    // }
   }
 }
 
@@ -170,7 +196,8 @@ void deleteDirIfEmptySync(Directory d) {
   } on FileSystemException catch (e) {
     const DIRECTORY_NOT_EMPTY = 66;
     if (e.osError?.errorCode != DIRECTORY_NOT_EMPTY)
-      print("WARNING: Got unexpected osError.errorCode=${e.osError?.errorCode} trying to remove directory.");
+      print(
+          "WARNING: Got unexpected osError.errorCode=${e.osError?.errorCode} trying to remove directory.");
   }
 }
 
@@ -236,7 +263,8 @@ class DiskCache {
         files.add(FileAndStat(f));
       }
     }
-    FileAndStat._deleteOldest(files, maxSumSize: this.maxSizeBytes, maxCount: this.maxCount, deleteFile: (file) {
+    FileAndStat._deleteOldest(files, maxSumSize: this.maxSizeBytes, maxCount: this.maxCount,
+        deleteFile: (file) {
       deleteSyncCalm(file);
       deleteDirIfEmptySync(file.parent);
     });
