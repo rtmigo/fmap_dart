@@ -267,12 +267,14 @@ void main() {
 
   // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
 
-  test('clearing on start by size and count', () async {
+  test('Deleting random files', () async {
     final sample = await SampleWithData.create();
-
-    final cache = DiskCache(sample.cache.directory);
-
+    final cache = sample.cache;
+    expect(countFiles(cache.directory), 100);
+    // deleting 10 files
     removeRandomItems(cache.directory, 10, FileSystemEntityType.file);
+    expect(countFiles(cache.directory), 90);
+    expect(sample.countItemsInCache(), 90);
 
     //int countStillOk = 0;
     //for (int i=0; i<100; ++i)
