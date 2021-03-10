@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:crypto/crypto.dart' as crypto;
 import "package:test/test.dart";
 import 'package:disk_cache/disk_сache.dart';
@@ -18,6 +19,19 @@ String badHashFunc(String data) {
   return result;
 }
 
+/// Removes random files or directories from the [dir]
+void removeRandomItems(Directory dir, int count, FileSystemEntityType type)
+{
+  List<FileSystemEntity> files = <FileSystemEntity>[]; 
+  for (final entry in dir.listSync(recursive: true))
+    if (FileSystemEntity.typeSync(entry.path)==type)
+      files.add(entry);
+  assert(files.length>=count);  
+  files.shuffle();
+  for (final f in files.take(count))
+    f.deleteSync();
+}
+
 class SampleWithData {
   static Future<SampleWithData> create({lmtMatters = false}) async {
     final longerDelays = lmtMatters && Platform.isWindows;
@@ -25,7 +39,7 @@ class SampleWithData {
     final theDir = Directory.systemTemp.createTempSync();
 
     var theCache = DiskCache(theDir,
-        maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024, keyToHash: badHashFunc);
+         keyToHash: badHashFunc); // maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024,
 
     Set<String> allKeys = Set<String>();
 
@@ -96,7 +110,7 @@ void main() {
     final theDir = Directory.systemTemp.createTempSync();
     //print(theDir);
 
-    final cacheA = DiskCache(theDir, maxCount: 3, maxSizeBytes: 10);
+    final cacheA = DiskCache(theDir); // maxCount: 3, maxSizeBytes: 10
 
     expect(await cacheA.readBytes("A"), null);
     await cacheA.writeBytes("A", [1, 2, 3]);
@@ -108,7 +122,7 @@ void main() {
     //print(theDir);
 
     final cache =
-        DiskCache(theDir, maxCount: 1000, maxSizeBytes: 10 * 1024 * 1024, keyToHash: badHashFunc);
+        DiskCache(theDir, keyToHash: badHashFunc); // maxCount: 1000, maxSizeBytes: 10 * 1024 * 1024,
 
     Set<Directory> allSubdirs = Set<Directory>();
     Set<String> allKeys = Set<String>();
@@ -149,51 +163,111 @@ void main() {
     expect(findEmptySubdir(theDir), null); // пустых подкаталогов не осталось
   });
 
-  test('clearing on start by count', () async {
+  // CLEARING //////////////////////////////////////////////////////////////////////////////////////
+
+  test('Compacting with maxCount', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
-    // оставляем только 50 новейших файлов
-    await DiskCache(sample.cache.directory, maxCount: 50, keyToHash: sample.cache.keyToHash)
-        .initialized;
+    expect(await sample.countItemsInCache(), 100);
 
-    expect(await sample.countItemsInCache(), 50);
-    expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
+    sample.cache.compactSync(maxCount: 55);
 
-    // первый элемент точно был удален, последний точно остался
-    expect(await sample.cache.readBytes("0"), isNull);
-    expect(await sample.cache.readBytes("99"), isNotNull); // fails on windows
-  });
+    expect(await sample.countItemsInCache(), 55);
+    expect(findEmptySubdir(sample.cache.directory), null); // no empty subdirectories
 
-  test('clearing on start by size', () async {
-    final sample = await SampleWithData.create(lmtMatters: true);
-
-    // оставляем только 52 килобайта
-    await DiskCache(sample.cache.directory,
-            maxSizeBytes: 52 * 1024, keyToHash: sample.cache.keyToHash)
-        .initialized;
-
-    expect(await sample.countItemsInCache(),
-        51); // получилось на один меньше, т.е. каждый файл больше на размер заголовка
-    expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
-
-    // первый элемент точно был удален, последний точно остался
+    // the first element was definitely deleted, the last one was definitely left
     expect(await sample.cache.readBytes("0"), isNull);
     expect(await sample.cache.readBytes("99"), isNotNull);
   });
 
-  test('clearing on start by size and count', () async {
+  test('Compacting with maxSize', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
-    // оставляем только 52 килобайта
-    await DiskCache(sample.cache.directory,
-            maxSizeBytes: 47 * 1024, maxCount: 45, keyToHash: sample.cache.keyToHash)
-        .initialized;
+    expect(await sample.countItemsInCache(), 100);
+
+    sample.cache.compactSync(maxSizeBytes: 52 * 1024); // max sum size = 52 KiB
+
+    // 5<=n<95 files left
+    expect(await sample.countItemsInCache(), greaterThanOrEqualTo(5));
+    expect(await sample.countItemsInCache(), lessThan(95));
+
+    expect(findEmptySubdir(sample.cache.directory), null); // no empty subdirectories
+
+    // the first element was definitely deleted, the last one was definitely left
+    expect(await sample.cache.readBytes("0"), isNull);
+    expect(await sample.cache.readBytes("99"), isNotNull);
+  });
+
+  test('Compacting with maxSize and maxCount', () async {
+    final sample = await SampleWithData.create(lmtMatters: true);
+
+    expect(await sample.countItemsInCache(), 100);
+
+    sample.cache.compactSync(maxSizeBytes: 47 * 1024, maxCount: 45); // max sum size = 52 KiB
 
     expect(await sample.countItemsInCache(), 45);
-    expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
 
-    // первый элемент точно был удален, последний точно остался
+    expect(findEmptySubdir(sample.cache.directory), null); // no empty subdirectories
+
+    // the first element was definitely deleted, the last one was definitely left
     expect(await sample.cache.readBytes("0"), isNull);
     expect(await sample.cache.readBytes("99"), isNotNull);
   });
+
+
+  //
+  // test('clearing on start by size', () async {
+  //   final sample = await SampleWithData.create(lmtMatters: true);
+  //
+  //   // оставляем только 52 килобайта
+  //   await DiskCache(sample.cache.directory,
+  //           maxSizeBytes: 52 * 1024, keyToHash: sample.cache.keyToHash)
+  //       .initialized;
+  //
+  //   expect(await sample.countItemsInCache(),
+  //       51); // получилось на один меньше, т.е. каждый файл больше на размер заголовка
+  //   expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
+  //
+  //   // первый элемент точно был удален, последний точно остался
+  //   expect(await sample.cache.readBytes("0"), isNull);
+  //   expect(await sample.cache.readBytes("99"), isNotNull);
+  // });
+  //
+  // test('clearing on start by size and count', () async {
+  //   final sample = await SampleWithData.create(lmtMatters: true);
+  //
+  //   // оставляем только 52 килобайта
+  //   await DiskCache(sample.cache.directory,
+  //           maxSizeBytes: 47 * 1024, maxCount: 45, keyToHash: sample.cache.keyToHash)
+  //       .initialized;
+  //
+  //   expect(await sample.countItemsInCache(), 45);
+  //   expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
+  //
+  //   // первый элемент точно был удален, последний точно остался
+  //   expect(await sample.cache.readBytes("0"), isNull);
+  //   expect(await sample.cache.readBytes("99"), isNotNull);
+  // });
+
+  // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
+
+
+
+  test('clearing on start by size and count', () async {
+    final sample = await SampleWithData.create();
+
+    final cache = DiskCache(sample.cache.directory);
+
+    removeRandomItems(cache.directory, 10, FileSystemEntityType.file);
+
+    //int countStillOk = 0;
+    //for (int i=0; i<100; ++i)
+      //if (await cache.readBytes(i.toString())!=null)
+        //countStillOk
+
+
+
+  });
+
+
 }

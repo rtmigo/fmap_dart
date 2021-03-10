@@ -11,9 +11,9 @@ import 'package:path/path.dart' as paths;
 
 extension DateTimeCmp on DateTime {
   bool isBeforeOrSame(DateTime b) => this.isBefore(b) || this.isAtSameMomentAs(b);
+
   bool isAfterOrSame(DateTime b) => this.isAfter(b) || this.isAtSameMomentAs(b);
 }
-
 
 // todo предусмотреть и протестировать совершенно рандомное удаление файлов системой
 
@@ -68,8 +68,7 @@ class FileAndStat {
     //iterating files from old to new
     for (int i = files.length - 1;
         i >= 0 && (sumSize > maxSumSize || files.length > maxCount);
-        --i)
-    {
+        --i) {
       // we update sumSize and files.length on each iteration
 //      if (!tooLarge(sumSize, maxSumSize) && !tooLarge(files.length, maxCount)) break; // todo move into for
 
@@ -201,16 +200,10 @@ class DiskCache {
   //
   // Удаление файлов НЕ при запуске теоретически реализуемо, фактически я поленился.
 
-  DiskCache(this.directory,
-      {this.maxSizeBytes = JS_MAX_SAFE_INTEGER,
-      this.maxCount = JS_MAX_SAFE_INTEGER,
-      this.keyToHash = stringToMd5,
-      this.asyncTimestamps = true}) {
+  DiskCache(this.directory, {this.keyToHash = stringToMd5, this.asyncTimestamps = true}) {
     this._initialized = this._init();
   }
 
-  final int maxSizeBytes;
-  final int maxCount;
   final bool asyncTimestamps;
 
   // по умолчанию тут используется MD5, что вполне замечательный выбор.
@@ -223,7 +216,13 @@ class DiskCache {
 
   Future<DiskCache> _init() async {
     directory.createSync(recursive: true);
+    this.compactSync();
 
+    return this;
+  }
+
+  void compactSync(
+      {final int maxSizeBytes = JS_MAX_SAFE_INTEGER, final maxCount = JS_MAX_SAFE_INTEGER}) {
     List<FileAndStat> files = <FileAndStat>[];
 
     List<FileSystemEntity> entries;
@@ -231,7 +230,8 @@ class DiskCache {
       entries = directory.listSync(recursive: true);
     } on FileSystemException catch (e) {
       throw FileSystemException(
-          "DiskCache failed to listSync directory $directory right after creation. osError: ${e.osError}.");
+          "DiskCache failed to listSync directory $directory right after creation. "
+          "osError: ${e.osError}.");
     }
 
     for (final entry in entries) {
@@ -244,13 +244,12 @@ class DiskCache {
         files.add(FileAndStat(f));
       }
     }
-    FileAndStat._deleteOldest(files, maxSumSize: this.maxSizeBytes, maxCount: this.maxCount,
+
+    FileAndStat._deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: maxCount,
         deleteFile: (file) {
       deleteSyncCalm(file);
       deleteDirIfEmptySync(file.parent);
     });
-
-    return this;
   }
 
   Future<DiskCache> get initialized => this._initialized!;
@@ -291,10 +290,12 @@ class DiskCache {
     return cacheFile;
   }
 
-  /// Returns the target directory path for a file that holds value for [key]. The directory may exist or not.
+  /// Returns the target directory path for a file that holds value for [key].
+  /// The directory may exist or not.
   ///
-  /// Each directory corresponds to a hash value. Due to hash collision different keys may produce the same hash.
-  /// Files with the same hash will be placed in the same directory.
+  /// Each directory corresponds to a hash value. Due to hash collision different keys
+  /// may produce the same hash. Files with the same hash will be placed in the same
+  /// directory.
   Directory _keyToHypotheticalDir(String key) {
     // один и тот же ключ может сгенерировать одинаковые хэши.
     // Все файлы с одинаковыми хэшами будут находиться в одном и тот же подкаталоге.
