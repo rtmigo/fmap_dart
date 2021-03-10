@@ -1,9 +1,3 @@
-![Generic badge](https://img.shields.io/badge/status-draft-red.svg)
-[![Actions Status](https://github.com/rtmigo/dart_disk_cache/workflows/unittest/badge.svg?branch=master)](https://github.com/rtmigo/dart_disk_cache/actions)
-![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
-
-``` dart
-
 import 'dart:typed_data';
 import 'package:disk_cache/disk_cache.dart';
 import 'package:path/path.dart' as pathlib;
@@ -39,5 +33,3 @@ void main() async {
 
   // if we restart the program, we'll see that "firstKey" still returns [1,2,3]
 }
-
-```

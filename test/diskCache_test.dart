@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:math';
 import 'package:crypto/crypto.dart' as crypto;
 import "package:test/test.dart";
-import 'package:disk_cache/disk_сache.dart';
+import 'package:disk_cache/disk_cache.dart';
 import 'dart:io' show Platform;
 
 String badHashFunc(String data) {
