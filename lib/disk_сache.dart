@@ -9,15 +9,13 @@ import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:path/path.dart' as paths;
 
-const _DEBUG_LOGGING = true;
+const _DEBUG_LOGGING = false;
 
 extension DateTimeCmp on DateTime {
   bool isBeforeOrSame(DateTime b) => this.isBefore(b) || this.isAtSameMomentAs(b);
-
   bool isAfterOrSame(DateTime b) => this.isAfter(b) || this.isAtSameMomentAs(b);
 }
 
-// todo предусмотреть и протестировать совершенно рандомное удаление файлов системой
 
 typedef DeleteFile(File file);
 
@@ -72,22 +70,14 @@ class FileAndStat {
 
     DateTime? prevLastModified;
 
-    // bool tooLarge(int x, int max) {
-    //   if (x > JS_MAX_SAFE_INTEGER) throw Exception("Integer overflow!"); // wow, we're dealing with zillion bytes cache?
-    //   return x > max;
-    // }
-
     //iterating files from old to new
     for (int i = files.length - 1;
         i >= 0 && (sumSize > maxSumSize || files.length > maxCount);
         --i) {
-      // we update sumSize and files.length on each iteration
-//      if (!tooLarge(sumSize, maxSumSize) && !tooLarge(files.length, maxCount)) break; // todo move into for
 
       var item = files[i];
       // assert that the files are sorted from old to new
       assert(prevLastModified == null || item.stat.modified.isAfterOrSame(prevLastModified));
-
       if (_DEBUG_LOGGING)
         print("Deleting file ${item.file.path} LMT ${item.file.lastModifiedSync()}");
 
@@ -132,23 +122,20 @@ Uint8List? readIfKeyMatchSync(File file, String key) {
 
   try {
     final versionNum = raf.readSync(1)[0];
-    if (versionNum > 1) throw Exception("Unsupported version");
+    if (versionNum > 1) throw Exception("Unsupported version"); // todo custom exceptions
 
     final keyBytesLen = ByteData.sublistView(raf.readSync(2)).getInt16(0);
 
     final keyAsBytes = raf.readSync(keyBytesLen); // utf8.encode(key);
     final keyFromFile = utf8.decode(keyAsBytes);
 
-    if (keyFromFile != key) {
-      //print("Jey mismatch: $key $keyFromFile");
+    if (keyFromFile != key)
       return null;
-    }
 
     final bytes = <int>[];
     const CHUNK_SIZE = 128 * 1024;
 
     while (true) {
-      // todo refactor
       final chunk = raf.readSync(CHUNK_SIZE);
       bytes.addAll(chunk);
       if (chunk.length < CHUNK_SIZE) break;
@@ -162,13 +149,11 @@ Uint8List? readIfKeyMatchSync(File file, String key) {
 
 String readKeySync(File file) {
   RandomAccessFile raf = file.openSync(mode: FileMode.read);
-
   try {
     final versionNum = raf.readSync(1)[0];
-    if (versionNum > 1) throw Exception("Unsupported version");
-
+    if (versionNum > 1)
+      throw Exception("Unsupported version");
     final keyBytesLen = ByteData.sublistView(raf.readSync(2)).getInt16(0);
-
     final keyAsBytes = raf.readSync(keyBytesLen); // utf8.encode(key);
     return utf8.decode(keyAsBytes);
   } finally {
@@ -285,19 +270,23 @@ class DiskCache {
   Future<DiskCache>? _initialized;
   final Directory directory;
 
-  Future<void> delete(String key) async {
+  Future<bool> delete(String key) async {
     await this._initialized;
-    final file = _findTargetFile(key);
+    final file = this._findExistingFile(key);
+    if (file==null)
+      return false;
+
     assert(file.path.endsWith(_DATA_SUFFIX));
     file.deleteSync();
     deleteDirIfEmptySync(file.parent);
+    return true;
   }
 
   Future<File> writeBytes(String key, List<int> data) async {
     //final cacheFile = _fnToCacheFile(filename);
 
     await this._initialized;
-    final cacheFile = this._findTargetFile(key);
+    final cacheFile = this._findExistingFile(key) ?? this._proposeUniqueFile(key);
 
     File? dirtyFile = _uniqueDirtyFn();
     try {
@@ -348,17 +337,21 @@ class DiskCache {
     }
   }
 
-  File _findTargetFile(String key) {
-    //print("FTF");
-    for (final existingFile in this._keyToExistingFiles(key)) {
-      //print("Comparing with $existingFile");
-      if (readKeySync(existingFile) == key) return existingFile;
-    }
-
+  /// Generates a unique filename in a directory that should contain file [key].
+  File _proposeUniqueFile(String key) {
+    final dirPath = _keyToHypotheticalDir(key).path;
     for (int i = 0;; ++i) {
-      final candidateFile = File(paths.join(_keyToHypotheticalDir(key).path, "$i$_DATA_SUFFIX"));
+      final candidateFile = File(paths.join(dirPath, "$i$_DATA_SUFFIX"));
       if (!candidateFile.existsSync()) return candidateFile;
     }
+  }
+
+  /// Tries to find a file for the [key]. If file does not exist, returns `null`.
+  File? _findExistingFile(String key) {
+    for (final existingFile in this._keyToExistingFiles(key)) {
+      if (readKeySync(existingFile) == key) return existingFile;
+    }
+    return null;
   }
 
   Future<Uint8List?> readBytes(String key) async {
@@ -381,17 +374,12 @@ class DiskCache {
   }
 
   Future<void> _setTimestampToNow(File file) async {
-    // поскольку кэш расположен во временном каталоге, там любой файл может быть удален в любой момент
-
+    // since the cache is located in a temporary directory,
+    // any file there can be deleted at any time
     try {
       file.setLastModifiedSync(DateTime.now());
     } on FileSystemException catch (e, _) {
       print("WARNING: Cannot set timestamp to file $file: $e");
-
-      //#if (e.osError.errorCode==2) // (OS Error: No such file or directory, errno = 2)
-      //print("WARNING: File $file seems to be deleted.");
-      //else
-      //rethrow;
     }
   }
 

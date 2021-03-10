@@ -3,40 +3,45 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:crypto/crypto.dart' as crypto;
 import "package:test/test.dart";
 import 'package:disk_cache/disk_сache.dart';
 import 'dart:io' show Platform;
 
 String badHashFunc(String data) {
-  // guaranteed to produce collisions
+  // returns only 16 possible hash values.
+  // So if we have more than 16 items, there will hash collisions.
+  // Which is bad for production, but good for testing
   var content = new Utf8Encoder().convert(data);
   var md5 = crypto.md5;
   var digest = md5.convert(content);
-
   String result = digest.bytes[0].toRadixString(16)[0];
-
   assert(result.length == 1);
-
   return result;
 }
 
-/// Removes random files or directories from the [dir]
-void removeRandomItems(Directory dir, int count, FileSystemEntityType type) {
+/// Removes random files or directories from the [dir].
+void deleteRandomItems(Directory dir, int count, FileSystemEntityType type, {emptyOk=false, errorOk=false}) {
   List<FileSystemEntity> files = <FileSystemEntity>[];
   for (final entry in dir.listSync(recursive: true))
     if (FileSystemEntity.typeSync(entry.path) == type) files.add(entry);
-  assert(files.length >= count);
+  if (!emptyOk)
+    assert(files.length >= count);
   files.shuffle();
-  for (final f in files.take(count)) f.deleteSync();
+  for (final f in files.take(count))
+    try {
+      f.deleteSync(recursive: true);
+    }
+    on FileSystemException catch (_) {
+      if (!errorOk)
+        rethrow;
+    }
 }
 
 int countFiles(Directory dir) {
   return dir.listSync(recursive: true).where((e) => FileSystemEntity.isFileSync(e.path)).length;
 }
-
-
-
 
 class SampleWithData {
   static Future<SampleWithData> create({lmtMatters = false}) async {
@@ -74,7 +79,7 @@ class SampleWithData {
           await Future.delayed(Duration(milliseconds: 25));
       }
 
-      print("Creating file ${longerDelays} at ${DateTime.now()}");
+      //print("Creating file ${longerDelays} at ${DateTime.now()}");
 
       await theCache.writeBytes(key, List.filled(1024, 0));
     }
@@ -95,36 +100,64 @@ class SampleWithData {
 }
 
 Directory? findEmptySubdir(Directory d) {
-  for (var sub in d.listSync(recursive: true)) {
-    if (sub is Directory) if (sub.listSync().length == 0) return sub;
-//      if (sub. is Directo)
-  }
-
+  for (final fsEntry in d.listSync(recursive: true))
+    if (fsEntry is Directory && fsEntry.listSync().length == 0)
+      return fsEntry;
   return null;
 }
 
 void main() {
-  test('files: saving and reading', () async {
+  test('Files: saving and reading', () async {
     final theDir = Directory.systemTemp.createTempSync();
     final path = theDir.path + "/temp";
-
+    // writing
     writeKeyAndDataSync(File(path), "c:/key/name/", [4, 5, 6, 7]);
-
+    // reading
     expect(readKeySync(File(path)), "c:/key/name/");
-
     expect(readIfKeyMatchSync(File(path), "c:/key/name/"), [4, 5, 6, 7]);
     expect(readIfKeyMatchSync(File(path), "other"), null);
   });
 
-  test('dk', () async {
-    final theDir = Directory.systemTemp.createTempSync();
-    //print(theDir);
+  test('Disk cache: write and read', () async {
+    final dir = Directory.systemTemp.createTempSync();
+    final cache = DiskCache(dir); // maxCount: 3, maxSizeBytes: 10
+    // check it's null by default
+    expect(await cache.readBytes("A"), null);
+    // write and check it's not null anymore
+    await cache.writeBytes("A", [1, 2, 3]);
+    expect(await cache.readBytes("A"), [1, 2, 3]);
+    expect(await cache.readBytes("A"), [1, 2, 3]); // reading again
+  });
 
-    final cacheA = DiskCache(theDir); // maxCount: 3, maxSizeBytes: 10
+  test('Disk cache: write and delete', () async {
+    final dir = Directory.systemTemp.createTempSync();
+    final cache = DiskCache(dir); // maxCount: 3, maxSizeBytes: 10
+    // check it's null by default
+    expect(await cache.readBytes("A"), isNull);
+    // write and check it's not null anymore
+    await cache.writeBytes("A", [1, 2, 3]);
+    expect(await cache.readBytes("A"), isNotNull);
+    // delete
+    expect(await cache.delete("A"), true);
+    // reading the item returns null again
+    expect(await cache.readBytes("A"), isNull);
+    // deleting again does not produce errors, but returns false
+    expect(await cache.delete("A"), false);
+    expect(await cache.delete("A"), false);
+  });
 
-    expect(await cacheA.readBytes("A"), null);
-    await cacheA.writeBytes("A", [1, 2, 3]);
-    expect(await cacheA.readBytes("A"), [1, 2, 3]);
+  test('Disk cache: timestamps', () async {
+    final dir = Directory.systemTemp.createTempSync();
+    final cache = DiskCache(dir);
+    final itemFile = await cache.writeBytes("key", [23, 42]);
+    final lmt = itemFile.lastModifiedSync();
+    // reading the file attribute again gives the same last-modified
+    expect(itemFile.lastModifiedSync(), equals(lmt));
+    await Future.delayed(const Duration(milliseconds: 2100));
+    // now we access the item through the cache object
+    await cache.readBytes("key");
+    // the last-modified is now be changed
+    expect(itemFile.lastModifiedSync(), isNot(equals(lmt)));
   });
 
   test('hash collisions', () async {
@@ -178,14 +211,11 @@ void main() {
   test('Compacting with maxCount', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
-    // [!!!] if we call sample.cache.readBytes new, it will lead to rewriting
-    // the last-modified date. The files will not be sorted anymore.
+    // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
+    // the last-modified date, so we will lose the expected files order.
+    // We should not do that
 
     expect(countFiles(sample.cache.directory), 100);
-
-    //expect(await sample.countItemsInCache(), 100);
-    //expect(await sample.cache.readBytes("0"), isNotNull);
-    //expect(await sample.cache.readBytes("99"), isNotNull);
 
     sample.cache.compactSync(maxCount: 55);
 
@@ -199,6 +229,10 @@ void main() {
 
   test('Compacting with maxSize', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
+
+    // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
+    // the last-modified date, so we will lose the expected files order.
+    // We should not do that
 
     expect(countFiles(sample.cache.directory), 100);
 
@@ -218,6 +252,10 @@ void main() {
   test('Compacting with maxSize and maxCount', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
+    // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
+    // the last-modified date, so we will lose the expected files order.
+    // We should not do that
+
     expect(countFiles(sample.cache.directory), 100);
 
     sample.cache.compactSync(maxSizeBytes: 47 * 1024, maxCount: 45); // max sum size = 52 KiB
@@ -231,40 +269,6 @@ void main() {
     expect(await sample.cache.readBytes("99"), isNotNull);
   });
 
-  //
-  // test('clearing on start by size', () async {
-  //   final sample = await SampleWithData.create(lmtMatters: true);
-  //
-  //   // оставляем только 52 килобайта
-  //   await DiskCache(sample.cache.directory,
-  //           maxSizeBytes: 52 * 1024, keyToHash: sample.cache.keyToHash)
-  //       .initialized;
-  //
-  //   expect(await sample.countItemsInCache(),
-  //       51); // получилось на один меньше, т.е. каждый файл больше на размер заголовка
-  //   expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
-  //
-  //   // первый элемент точно был удален, последний точно остался
-  //   expect(await sample.cache.readBytes("0"), isNull);
-  //   expect(await sample.cache.readBytes("99"), isNotNull);
-  // });
-  //
-  // test('clearing on start by size and count', () async {
-  //   final sample = await SampleWithData.create(lmtMatters: true);
-  //
-  //   // оставляем только 52 килобайта
-  //   await DiskCache(sample.cache.directory,
-  //           maxSizeBytes: 47 * 1024, maxCount: 45, keyToHash: sample.cache.keyToHash)
-  //       .initialized;
-  //
-  //   expect(await sample.countItemsInCache(), 45);
-  //   expect(findEmptySubdir(sample.cache.directory), null); // пустых подкаталогов не осталось
-  //
-  //   // первый элемент точно был удален, последний точно остался
-  //   expect(await sample.cache.readBytes("0"), isNull);
-  //   expect(await sample.cache.readBytes("99"), isNotNull);
-  // });
-
   // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
 
   test('Deleting random files', () async {
@@ -272,13 +276,102 @@ void main() {
     final cache = sample.cache;
     expect(countFiles(cache.directory), 100);
     // deleting 10 files
-    removeRandomItems(cache.directory, 10, FileSystemEntityType.file);
+    deleteRandomItems(cache.directory, 10, FileSystemEntityType.file);
     expect(countFiles(cache.directory), 90);
-    expect(sample.countItemsInCache(), 90);
+    expect(await sample.countItemsInCache(), 90);
+    // deleting 15 more files
+    deleteRandomItems(cache.directory, 15, FileSystemEntityType.file);
+    expect(await sample.countItemsInCache(), 75);
+    expect(countFiles(cache.directory), 75);
+  });
 
-    //int countStillOk = 0;
-    //for (int i=0; i<100; ++i)
-    //if (await cache.readBytes(i.toString())!=null)
-    //countStillOk
+  test('Deleting random directories', () async {
+    final sample = await SampleWithData.create();
+    final cache = sample.cache;
+    expect(countFiles(cache.directory), 100);
+    // deleting 10 directories
+    deleteRandomItems(cache.directory, 10, FileSystemEntityType.directory);
+    // checking that some items are left (and the cache works ok)
+    expect(countFiles(cache.directory), greaterThan(5));
+    expect(await sample.countItemsInCache(), greaterThan(5));
+    // deleting 15 more files
+    deleteRandomItems(cache.directory, 15, FileSystemEntityType.file);
+    // checking that some items are left (and the cache works ok)
+    expect(countFiles(cache.directory), greaterThan(5));
+    expect(await sample.countItemsInCache(), greaterThan(5));
+  });
+
+  // RANDOM MONSTROUS //////////////////////////////////////////////////////////////////////////////
+
+  test('Random monstrous', () async {
+
+    // we will run two async functions that will work in parallel.
+    // One will randomly add/read/delete items in the cache.
+    // The other one will randomly delete them.
+
+    const ACTIONS = 2000;
+    const DELAY = 10;
+    const UNIQUE_KEYS_RANGE = 50;
+    final dir = Directory.systemTemp.createTempSync();
+    final random = Random();
+
+    Future<void> randomUser() async {
+      // it this function we randomly use the cache
+      final cache = DiskCache(dir, keyToHash: badHashFunc);
+      final keys = <String>[];
+      for (int i = 0; i < ACTIONS; ++i) {
+        // making a random delay
+        await Future.delayed(Duration(milliseconds: random.nextInt(DELAY)));
+        // and performing a random action
+        switch (random.nextInt(5)) {
+          // adding a new key
+          case 0:
+          case 1:
+          case 2:
+            {
+              final newKey = random.nextInt(UNIQUE_KEYS_RANGE).toRadixString(16);
+              keys.add(newKey);
+              // write random length of 42s (it's async but we are not waiting)
+              cache.writeBytes(newKey, List.filled(random.nextInt(2048), 42));
+              break;
+            }
+          // removing an old key
+          case 3:
+            {
+              if (keys.length<=0)
+                break;
+              // (it's async but we are not waiting)
+              final randomOldKey = keys.removeAt(random.nextInt(keys.length));
+              cache.delete(randomOldKey);
+              break;
+            }
+          // reading some key
+          case 4:
+            {
+              if (keys.length<=0)
+                break;
+              final randomOldKey = keys.removeAt(random.nextInt(keys.length));
+              // (it's async but we are not waiting)
+              cache.readBytes(randomOldKey);
+              break;
+            }
+        }
+      }
+    }
+
+    Future<void> randomRemover() async {
+      for (int i = 0; i < ACTIONS; ++i) {
+        // making a random delay
+        await Future.delayed(Duration(milliseconds: random.nextInt(DELAY)));
+        // and performing a random action
+        final deleteWhat =
+                random.nextBool()
+                ? FileSystemEntityType.file
+                : FileSystemEntityType.directory;
+        deleteRandomItems(dir, 1, deleteWhat, emptyOk: true, errorOk: true);
+      }
+    }
+
+    await Future.wait([randomUser(), randomRemover()]);
   });
 }
