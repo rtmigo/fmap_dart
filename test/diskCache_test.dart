@@ -31,6 +31,10 @@ void removeRandomItems(Directory dir, int count, FileSystemEntityType type) {
   for (final f in files.take(count)) f.deleteSync();
 }
 
+int countFiles(Directory dir) {
+  return dir.listSync(recursive: true).where((e) => FileSystemEntity.isFileSync(e.path)).length;
+}
+
 // On Ubuntu at GitHub Actions file LMTs seems to be rounded to seconds.
 //
 // On Windows they're quantized too (not sure how exactly).
@@ -182,9 +186,14 @@ void main() {
   test('Compacting with maxCount', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
-    expect(await sample.countItemsInCache(), 100);
-    expect(await sample.cache.readBytes("0"), isNotNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    // [!!!] if we call sample.cache.readBytes new, it will lead to rewriting
+    // the last-modified date. The files will not be sorted anymore.
+
+    expect(countFiles(sample.cache.directory), 100);
+
+    //expect(await sample.countItemsInCache(), 100);
+    //expect(await sample.cache.readBytes("0"), isNotNull);
+    //expect(await sample.cache.readBytes("99"), isNotNull);
 
     sample.cache.compactSync(maxCount: 55);
 
@@ -199,9 +208,7 @@ void main() {
   test('Compacting with maxSize', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
-    expect(await sample.countItemsInCache(), 100);
-    expect(await sample.cache.readBytes("0"), isNotNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    expect(countFiles(sample.cache.directory), 100);
 
     sample.cache.compactSync(maxSizeBytes: 52 * 1024); // max sum size = 52 KiB
 
@@ -219,9 +226,7 @@ void main() {
   test('Compacting with maxSize and maxCount', () async {
     final sample = await SampleWithData.create(lmtMatters: true);
 
-    expect(await sample.countItemsInCache(), 100);
-    expect(await sample.cache.readBytes("0"), isNotNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    expect(countFiles(sample.cache.directory), 100);
 
     sample.cache.compactSync(maxSizeBytes: 47 * 1024, maxCount: 45); // max sum size = 52 KiB
 
