@@ -46,26 +46,28 @@ class SampleWithData {
       var key = i.toString();
       allKeys.add(key);
 
-      if (i != 0) if (longerDelays && (i == 1 || i == 99)) {
-        // making a longer pause between 0..1 and 98..99, to be sure that the LMT of first file
-        // is minimal and LMT of the last one is maximal.
-        //
-        // Last-modification times on FAT are rounded to nearest 2 seconds.
-        //
-        // https://stackoverflow.com/a/11547476
-        // File time stamps on FAT drives are rounded to the nearest two seconds (even number)
-        // when the file is written to the drive. The file time stamps on NTFS drives are rounded
-        // to the nearest 100 nanoseconds when the file is written to the drive. Consequently,
-        // file time stamps on FAT drives always end with an even number of seconds, while file
-        // time stamps on NTFS drives can end with either even or odd number of seconds.
-        //
-        // So we make  that first and last files distant in time from the others.
+      if (i != 0) {
+        if (longerDelays && (i == 1 || i == 99)) {
+          // making a longer pause between 0..1 and 98..99, to be sure that the LMT of first file
+          // is minimal and LMT of the last one is maximal.
+          //
+          // Last-modification times on FAT are rounded to nearest 2 seconds.
+          //
+          // https://stackoverflow.com/a/11547476
+          // File time stamps on FAT drives are rounded to the nearest two seconds (even number)
+          // when the file is written to the drive. The file time stamps on NTFS drives are rounded
+          // to the nearest 100 nanoseconds when the file is written to the drive. Consequently,
+          // file time stamps on FAT drives always end with an even number of seconds, while file
+          // time stamps on NTFS drives can end with either even or odd number of seconds.
+          //
+          // So we make  that first and last files distant in time from the others.
 
-        await Future.delayed(Duration(milliseconds: 2050));
-      } else
-        await Future.delayed(Duration(milliseconds: 25));
+          await Future.delayed(Duration(milliseconds: 2050));
+        } else
+          await Future.delayed(Duration(milliseconds: 25));
+      }
 
-      print("Creating file at ${DateTime.now()}");
+      print("Creating file ${longerDelays} at ${DateTime.now()}");
 
       await theCache.writeBytes(key, List.filled(1024, 0));
     }
