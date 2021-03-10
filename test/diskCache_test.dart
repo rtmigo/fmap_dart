@@ -46,7 +46,7 @@ class SampleWithData {
       var key = i.toString();
       allKeys.add(key);
 
-      if (i != 0) if (longerDelays && (i == 1 || i == 98)) {
+      if (i != 0) if (longerDelays && (i == 1 || i == 99)) {
         // making a longer pause between 0..1 and 98..99, to be sure that the LMT of first file
         // is minimal and LMT of the last one is maximal.
         //
