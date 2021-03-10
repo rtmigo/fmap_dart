@@ -48,7 +48,7 @@ class FileAndStat {
     return files.fold(0, (prev, curr) => prev + curr.stat.size);
   }
 
-  static void deleteOldest(List<FileAndStat> files,
+  static void _deleteOldest(List<FileAndStat> files,
       {int maxSumSize = JS_MAX_SAFE_INTEGER, int maxCount = JS_MAX_SAFE_INTEGER, DeleteFile? deleteFile}) {
     //
     FileAndStat.sortByLastModifiedDesc(files); // now they are sorted by time
@@ -236,13 +236,15 @@ class DiskCache {
         files.add(FileAndStat(f));
       }
     }
-    FileAndStat.deleteOldest(files, maxSumSize: this.maxSizeBytes, maxCount: this.maxCount, deleteFile: (file) {
+    FileAndStat._deleteOldest(files, maxSumSize: this.maxSizeBytes, maxCount: this.maxCount, deleteFile: (file) {
       deleteSyncCalm(file);
       deleteDirIfEmptySync(file.parent);
     });
 
     return this;
   }
+
+  Future<DiskCache> get initialized => this._initialized!;
 
   Future<DiskCache>? _initialized;
   final Directory directory;
@@ -283,7 +285,7 @@ class DiskCache {
   /// Returns the target directory path for a file that holds value for [key]. The directory may exist or not.
   ///
   /// Each directory corresponds to a hash value. Due to hash collision different keys may produce the same hash.
-  /// In this case their files will be kept in the same directory.
+  /// Files with the same hash will be placed in the same directory.
   Directory _keyToHypotheticalDir(String key) {
     // один и тот же ключ может сгенерировать одинаковые хэши.
     // Все файлы с одинаковыми хэшами будут находиться в одном и тот же подкаталоге.
