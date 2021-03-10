@@ -34,7 +34,7 @@ void removeRandomItems(Directory dir, int count, FileSystemEntityType type)
 
 class SampleWithData {
   static Future<SampleWithData> create({lmtMatters = false}) async {
-    final longerDelays = lmtMatters && Platform.isWindows;
+    final longerDelays = lmtMatters;// && Platform.isWindows;
 
     final theDir = Directory.systemTemp.createTempSync();
 
