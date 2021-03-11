@@ -14,13 +14,16 @@ import '10_hashing.dart';
 
 typedef DeleteFile(File file);
 
+typedef String HashFunc(String key);
+
 
 /// A persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-abstract class BytesMapBase extends FileMap {
+class BytesMap extends FileMap {
 
-  BytesMapBase(directory): super(directory);
+  BytesMap(directory): keyToHash=stringToMd5, super(directory);
 
-  String keyToHash(String key);
+  @internal
+  HashFunc keyToHash;
 
 
   @override
@@ -130,11 +133,11 @@ abstract class BytesMapBase extends FileMap {
 
 }
 
-class BytesMap extends BytesMapBase {
-
-  BytesMap(Directory directory) : super(directory);
-
-  @override
-  String keyToHash(String key) => stringToMd5(key);
-
-}
+// class BytesMap extends BytesMapBase {
+//
+//   BytesMap(Directory directory) : super(directory);
+//
+//   @override
+//   String keyToHash(String key) => stringToMd5(key);
+//
+// }

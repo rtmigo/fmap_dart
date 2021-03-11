@@ -12,11 +12,14 @@ import 'dart:io' show Platform;
 
 /// This class defines intentionally bad hash function. So we don't need to wait 10 years for
 /// a hash collisions
-class CollidingDiskCache extends BytesMapBase {
-  CollidingDiskCache(Directory directory) : super(directory);
+class CollidingDiskCache extends BytesMap {
+  CollidingDiskCache(Directory directory) : super(directory)
+  {
+    this.keyToHash = badHashFunc; // todo no need for a class now
+  }
 
-  @override
-  String keyToHash(String key) => badHashFunc(key);
+  // @override
+  // String keyToHash(String key) => badHashFunc(key);
 
   static String badHashFunc(String data) {
     // returns only 16 possible hash values.
