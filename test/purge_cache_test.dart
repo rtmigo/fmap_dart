@@ -73,7 +73,7 @@ void main() {
 
     expect(countFiles(sample.cache.directory), 15);
 
-    sample.cache.compactSync(maxSizeBytes: 7 * 1024, maxCount: 5); // max sum size = 52 KiB
+    sample.cache.compactSync(maxSizeBytes: 7 * 1024, maxCount: 5);
 
     expect(await sample.countItemsInCache(), 5);
 

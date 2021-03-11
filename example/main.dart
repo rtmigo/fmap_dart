@@ -4,32 +4,20 @@ import 'package:path/path.dart' as pathlib;
 import 'dart:io';
 
 void main() {
-  // choosing the cache directory name
-  String cacheDirPath = pathlib.join(Directory.systemTemp.path, "myCache");
 
-  // creating the map
-  final diskCache = BytesMap(Directory(cacheDirPath));
+  // let's place the cache in the temp directory
+  String dirPath = pathlib.join(Directory.systemTemp.path, "myCache");
+
+  // creating the cache
+  final diskCache = BytesCache(Directory(dirPath));
 
   // reading bytes from cache
-  Uint8List? firstBytes = diskCache.readBytes("firstKey");
-  Uint8List? secondBytes = diskCache.readBytes("secondKey");
+  Uint8List? myData = diskCache["myKey"];
 
-  // this will print [null] when started for the first time
-  print("firstKey: $firstBytes");
-  print("secondKey: $secondBytes");
+  print(myData); // on first start it's null
 
-  // storing values to cache
-  diskCache.writeBytes("firstKey", [1, 2, 3]);
-  diskCache.writeBytes("secondKey", [90, 60, 90]);
+  // saving two bytes
+  diskCache["myKey"] = [0x23, 0x21];
 
-  // now the cache returns expected values
-  assert (diskCache.readBytes("firstKey") == [1, 2, 3]);
-  assert (diskCache.readBytes("secondKey") == [90, 60, 90]);
-
-  // let's delete the second item
-  diskCache.delete("secondKey");
-  // it's null again
-  assert (diskCache.readBytes("secondKey") == null);
-
-  // if we restart the program, we'll see that "firstKey" still returns [1,2,3]
+  // after restart diskCache["myKey"] will load the data
 }
