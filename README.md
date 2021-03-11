@@ -50,25 +50,6 @@ print(diskBytes["b"]);  // prints [0, 255, 254]
 
 
 
-
-
-File names are created based on hashes from string keys. This could hypothetically lead to hash
-collisions. If, by a rare miracle, the program encounters a collision, it will not affect the cache.
-
-Although both classes inherit from `Map<String, List<int>>`, it is worth remembering that `BytesMap`
-and `BytesCache` do not store lists or ints. They just accept `List<int>` as an argument. Each item
-of the list will be truncated to a byte.
-
-``` dart
-var bytesMap = BytesMap(dir);
-
-bytesMap["a"] = [1, 2, 3];
-print(bytesMap["a"]);  // prints [1, 2, 3]
-
-bytesMap["b"] = [0, -1, -2];
-print(bytesMap["b"]);  // prints [0, 255, 254]
-```
-
 # Example
 
 ``` dart
