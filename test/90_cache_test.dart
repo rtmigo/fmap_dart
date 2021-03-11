@@ -6,20 +6,19 @@ import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import "package:test/test.dart";
 
-import 'tstcommon.dart';
+import 'common.dart';
 
 void main() {
 
   Directory? tempDir;
-  late FilledWithData sample;
   late BytesCache cache;
 
 
-  setUp(() {
+  setUp(() async {
     tempDir = Directory.systemTemp.createTempSync();
     cache = BytesCache(tempDir);
     cache.keyToHash = badHashFunc;
-    sample = FilledWithData(cache, lmtMatters: true);
+    await populate(cache);
   });
 
   tearDown(() {
@@ -32,16 +31,16 @@ void main() {
     // the last-modified date, so we will lose the expected files order.
     // We should not do that
 
-    expect(countFiles(sample.cache.directory), 15);
+    expect(countFiles(cache.directory), 15);
 
-    sample.cache.compactSync(maxCount: 10);
+    cache.compactSync(maxCount: 10);
 
-    expect(await sample.countItemsInCache(), 10);
-    expect(findEmptySubdir(sample.cache.directory), null); // no empty subdirectories
+    expect(cache.length, 10);
+    expect(findEmptySubdirectory(cache.directory), null); // no empty subdirectories
 
     // the first element was definitely deleted, the last one was definitely left
-    expect(await sample.cache.readBytes("0"), isNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    expect(cache.readBytesSync(KEY_EARLIEST), isNull);
+    expect(cache.readBytesSync(KEY_LATEST), isNotNull);
   });
 
   test('Purge with maxSize', () async {
@@ -50,19 +49,19 @@ void main() {
     // the last-modified date, so we will lose the expected files order.
     // We should not do that
 
-    expect(countFiles(sample.cache.directory), 15);
+    expect(countFiles(cache.directory), 15);
 
-    sample.cache.compactSync(maxSizeBytes: 5 * 1024);
+    cache.compactSync(maxSizeBytes: 5 * 1024);
 
     // 5<=n<95 files left
-    expect(await sample.countItemsInCache(), greaterThanOrEqualTo(2));
-    expect(await sample.countItemsInCache(), lessThan(10));
+    expect(countFiles(cache.directory), greaterThanOrEqualTo(2));
+    expect(countFiles(cache.directory), lessThan(10));
 
-    expect(findEmptySubdir(sample.cache.directory), null); // no empty subdirectories
+    expect(findEmptySubdirectory(cache.directory), null); // no empty subdirectories
 
     // the first element was definitely deleted, the last one was definitely left
-    expect(await sample.cache.readBytes("0"), isNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    expect(cache.readBytesSync(KEY_EARLIEST), isNull);
+    expect(cache.readBytesSync(KEY_LATEST), isNotNull);
   });
 
   test('Purge with maxSize and maxCount', () async {
@@ -71,20 +70,20 @@ void main() {
     // the last-modified date, so we will lose the expected files order.
     // We should not do that
 
-    expect(countFiles(sample.cache.directory), 15);
+    expect(countFiles(cache.directory), 15);
 
-    sample.cache.compactSync(maxSizeBytes: 7 * 1024, maxCount: 5);
+    cache.compactSync(maxSizeBytes: 7 * 1024, maxCount: 5);
 
-    expect(await sample.countItemsInCache(), 5);
+    expect(countFiles(cache.directory), 5);
 
-    expect(findEmptySubdir(sample.cache.directory), null); // no empty subdirectories
+    expect(findEmptySubdirectory(cache.directory), null); // no empty subdirectories
 
     // the first element was definitely deleted, the last one was definitely left
-    expect(await sample.cache.readBytes("0"), isNull);
-    expect(await sample.cache.readBytes("99"), isNotNull);
+    expect(cache.readBytesSync(KEY_EARLIEST), isNull);
+    expect(cache.readBytesSync(KEY_LATEST), isNotNull);
   });
 
-  // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
+  // // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
 
   test('Deleting random files', () async {
 
@@ -92,13 +91,8 @@ void main() {
 
     deleteRandomItems(cache.directory, 3, FileSystemEntityType.file);
     expect(countFiles(cache.directory), 12);
-    expect(await sample.countItemsInCache(), 12);
 
     deleteRandomItems(cache.directory, 2, FileSystemEntityType.file);
-    expect(await sample.countItemsInCache(), 10);
     expect(countFiles(cache.directory), 10);
   });
-
-
-
 }

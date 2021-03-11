@@ -2,19 +2,30 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 
-import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
-import 'package:crypto/crypto.dart' as crypto;
+
 import 'package:disk_cache/src/10_hashing.dart';
 import "package:test/test.dart";
-import 'package:disk_cache/disk_cache.dart';
-import 'dart:io' show Platform;
+
+import 'common.dart';
 
 
 void main() {
-  test('MD5', () async {
+  test('MD5', () {
     expect(stringToMd5("Don't panic"), "6a1e03f6a6dee59ef4d9f1b332e86b6d");
     expect(stringToMd5(""), "d41d8cd98f00b204e9800998ecf8427e");
   });
+
+  test('Bad hash func', () {
+    final r=Random();
+    final hashes = Set<String>();
+    for (int i=0; i<1000; ++i) {
+      final randomText = i.toString()+" "+r.nextInt(0xFFFFFFFF).toString();
+      hashes.add(badHashFunc(randomText));
+    }
+    // although we made hashed for 1000 different strings, there
+    // are only 16 unique hash values generated
+    expect(hashes.length, 16);
+  });
+
 }

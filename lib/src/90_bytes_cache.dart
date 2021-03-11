@@ -26,7 +26,7 @@ class BytesCache extends BytesStore {
   }
 
   @override
-  bool delete(String key) {
+  bool deleteSync(String key) {
     final f = this._keyToFile(key);
     if (f.existsSync()) {
       this._keyToFile(key).deleteSync();
@@ -36,7 +36,7 @@ class BytesCache extends BytesStore {
   }
 
   @override
-  File writeBytes(String key, List<int> data) {
+  File writeBytesSync(String key, List<int> data) {
     final prefix = this._keyFilePrefix(key);
     final cacheFile = _combine(prefix, DATA_SUFFIX);
     final dirtyFile = _combine(prefix, DIRTY_SUFFIX);
@@ -69,7 +69,7 @@ class BytesCache extends BytesStore {
     //return File("${this._keyFilePrefix(key)}$DATA_SUFFIX");
   }
 
-  Uint8List? readBytes(String key, {bool updateLastModified=true}) {
+  Uint8List? readBytesSync(String key, {bool updateLastModified=true}) {
     final file = this._keyToFile(key);
     try {
       final data = readIfKeyMatchSync(file, key);

@@ -33,7 +33,7 @@ class BytesMap extends BytesStore {
   }
 
   @override
-  bool delete(String key) {
+  bool deleteSync(String key) {
     final file = this._findExistingFile(key);
     if (file==null)
       return false;
@@ -43,7 +43,7 @@ class BytesMap extends BytesStore {
   }
 
   @override
-  File writeBytes(String key, List<int> data) {
+  File writeBytesSync(String key, List<int> data) {
 
     final cacheFile = this._findExistingFile(key) ?? this._proposeUniqueFile(key);
 
@@ -105,7 +105,7 @@ class BytesMap extends BytesStore {
     return null;
   }
 
-  Uint8List? readBytes(String key, {bool updateLastModified=true}) {
+  Uint8List? readBytesSync(String key, {bool updateLastModified=true}) {
     for (final file in this._keyToExistingFiles(key)) {
       final data = readIfKeyMatchSync(file, key);
       if (data != null) {

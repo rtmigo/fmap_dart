@@ -6,7 +6,7 @@ import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import "package:test/test.dart";
 
-import 'tstcommon.dart';
+import 'common.dart';
 
 void main() {
 
@@ -33,7 +33,7 @@ void main() {
 
       for (var i = 0; i < 100; ++i) {
         var key = i.toString();
-        final file = cache.writeBytes(key, [i, i + 10]);
+        final file = cache.writeBytesSync(key, [i, i + 10]);
 
         allFiles.add(file);
         allSubdirs.add(file.parent);
@@ -43,7 +43,7 @@ void main() {
       for (var i = 0; i < 100; ++i) {
         var key = i.toString();
 
-        var bytes = cache.readBytes(key);
+        var bytes = cache.readBytesSync(key);
         expect(bytes, [i, i + 10]);
       }
 
@@ -56,16 +56,16 @@ void main() {
       // (and we delete them in random order intentionally)
 
       for (final key in allKeys.toList()..shuffle()) {
-        expect(cache.readBytes(key), isNotNull);
-        cache.delete(key);
-        expect(cache.readBytes(key), isNull);
+        expect(cache.readBytesSync(key), isNotNull);
+        cache.deleteSync(key);
+        expect(cache.readBytesSync(key), isNull);
       }
 
       // making sure that both files and subdirectories are deleted
       for (final d in allSubdirs) expect(d.existsSync(), isFalse);
       for (final f in allFiles) expect(f.existsSync(), isFalse);
 
-      expect(findEmptySubdir(tempDir!), null); // no empty subdirs
+      expect(findEmptySubdirectory(tempDir!), null); // no empty subdirs
     //});
   });
 }

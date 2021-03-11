@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'dart:io';
-//import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/src/80_unistor.dart';
 import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
 
-void runTests(String prefix, create(Directory d)) {
+void runTests(String prefix, BytesStore create(Directory d)) {
   Directory? tempDir;
 
   setUp(() {
@@ -82,17 +82,16 @@ void runTests(String prefix, create(Directory d)) {
     expect(map.keys.toSet(), isEmpty);
   });
 
-  test('$prefix Disk cache: timestamps', () async {
+  test('$prefix Disk cache: timestamp updated', () async {
+
     final map = create(tempDir!);
-    final itemFile = await map.writeBytes("key", [23, 42]);
+    final itemFile = await map.writeBytesSync("key", [23, 42]);
     final lmt = itemFile.lastModifiedSync();
-
-    // reading the file attribute again gives the same last-modified
     expect(itemFile.lastModifiedSync(), equals(lmt));
-    await Future.delayed(const Duration(milliseconds: 2100));
 
-    // now we access the item through the cache object
-    await map.readBytes("key");
+    // reading the same value a bit later
+    await Future.delayed(const Duration(milliseconds: 2100));
+    await map.readBytesSync("key");
 
     // the last-modified is now be changed
     expect(itemFile.lastModifiedSync(), isNot(equals(lmt)));

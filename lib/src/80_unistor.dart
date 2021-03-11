@@ -7,7 +7,7 @@ import 'dart:typed_data';
 import 'package:meta/meta.dart';
 
 import '00_common.dart';
-import '10_file_removal.dart';
+import '10_file_and_stat.dart';
 import '10_files.dart';
 import '10_hashing.dart';
 import '10_readwrite.dart';
@@ -56,24 +56,24 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
   @protected
   void deleteFile(File file);
 
-  Uint8List? readBytes(String key, {bool updateLastModified=true});
-  bool delete(String key);
-  File writeBytes(String key, List<int> data);
+  Uint8List? readBytesSync(String key, {bool updateLastModified=true});
+  bool deleteSync(String key);
+  File writeBytesSync(String key, List<int> data);
 
   @protected
   bool isFile(String path);
 
   @override
   Uint8List? operator [](Object? key) {
-    return readBytes(key as String);
+    return readBytesSync(key as String);
   }
 
   @override
   void operator []=(String key, List<int>? value) {
     if (value==null)
-      this.delete(key);
+      this.deleteSync(key);
     else
-      writeBytes(key, value);
+      writeBytesSync(key, value);
   }
 
   @override
@@ -91,6 +91,6 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
 
   @override
   Uint8List? remove(Object? key) {
-    this.delete(key as String);
+    this.deleteSync(key as String);
   }
 }
