@@ -81,7 +81,7 @@ diskBytes.purgeSync(maxCount=1000);
 ```
 
 The constructor has the `updateTimestampsOnRead` argument. This argument determines which elements
-will be "old" at the time of purging.
+will be considered fresh at the time of purging.
 
 ``` dart
 final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);
