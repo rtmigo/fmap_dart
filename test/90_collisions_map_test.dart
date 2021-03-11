@@ -24,7 +24,7 @@ void main() {
 
     //test('BytesMap hash collisions', () async {
 
-      final cache = BytesMap(tempDir);
+      final cache = DiskBytesMap(tempDir);
       cache.keyToHash = badHashFunc;
 
       Set<Directory> allSubdirs = Set<Directory>();

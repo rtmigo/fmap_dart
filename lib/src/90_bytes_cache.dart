@@ -14,10 +14,10 @@ import '10_hashing.dart';
 typedef DeleteFile(File file);
 
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-class BytesCache extends BytesStore {
+class DiskBytesCache extends DiskBytesStore {
   // this object should not be too insistent when saving data.
 
-  BytesCache(directory, {bool updateTimestampsOnRead=false}) : super(directory, updateTimestampsOnRead);
+  DiskBytesCache(directory, {bool updateTimestampsOnRead=false}) : super(directory, updateTimestampsOnRead);
 
   @override
   @protected
@@ -87,5 +87,15 @@ class BytesCache extends BytesStore {
   @override
   bool isFile(String path) {
     return FileSystemEntity.isFileSync(path); // todo needed?
+  }
+
+  @override
+  bool containsKey(Object? key) {
+    final file = this._keyToFile(key as String);
+    try {
+      return readKeySync(file)==key;
+    } on FileSystemException catch (_) {
+      return false;
+    }
   }
 }

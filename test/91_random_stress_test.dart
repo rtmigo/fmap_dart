@@ -21,7 +21,7 @@ void main() {
     if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
   });
 
-  Future performRandomWritesAndDeletions(BytesStore cache) async {
+  Future performRandomWritesAndDeletions(DiskBytesStore cache) async {
 
     cache.keyToHash = badHashFunc;
     await populate(cache);
@@ -38,6 +38,9 @@ void main() {
 
     final typesOfActionsPerformed = Set<int>();
     int maxKeysCountEver = 0;
+
+    // TODO purge
+    // TODO compare to Map
 
     for (int i = 0; i < ACTIONS; ++i) {
       futures.add(Future.delayed(Duration(milliseconds: random.nextInt(MAX_DELAY))).then((_) {
@@ -79,11 +82,11 @@ void main() {
   }
 
   test("Random map", () async {
-    await performRandomWritesAndDeletions(BytesMap(tempDir));
+    await performRandomWritesAndDeletions(DiskBytesMap(tempDir));
   });
 
   test("Random cache", () async {
-    await performRandomWritesAndDeletions(BytesCache(tempDir));
+    await performRandomWritesAndDeletions(DiskBytesCache(tempDir));
   });
 
 }

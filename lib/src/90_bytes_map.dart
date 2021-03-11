@@ -17,9 +17,9 @@ typedef String HashFunc(String key);
 
 
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-class BytesMap extends BytesStore {
+class DiskBytesMap extends DiskBytesStore {
 
-  BytesMap(directory, {bool updateTimestampsOnRead=false}): keyToHash=stringToMd5, super(directory, updateTimestampsOnRead);
+  DiskBytesMap(directory, {bool updateTimestampsOnRead=false}): keyToHash=stringToMd5, super(directory, updateTimestampsOnRead);
 
   @internal
   HashFunc keyToHash;
@@ -129,5 +129,10 @@ class BytesMap extends BytesStore {
   bool isFile(String path)
   {
     return FileSystemEntity.isFileSync(path);
+  }
+
+  @override
+  bool containsKey(Object? key) {
+    return _findExistingFile(key as String)!=null;
   }
 }

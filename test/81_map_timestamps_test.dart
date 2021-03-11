@@ -6,7 +6,7 @@ import 'package:disk_cache/src/80_unistor.dart';
 import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
 
-void runTests(String prefix, BytesStore create(Directory d), bool mustUpdate) {
+void runTests(String prefix, DiskBytesStore create(Directory d), bool mustUpdate) {
   Directory? tempDir;
 
   setUp(() {
@@ -38,10 +38,10 @@ void runTests(String prefix, BytesStore create(Directory d), bool mustUpdate) {
 }
 
 void main() {
-  runTests("BytesMap:", (dir)=>BytesMap(dir), false);
-  runTests("BytesCache:", (dir)=>BytesCache(dir), false);
+  runTests("BytesMap:", (dir)=>DiskBytesMap(dir), false);
+  runTests("BytesCache:", (dir)=>DiskBytesCache(dir), false);
 
-  runTests("BytesMap updating:", (dir)=>BytesMap(dir, updateTimestampsOnRead: true), true);
-  runTests("BytesCache updating:", (dir)=>BytesCache(dir, updateTimestampsOnRead: true), true);
+  runTests("BytesMap updating:", (dir)=>DiskBytesMap(dir, updateTimestampsOnRead: true), true);
+  runTests("BytesCache updating:", (dir)=>DiskBytesCache(dir, updateTimestampsOnRead: true), true);
 
 }

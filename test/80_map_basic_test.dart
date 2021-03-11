@@ -6,7 +6,7 @@ import 'package:disk_cache/src/80_unistor.dart';
 import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
 
-void runTests(String prefix, BytesStore create(Directory d)) {
+void runTests(String prefix, DiskBytesStore create(Directory d)) {
   Directory? tempDir;
 
   setUp(() {
@@ -81,9 +81,25 @@ void runTests(String prefix, BytesStore create(Directory d)) {
 
     expect(map.keys.toSet(), isEmpty);
   });
+
+  test('$prefix Contains', () {
+    final map = create(tempDir!);
+
+    expect(map.keys.toSet(), isEmpty);
+
+    map["A"] = [1, 2, 3];
+    map["B"] = [4, 5];
+    map["C"] = [5];
+
+    expect(map.containsKey("A"), true);
+    expect(map.containsKey("X"), false);
+    expect(map.containsKey("B"), true);
+    expect(map.containsKey("Y"), false);
+    expect(map.containsKey("C"), true);
+  });
 }
 
 void main() {
-  runTests("BytesMap:", (dir)=>BytesMap(dir));
-  runTests("BytesCache:", (dir)=>BytesCache(dir));
+  runTests("BytesMap:", (dir)=>DiskBytesMap(dir));
+  runTests("BytesCache:", (dir)=>DiskBytesCache(dir));
 }

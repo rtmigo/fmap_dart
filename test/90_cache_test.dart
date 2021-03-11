@@ -11,12 +11,12 @@ import 'helper.dart';
 void main() {
 
   Directory? tempDir;
-  late BytesCache cache;
+  late DiskBytesCache cache;
 
 
   setUp(() async {
     tempDir = Directory.systemTemp.createTempSync();
-    cache = BytesCache(tempDir);
+    cache = DiskBytesCache(tempDir);
     cache.keyToHash = badHashFunc;
     await populate(cache);
   });
@@ -26,12 +26,12 @@ void main() {
   });
 
   test('updateTimestamps default', () {
-    var z = BytesCache(Directory("labuda321"));
+    var z = DiskBytesCache(Directory("labuda321"));
     expect(z.updateTimestampsOnRead, false);
   });
 
   test('updateTimestamps changed', () {
-    var z = BytesCache(Directory("labuda321"), updateTimestampsOnRead: true);
+    var z = DiskBytesCache(Directory("labuda321"), updateTimestampsOnRead: true);
     expect(z.updateTimestampsOnRead, true);
   });
 

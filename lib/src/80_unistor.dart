@@ -14,12 +14,12 @@ import '10_readwrite.dart';
 
 typedef String HashFunc(String key);
 
-abstract class BytesStore extends MapBase<String, List<int>?> {
+abstract class DiskBytesStore extends MapBase<String, List<int>?> {
 
   final Directory directory;
   final bool updateTimestampsOnRead;
 
-  BytesStore(this.directory, this.updateTimestampsOnRead);
+  DiskBytesStore(this.directory, this.updateTimestampsOnRead);
 
   @internal
   HashFunc keyToHash = stringToMd5;
@@ -79,7 +79,7 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
 
   @override
   void clear() {
-    this.directory.deleteSync(recursive: true); // todo test
+    this.directory.deleteSync(recursive: true);
   }
 
   @override

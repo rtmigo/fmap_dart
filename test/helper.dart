@@ -66,7 +66,7 @@ const KEY_EARLIEST = "5_first";
 const KEY_LATEST  = "10_first";
 
 /// Fills the map with [n] blobs named `[KEY_EARLIEST, "3", "20", "6" ... KEY_LATEST]`.
-Future<void> populate(BytesStore theCache, {lmtMatters = false, int n=100, int sizeEach=1024}) async {
+Future<void> populate(DiskBytesStore theCache, {lmtMatters = false, int n=100, int sizeEach=1024}) async {
 
   List<String> allKeys = <String>[];
 

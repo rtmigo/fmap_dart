@@ -9,7 +9,7 @@ void main() {
   String dirPath = pathlib.join(Directory.systemTemp.path, "myCache");
 
   // creating the cache
-  final diskCache = BytesCache(Directory(dirPath));
+  final diskCache = DiskBytesCache(Directory(dirPath));
 
   // reading bytes from cache
   Uint8List? myData = diskCache["myKey"];
