@@ -9,16 +9,25 @@ import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
 import 'dart:io' show Platform;
 
-String badHashFunc(String data) {
-  // returns only 16 possible hash values.
-  // So if we have more than 16 items, there will hash collisions.
-  // Which is bad for production, but good for testing
-  var content = new Utf8Encoder().convert(data);
-  var md5 = crypto.md5;
-  var digest = md5.convert(content);
-  String result = digest.bytes[0].toRadixString(16)[0];
-  assert(result.length == 1);
-  return result;
+/// This class defines intentionally bad hash function. So we don't need to wait 10 years for
+/// a hash collisions
+class CollidingDiskCache extends BytesStorageBase {
+  CollidingDiskCache(Directory directory) : super(directory);
+
+  @override
+  String keyToHash(String key) => badHashFunc(key);
+
+  static String badHashFunc(String data) {
+    // returns only 16 possible hash values.
+    // So if we have more than 16 items, there will hash collisions.
+    // Which is bad for production, but good for testing
+    var content = new Utf8Encoder().convert(data);
+    var md5 = crypto.md5;
+    var digest = md5.convert(content);
+    String result = digest.bytes[0].toRadixString(16)[0];
+    assert(result.length == 1);
+    return result;
+  }
 }
 
 /// Removes random files or directories from the [dir].
@@ -49,8 +58,7 @@ class SampleWithData {
 
     final theDir = Directory.systemTemp.createTempSync();
 
-    var theCache = DiskCache(theDir,
-        keyToHash: badHashFunc); // maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024,
+    var theCache = CollidingDiskCache(theDir); // maxCount: 999999, maxSizeBytes: 99999 * 1024 * 1024,
 
     Set<String> allKeys = Set<String>();
 
@@ -89,7 +97,7 @@ class SampleWithData {
 
   SampleWithData(this.cache, this.keys);
 
-  final DiskCache cache;
+  final CollidingDiskCache cache;
   final Set<String> keys;
 
   Future<int> countItemsInCache() async {
@@ -107,20 +115,10 @@ Directory? findEmptySubdir(Directory d) {
 }
 
 void main() {
-  test('Files: saving and reading', () async {
-    final theDir = Directory.systemTemp.createTempSync();
-    final path = theDir.path + "/temp";
-    // writing
-    writeKeyAndDataSync(File(path), "c:/key/name/", [4, 5, 6, 7]);
-    // reading
-    expect(readKeySync(File(path)), "c:/key/name/");
-    expect(readIfKeyMatchSync(File(path), "c:/key/name/"), [4, 5, 6, 7]);
-    expect(readIfKeyMatchSync(File(path), "other"), null);
-  });
 
   test('Disk cache: write and read', () async {
     final dir = Directory.systemTemp.createTempSync();
-    final cache = DiskCache(dir); // maxCount: 3, maxSizeBytes: 10
+    final cache = BytesStorage(dir); // maxCount: 3, maxSizeBytes: 10
     // check it's null by default
     expect(await cache.readBytes("A"), null);
     // write and check it's not null anymore
@@ -131,7 +129,7 @@ void main() {
 
   test('Disk cache: write and delete', () async {
     final dir = Directory.systemTemp.createTempSync();
-    final cache = DiskCache(dir); // maxCount: 3, maxSizeBytes: 10
+    final cache = BytesStorage(dir); // maxCount: 3, maxSizeBytes: 10
     // check it's null by default
     expect(await cache.readBytes("A"), isNull);
     // write and check it's not null anymore
@@ -148,7 +146,7 @@ void main() {
 
   test('Disk cache: timestamps', () async {
     final dir = Directory.systemTemp.createTempSync();
-    final cache = DiskCache(dir);
+    final cache = BytesStorage(dir);
     final itemFile = await cache.writeBytes("key", [23, 42]);
     final lmt = itemFile.lastModifiedSync();
     // reading the file attribute again gives the same last-modified
@@ -164,8 +162,7 @@ void main() {
     final theDir = Directory.systemTemp.createTempSync();
     //print(theDir);
 
-    final cache = DiskCache(theDir,
-        keyToHash: badHashFunc); // maxCount: 1000, maxSizeBytes: 10 * 1024 * 1024,
+    final cache = CollidingDiskCache(theDir);
 
     Set<Directory> allSubdirs = Set<Directory>();
     Set<String> allKeys = Set<String>();
@@ -319,7 +316,7 @@ void main() {
 
     Future<void> randomUser() async {
       // it this function we randomly use the cache
-      final cache = DiskCache(dir, keyToHash: badHashFunc);
+      final cache = CollidingDiskCache(dir);
       final keys = <String>[];
       for (int i = 0; i < ACTIONS; ++i) {
         // making a random delay

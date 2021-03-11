@@ -8,7 +8,7 @@ void main() async {
   String cacheDirPath = pathlib.join(Directory.systemTemp.path, "myCache");
 
   // creating the cache
-  final diskCache = DiskCache(Directory(cacheDirPath));
+  final diskCache = BytesStorage(Directory(cacheDirPath));
 
   // reading bytes from cache
   Uint8List? firstBytes = await diskCache.readBytes("firstKey");
