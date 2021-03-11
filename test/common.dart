@@ -67,7 +67,12 @@ Future<void> populate(BytesStore theCache, {lmtMatters = false, int n=100, int s
 
   await longDelay();
 
-  for (var i = 0; i < n-2; ++i) {
+  final indexesInRandomOrder = <int>[];
+  for (int i = 0; i < n-2; ++i)
+    indexesInRandomOrder.add(i);
+  indexesInRandomOrder.shuffle();
+
+  for (int i in indexesInRandomOrder) {
     final key = i.toString();
     allKeys.add(key);
     theCache.writeBytesSync(key, List.filled(1024, i));
