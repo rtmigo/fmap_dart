@@ -37,4 +37,21 @@ void main() {
     expect(listSyncCalm(tempDir).map((e) => path.basename(e.path)).toSet(), {'b.txt', 'a.txt'});
   });
 
+  test('isDirNotEmpty', () async {
+
+    File(path.join(tempDir.path, "a.txt")).writeAsStringSync(":)");
+    File(path.join(tempDir.path, "b.txt")).writeAsStringSync("(:");
+
+    bool raised = false;
+    try {
+      tempDir.deleteSync(recursive: false);
+    } on FileSystemException catch (e) {
+      raised = true;
+      expect(isDirectoryNotEmptyException(e), isTrue);
+    }
+
+    expect(raised, isTrue);
+  });
+
+
 }

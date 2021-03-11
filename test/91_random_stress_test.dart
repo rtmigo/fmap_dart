@@ -26,9 +26,11 @@ void main() {
     cache.keyToHash = badHashFunc;
     await populate(cache);
 
-    final random = Random();
+    // we will perform 3000 actions in 3 seconds in async manner
     const ACTIONS = 3000;
     const MAX_DELAY = 3000;
+
+    final random = Random();
     const UNIQUE_KEYS_COUNT = 50;
 
     List<Future> futures = [];
@@ -74,7 +76,6 @@ void main() {
     //print(typesOfActionsPerformed);
     assert(typesOfActionsPerformed.length==3);
     assert(maxKeysCountEver>5);
-
   }
 
   test("Random map", () async {

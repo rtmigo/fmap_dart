@@ -34,6 +34,11 @@ bool isDirectoryNotEmptyException(FileSystemException e)
   if (Platform.isMacOS && e.osError?.errorCode == 66)
     return true;
 
+  // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
+  const WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
+  if (Platform.isWindows && e.osError?.errorCode == WINDOWS_DIR_NOT_EMPTY)
+    return true;
+
   return false;
 }
 
