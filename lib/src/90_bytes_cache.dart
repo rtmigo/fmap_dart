@@ -69,13 +69,14 @@ class BytesCache extends BytesStore {
     //return File("${this._keyFilePrefix(key)}$DATA_SUFFIX");
   }
 
-  Uint8List? readBytes(String key) {
+  Uint8List? readBytes(String key, {bool updateLastModified=true}) {
     final file = this._keyToFile(key);
     try {
       final data = readIfKeyMatchSync(file, key);
       // data will be null if file contains wrong key (hash collision)
       if (data != null) {
-        setTimestampToNow(file); // calling async func without waiting
+        if (updateLastModified)
+          setTimestampToNow(file); // calling async func without waiting
         return data;
       }
     } on FileSystemException catch (_) {

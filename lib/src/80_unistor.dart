@@ -56,7 +56,7 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
   @protected
   void deleteFile(File file);
 
-  Uint8List? readBytes(String key);
+  Uint8List? readBytes(String key, {bool updateLastModified=true});
   bool delete(String key);
   File writeBytes(String key, List<int> data);
 

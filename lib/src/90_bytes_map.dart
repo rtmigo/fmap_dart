@@ -105,12 +105,13 @@ class BytesMap extends BytesStore {
     return null;
   }
 
-  Uint8List? readBytes(String key) {
+  Uint8List? readBytes(String key, {bool updateLastModified=true}) {
     for (final file in this._keyToExistingFiles(key)) {
       final data = readIfKeyMatchSync(file, key);
       if (data != null) {
         // this is the file with key=key :)
-        setTimestampToNow(file); // calling async func without waiting
+        if (updateLastModified)
+          setTimestampToNow(file); // calling async func without waiting
         return data;
       }
     }
