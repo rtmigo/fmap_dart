@@ -19,5 +19,10 @@ void main() {
   // saving two bytes
   diskCache["myKey"] = [0x23, 0x21];
 
+  diskCache["x"] = [0, -1, -2];
+  print(diskCache["x"]);
+
+
+
   // after restart diskCache["myKey"] will load the data
 }

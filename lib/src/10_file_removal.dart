@@ -7,7 +7,7 @@ import '../disk_cache.dart';
 import '00_common.dart';
 import '90_bytes_map.dart';
 
-const _DEBUG_LOGGING = false;
+const _DEBUG_LOGGING = true;
 
 extension DateTimeCmp on DateTime {
   bool isBeforeOrSame(DateTime b) => this.isBefore(b) || this.isAtSameMomentAs(b);
