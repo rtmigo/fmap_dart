@@ -87,15 +87,16 @@ will be "old" at the time of purging.
 final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);
 ```
 
-In this case, the elements will be deleted according to the LRU criterion. However, accounting for
-usage will require an extra write operation on each read.
+In this case, the elements will be deleted according to the **LRU** policy. Items that were accessed
+recently or added recently will remain in the cache.
+
+However, accounting for usage will require an extra write operation on each read.
 
 ``` dart
 final diskBytes = DiskBytesCache(updateTimestampsOnRead=false);
 ```
-In this case, the elements will be deleted according to the LRU criterion. However, accounting for
-usage will require an extra write operation on each read.
 
+In this case, it's a **FIFO**. Items that were added recently will remain in the cache.
 
 # Example
 
