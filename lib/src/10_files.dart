@@ -5,8 +5,7 @@ import 'dart:io';
 
 /// Returns the result of [Directory.listSync], providing an empty list 
 /// if [FileSystemException] occurs.
-List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false})
-{
+List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false}) {
   try {
     return d.listSync(recursive: recursive);
   }
@@ -20,7 +19,7 @@ List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false})
     //
     // I don't think it's a good idea trying to differentiate error code in 
     // imaginable OS. So if we got a file exception while trying to list,
-    // just assume we cannot list.
+    // we just assume we cannot list.
     return [];
   }
 }
