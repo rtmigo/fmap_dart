@@ -21,7 +21,7 @@ characters.
 
 ``` dart
 diskBytes.saveBytesSync('C:\\con', ...);  // no problem
-diskBytes.saveBytesSync('* :) *', ...);   // no problem
+diskBytes.saveBytesSync('*_*', ...);      // no problem
 ```
 
 ## They both are `Map`s
