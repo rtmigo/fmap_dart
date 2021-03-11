@@ -104,13 +104,13 @@ void main() {
     deleteRandomItems(cache.directory, 10, FileSystemEntityType.directory);
 
     // checking that some items are left (and the cache works ok)
-    expect(countFiles(cache.directory), greaterThan(5));
+    expect(countFiles(cache.directory), greaterThan(2));
 
     // deleting 15 more files
     deleteRandomItems(cache.directory, 15, FileSystemEntityType.file);
 
     // checking that some items are left (and the cache works ok)
-    expect(countFiles(cache.directory), greaterThan(5));
+    expect(countFiles(cache.directory), greaterThan(2));
   });
 
 }

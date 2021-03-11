@@ -9,23 +9,22 @@ import 'dart:io';
 // (https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-)
 //
 // class _WindowsCodes { ...
-//   final int esrch = 3;
-//      // WTF is that? WinAPI uses 3 (0x3) for ERROR_PATH_NOT_FOUND,
-//      // while ESRCH is for "no such process"...
-//   final int enotempty = 41; // must be 145
+//   final int esrch = 3;       // WTF is that? WinAPI uses 3 (0x3) for ERROR_PATH_NOT_FOUND,
+//                              // while ESRCH is for "no such process"...
+//   final int enotempty = 41;  // Must be 145 etc.
 // }
 
 
-const LINUX_ENOTEMPTY = 39;
-const LINUX_ENOENT = 2;
+const int LINUX_ENOTEMPTY = 39;
+const int LINUX_ENOENT = 2;
 
 // there is no official list of macOS errors for 2021.
 // I have to catch them in the woods
-const MACOS_NOT_EMPTY = 66;
-const MACOS_NO_SUCH_FILE = LINUX_ENOENT;
+const int MACOS_NOT_EMPTY = 66;
+const int MACOS_NO_SUCH_FILE = LINUX_ENOENT;
 
-const WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
-const WINDOWS_ERROR_PATH_NOT_FOUND = 3; // 0x3
+const int WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
+const int WINDOWS_ERROR_PATH_NOT_FOUND = 3; // 0x3
 
 /// If directory exists, returns the result of [Directory.listSync]. 
 /// Otherwise returns empty list.
