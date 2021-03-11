@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
+// SPDX-FileCopyrightText: (c) 2021 Art Galkin <ortemeo@gmail.com>
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'dart:collection';
@@ -9,13 +9,19 @@ import 'package:meta/meta.dart';
 import '00_common.dart';
 import '10_file_removal.dart';
 import '10_files.dart';
+import '10_hashing.dart';
 import '10_readwrite.dart';
 
-abstract class FileMap extends MapBase<String, List<int>?> {
+typedef String HashFunc(String key);
+
+abstract class BytesStore extends MapBase<String, List<int>?> {
 
   final Directory directory;
 
-  FileMap(this.directory);
+  BytesStore(this.directory);
+
+  @internal
+  HashFunc keyToHash = stringToMd5;
 
   void compactSync({
     final int maxSizeBytes = JS_MAX_SAFE_INTEGER,

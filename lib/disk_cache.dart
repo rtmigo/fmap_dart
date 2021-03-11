@@ -1,1 +1,2 @@
-export 'src/90_bytes_storage.dart' show BytesMap, BytesMapBase;
+export 'src/90_bytes_map.dart' show BytesMap;
+export 'src/90_bytes_cache.dart' show BytesCache;

@@ -101,4 +101,5 @@ void runTests(String prefix, create(Directory d)) {
 
 void main() {
   runTests("BytesMap:", (dir)=>BytesMap(dir));
+  runTests("BytesCache:", (dir)=>BytesCache(dir));
 }

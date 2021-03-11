@@ -4,7 +4,6 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
-import 'package:disk_cache/src/10_file_removal.dart';
 import 'package:disk_cache/src/10_readwrite.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import 'package:path/path.dart' as paths;
@@ -17,8 +16,8 @@ typedef DeleteFile(File file);
 typedef String HashFunc(String key);
 
 
-/// A persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-class BytesMap extends FileMap {
+/// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
+class BytesMap extends BytesStore {
 
   BytesMap(directory): keyToHash=stringToMd5, super(directory);
 
@@ -130,14 +129,4 @@ class BytesMap extends FileMap {
   {
     return FileSystemEntity.isFileSync(path);
   }
-
 }
-
-// class BytesMap extends BytesMapBase {
-//
-//   BytesMap(Directory directory) : super(directory);
-//
-//   @override
-//   String keyToHash(String key) => stringToMd5(key);
-//
-// }

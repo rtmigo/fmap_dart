@@ -5,7 +5,7 @@ import 'dart:io';
 
 import '../disk_cache.dart';
 import '00_common.dart';
-import '90_bytes_storage.dart';
+import '90_bytes_map.dart';
 
 const _DEBUG_LOGGING = false;
 
