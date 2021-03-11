@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'dart:io';
+import 'package:file/file.dart' show ErrorCodes;
 
 /// Returns the result of [Directory.listSync], providing an empty list 
 /// if [FileSystemException] occurs.
@@ -9,7 +10,15 @@ List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false}) {
   try {
     return d.listSync(recursive: recursive);
   }
-  on FileSystemException catch (_) {
+  on FileSystemException catch (e) {
+
+    if (e.osError?.errorCode == ErrorCodes.ENOENT)
+      return [];
+
+    rethrow;
+
+
+
     // Windows:
     //    FileSystemException: Directory listing failed, path = '...' 
     //    (OS Error: The system cannot find the path specified., errno = 3)
@@ -26,22 +35,27 @@ List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false}) {
 
 bool isDirectoryNotEmptyException(FileSystemException e)
 {
-  // https://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html
-  const LINUX_ENOTEMPTY = 39;
-  if (Platform.isLinux && e.osError?.errorCode == LINUX_ENOTEMPTY)
-    return true;
+  return e.osError?.errorCode == ErrorCodes.ENOTEMPTY;
 
-  // there is no evident source of macOS errors in 2021 O_O
-  const GUESSING_MACOS_NOT_EMPTY = 66;
-  if (Platform.isMacOS && e.osError?.errorCode == GUESSING_MACOS_NOT_EMPTY)
-    return true;
 
-  // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
-  const WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
-  if (Platform.isWindows && e.osError?.errorCode == WINDOWS_DIR_NOT_EMPTY)
-    return true;
+  // TODO maybe copy https://github.com/google/file.dart/blob/0213b00c5007d31f66c248eacadc1670b27b3066/packages/file/lib/src/interface/error_codes.dart#L10
 
-  return false;
+  // // https://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html
+  // const LINUX_ENOTEMPTY = 39;
+  // if (Platform.isLinux && e.osError?.errorCode == LINUX_ENOTEMPTY)
+  //   return true;
+  //
+  // // there is no evident source of macOS errors in 2021 O_O
+  // const GUESSING_MACOS_NOT_EMPTY = 66;
+  // if (Platform.isMacOS && e.osError?.errorCode == GUESSING_MACOS_NOT_EMPTY)
+  //   return true;
+  //
+  // // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
+  // const WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
+  // if (Platform.isWindows && e.osError?.errorCode == WINDOWS_DIR_NOT_EMPTY)
+  //   return true;
+  //
+  // return false;
 }
 
 void deleteDirIfEmptySync(Directory d) {
