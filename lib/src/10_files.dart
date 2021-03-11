@@ -27,11 +27,13 @@ List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false}) {
 bool isDirectoryNotEmptyException(FileSystemException e)
 {
   // https://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html
-  if (Platform.isLinux && e.osError?.errorCode == 39)
+  const LINUX_ENOTEMPTY = 39;
+  if (Platform.isLinux && e.osError?.errorCode == LINUX_ENOTEMPTY)
     return true;
 
   // there is no evident source of macOS errors in 2021 O_O
-  if (Platform.isMacOS && e.osError?.errorCode == 66)
+  const GUESSING_MACOS_NOT_EMPTY = 66;
+  if (Platform.isMacOS && e.osError?.errorCode == GUESSING_MACOS_NOT_EMPTY)
     return true;
 
   // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-

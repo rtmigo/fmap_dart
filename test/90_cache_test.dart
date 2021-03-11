@@ -6,7 +6,7 @@ import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import "package:test/test.dart";
 
-import 'common.dart';
+import 'helper.dart';
 
 void main() {
 
@@ -50,6 +50,8 @@ void main() {
     // We should not do that
 
     expect(countFiles(cache.directory), 15);
+    
+    print("Average file size: ${averageFileSize(cache.directory)}");
 
     cache.compactSync(maxSizeBytes: 5 * 1024);
 

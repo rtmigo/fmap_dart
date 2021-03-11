@@ -7,7 +7,7 @@ import 'dart:math';
 import 'package:disk_cache/src/10_hashing.dart';
 import "package:test/test.dart";
 
-import 'common.dart';
+import 'helper.dart';
 
 
 void main() {

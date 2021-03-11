@@ -52,6 +52,4 @@ void main() {
 
     expect(raised, isTrue);
   });
-
-
 }

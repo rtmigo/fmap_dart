@@ -31,6 +31,18 @@ int countFiles(Directory dir) {
   return dir.listSync(recursive: true).where((e) => FileSystemEntity.isFileSync(e.path)).length;
 }
 
+int averageFileSize(Directory dir) {
+
+  int sum = 0;
+  int count = 0;
+  for (var fse in dir.listSync(recursive: true))
+    if (FileSystemEntity.isFileSync(fse.path)) {
+        sum+=File(fse.path).statSync().size;
+        count++;
+      }
+  return (sum/count).round();
+}
+
 /// Removes random files or directories from the [dir].
 void deleteRandomItems(Directory dir, int count, FileSystemEntityType type,
     {emptyOk = false, errorOk = false}) {
