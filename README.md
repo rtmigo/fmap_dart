@@ -100,6 +100,8 @@ diskBytes.purge(...);
 
 In this case, it's a **FIFO**. Items that were added recently will remain in the cache.
 
+This is the default mode. This prevents wear to the SSD drives.
+
 # Example
 
 ``` dart
