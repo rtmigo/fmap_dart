@@ -14,7 +14,7 @@ diskBytes.saveBytesSync('myKey', [0x21, 0x23]); // saved into a file!
 Uint8List fromDisk = diskBytes.loadBytesSync('myKey'); 
 ```
 
-Each item actually stored in a separate file. So it's just named files.
+Each item actually stored in a separate file. So it's just named files. Fast, simple and reliable.
 
 This does not impose any restrictions on the keys. 
 They can be of any length and can contain any characters.

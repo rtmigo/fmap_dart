@@ -19,11 +19,11 @@ void main() {
   test('Bad hash func', () {
     final r=Random();
     final hashes = Set<String>();
-    for (int i=0; i<1000; ++i) {
+    for (int i=0; i<100000; ++i) {
       final randomText = i.toString()+" "+r.nextInt(0xFFFFFFFF).toString();
       hashes.add(badHashFunc(randomText));
     }
-    // although we made hashed for 1000 different strings, there
+    // although we made hashed for 100000 different strings, there
     // are only 16 unique hash values generated
     expect(hashes.length, 16);
   });
