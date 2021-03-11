@@ -22,9 +22,6 @@ abstract class BytesStorageBase {
 
   String keyToHash(String key);
 
-  static const _DIRTY_SUFFIX = ".dirt";
-  static const _DATA_SUFFIX = ".dat";
-
   Future<BytesStorageBase> _init() async {
     directory.createSync(recursive: true);
     this.compactSync();
@@ -125,7 +122,7 @@ abstract class BytesStorageBase {
   /// It's also possible, that neither of them stores the data for [key].
   Iterable<File> _keyToExistingFiles(String key) sync* {
     final parent = this._keyToHypotheticalDir(key);
-    for (final fse in listIfExists(parent))
+    for (final fse in listCalm(parent))
       if (fse.path.endsWith(_DATA_SUFFIX))
         yield File(fse.path);
   }

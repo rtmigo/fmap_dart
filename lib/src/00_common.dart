@@ -1,1 +1,3 @@
 const JS_MAX_SAFE_INTEGER = 9007199254740991;
+const _DIRTY_SUFFIX = ".dirt";
+const _DATA_SUFFIX = ".dat";

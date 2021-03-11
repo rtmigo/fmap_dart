@@ -3,18 +3,23 @@
 
 import 'dart:io';
 
-List<FileSystemEntity> listIfExists(Directory d, {bool recursive = false})
+List<FileSystemEntity> listCalm(Directory d, {bool recursive = false})
 {
   try {
-    return d.listSync(recursive: false);
+    return d.listSync(recursive: recursive);
   }
-  on FileSystemException catch (e)
-  {
-    //  FileSystemException: Directory listing failed, path = '...'
-    //  (OS Error: No such file or directory, errno = 2)
-    if (e.osError?.errorCode == 2)
-      return [];
-    rethrow;
+  on FileSystemException catch (_) {
+    // Windows:
+    //    FileSystemException: Directory listing failed, path = '...' 
+    //    (OS Error: The system cannot find the path specified., errno = 3)
+    // MacOS:    
+    //    FileSystemException: Directory listing failed, path = '...'
+    //    (OS Error: No such file or directory, errno = 2)
+    //
+    // I don't think it's a good idea trying to differentiate error code in 
+    // imaginable OS. So if we got a file exception while trying to list,
+    // just assume we cannot list.
+    return [];
   }
 }
 
