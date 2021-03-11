@@ -8,10 +8,7 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  file: ^6.1.0 # for OS error codes
-#  me
-
-#  crypto: ^3.0.0
+  # :)
 
 dev_dependencies:
 

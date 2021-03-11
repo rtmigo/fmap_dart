@@ -2,60 +2,61 @@
 // SPDX-License-Identifier: BSD-3-Clause
 
 import 'dart:io';
-import 'package:file/file.dart' show ErrorCodes;
 
-/// Returns the result of [Directory.listSync], providing an empty list 
-/// if [FileSystemException] occurs.
-List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false}) {
+
+// also tried [ErrorCodes](https://git.io/JqnbR) but their codes for Windows
+// (as for 2021-03) are totally different from
+// (https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-)
+//
+// class _WindowsCodes { ...
+//   final int esrch = 3;
+//      // WTF is that? WinAPI uses 3 (0x3) for ERROR_PATH_NOT_FOUND,
+//      // while ESRCH is for "no such process"...
+//   final int enotempty = 41; // must be 145
+// }
+
+
+const LINUX_ENOTEMPTY = 39;
+const LINUX_ENOENT = 2;
+
+// there is no official list of macOS errors for 2021.
+// I have to catch them in the woods
+const MACOS_NOT_EMPTY = 66;
+const MACOS_NO_SUCH_FILE = LINUX_ENOENT;
+
+const WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
+const WINDOWS_ERROR_PATH_NOT_FOUND = 3; // 0x3
+
+/// If directory exists, returns the result of [Directory.listSync]. 
+/// Otherwise returns empty list.
+List<FileSystemEntity> listSyncOrEmpty(Directory d, {bool recursive = false}) {
   try {
     return d.listSync(recursive: recursive);
   }
   on FileSystemException catch (e) {
 
-    if (e.osError?.errorCode == ErrorCodes.ENOENT)
+    if (Platform.isWindows && e.osError?.errorCode == WINDOWS_ERROR_PATH_NOT_FOUND)
+      return [];
+    if ((Platform.isMacOS||Platform.isIOS) && e.osError?.errorCode == MACOS_NO_SUCH_FILE)
+      return [];
+    // assuming we're on a kind of linux
+    if (e.osError?.errorCode==LINUX_ENOENT)
       return [];
 
     rethrow;
-
-
-
-    // Windows:
-    //    FileSystemException: Directory listing failed, path = '...' 
-    //    (OS Error: The system cannot find the path specified., errno = 3)
-    // MacOS:    
-    //    FileSystemException: Directory listing failed, path = '...'
-    //    (OS Error: No such file or directory, errno = 2)
-    //
-    // I don't think it's a good idea trying to differentiate error code in 
-    // imaginable OS. So if we got a file exception while trying to list,
-    // we just assume we cannot list.
-    return [];
   }
 }
 
 bool isDirectoryNotEmptyException(FileSystemException e)
 {
-  return e.osError?.errorCode == ErrorCodes.ENOTEMPTY;
+  if (Platform.isWindows && e.osError?.errorCode == WINDOWS_DIR_NOT_EMPTY)
+    return true;
 
+  if ((Platform.isMacOS||Platform.isIOS) && e.osError?.errorCode == MACOS_NOT_EMPTY)
+    return true;
 
-  // TODO maybe copy https://github.com/google/file.dart/blob/0213b00c5007d31f66c248eacadc1670b27b3066/packages/file/lib/src/interface/error_codes.dart#L10
-
-  // // https://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html
-  // const LINUX_ENOTEMPTY = 39;
-  // if (Platform.isLinux && e.osError?.errorCode == LINUX_ENOTEMPTY)
-  //   return true;
-  //
-  // // there is no evident source of macOS errors in 2021 O_O
-  // const GUESSING_MACOS_NOT_EMPTY = 66;
-  // if (Platform.isMacOS && e.osError?.errorCode == GUESSING_MACOS_NOT_EMPTY)
-  //   return true;
-  //
-  // // https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
-  // const WINDOWS_DIR_NOT_EMPTY = 145; // 0x91
-  // if (Platform.isWindows && e.osError?.errorCode == WINDOWS_DIR_NOT_EMPTY)
-  //   return true;
-  //
-  // return false;
+  // assuming we're on a kind of linux
+  return e.osError?.errorCode == LINUX_ENOTEMPTY;
 }
 
 void deleteDirIfEmptySync(Directory d) {

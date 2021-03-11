@@ -83,7 +83,7 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
 
   @override
   Iterable<String> get keys sync* {
-    for (final f in listSyncCalm(this.directory, recursive: true)) {
+    for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
       if (this.isFile(f.path))
         yield readKeySync(File(f.path));
     }

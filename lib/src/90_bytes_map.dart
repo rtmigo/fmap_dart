@@ -83,7 +83,7 @@ class BytesMap extends BytesStore {
   /// It's also possible, that neither of them stores the data for [key].
   Iterable<File> _keyToExistingFiles(String key) sync* {
     final parent = this._keyToHypotheticalDir(key);
-    for (final fse in listSyncCalm(parent))
+    for (final fse in listSyncOrEmpty(parent))
       if (fse.path.endsWith(DATA_SUFFIX))
         yield File(fse.path);
   }

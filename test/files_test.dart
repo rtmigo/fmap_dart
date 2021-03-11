@@ -26,7 +26,7 @@ void main() {
 
   test('listIfExists when does not exist', () async {
     final unexisting = Directory(path.join(tempDir.path, "unexisting"));
-    expect(listSyncCalm(unexisting), []);
+    expect(listSyncOrEmpty(unexisting), []);
   });
 
   test('listIfExists when exists', () async {
@@ -34,7 +34,7 @@ void main() {
     File(path.join(tempDir.path, "a.txt")).writeAsStringSync(":)");
     File(path.join(tempDir.path, "b.txt")).writeAsStringSync("(:");
 
-    expect(listSyncCalm(tempDir).map((e) => path.basename(e.path)).toSet(), {'b.txt', 'a.txt'});
+    expect(listSyncOrEmpty(tempDir).map((e) => path.basename(e.path)).toSet(), {'b.txt', 'a.txt'});
   });
 
   test('isDirNotEmpty', () async {
