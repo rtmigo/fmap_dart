@@ -84,14 +84,14 @@ The constructor has the `updateTimestampsOnRead` argument. This argument determi
 will be "old" at the time of purging.
 
 ``` dart
-final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);  // prepare for LRU
+final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);
 ```
 
 In this case, the elements will be deleted according to the LRU criterion. However, accounting for
 usage will require an extra write operation on each read.
 
 ``` dart
-final diskBytes = DiskBytesCache(updateTimestampsOnRead=false);  // default
+final diskBytes = DiskBytesCache(updateTimestampsOnRead=false);
 ```
 In this case, the elements will be deleted according to the LRU criterion. However, accounting for
 usage will require an extra write operation on each read.
