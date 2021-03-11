@@ -101,8 +101,10 @@ class FilledWithData {
 
   Future<int> countItemsInCache() async {
     //return countFiles()
-    int countLeft = 0; //
-    for (var k in this.keys) if (await this.cache.readBytes(k, updateLastModified: false) != null) countLeft++;
+    int countLeft = 0;
+    for (var k in this.keys)
+      if (await this.cache.readBytes(k, updateLastModified: false) != null)
+        countLeft++;
     return countLeft;
   }
 }
