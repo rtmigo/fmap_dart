@@ -309,8 +309,10 @@ void main() {
     // One will randomly add/read/delete items in the cache.
     // The other one will randomly delete them.
 
-    const ACTIONS = 2000;
+    const ACTIONS = 1500;
     const DELAY = 10;
+    assert (ACTIONS*DELAY < 30000); // to avoid test timeout
+
     const UNIQUE_KEYS_RANGE = 50;
     final dir = Directory.systemTemp.createTempSync();
     final random = Random();
@@ -373,5 +375,6 @@ void main() {
     }
 
     await Future.wait([randomUser(), randomRemover()]);
-  });
+  },
+  timeout: Timeout(const Duration(minutes: 1)));
 }
