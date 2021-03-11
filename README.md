@@ -14,13 +14,9 @@ diskBytes.saveBytesSync('myKey', [0x21, 0x23]); // saved into a file!
 Uint8List fromDisk = diskBytes.loadBytesSync('myKey'); 
 ```
 
-Each item actually stored in a separate file. So there is no central index, that can be broken.
-It's just named files.
+Each item actually stored in a separate file. So it's just named files.
 
-Even if the OS decides to clear the temporary directories, and deletes half of the files, 
-it's not a big deal.
-
-Although each item is contained in a file, this does not impose any restrictions on the keys. 
+This does not impose any restrictions on the keys. 
 They can be of any length and can contain any characters.
 ``` dart
 diskBytes.saveBytesSync('C:\\con', ...);  // no problem
