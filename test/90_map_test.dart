@@ -24,7 +24,7 @@ void main() {
     if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
   });
 
-  test('Purge with maxCount', () async {
+  test('Purge with maxCount', () {
 
     // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
     // the last-modified date, so we will lose the expected files order.
@@ -42,7 +42,7 @@ void main() {
     expect(cache.readBytesSync(KEY_LATEST), isNotNull);
   });
 
-  test('Purge with maxSize', () async {
+  test('Purge with maxSize', () {
 
     // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
     // the last-modified date, so we will lose the expected files order.
@@ -63,7 +63,7 @@ void main() {
     expect(cache.readBytesSync(KEY_LATEST), isNotNull);
   });
 
-  test('Purge with maxSize and maxCount', () async {
+  test('Purge with maxSize and maxCount', () {
 
     // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
     // the last-modified date, so we will lose the expected files order.
@@ -84,7 +84,7 @@ void main() {
 
   // RANDOM DELETIONS //////////////////////////////////////////////////////////////////////////////
 
-  test('Deleting random files', () async {
+  test('Deleting random files', () {
     expect(countFiles(cache.directory), 100);
 
     // deleting 10 files
@@ -96,7 +96,7 @@ void main() {
     expect(countFiles(cache.directory), 75);
   });
 
-  test('Deleting random directories', () async {
+  test('Deleting random directories', () {
 
     expect(countFiles(cache.directory), 100);
 
