@@ -24,7 +24,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
   @internal
   HashFunc keyToHash = stringToMd5;
 
-  void compactSync({
+  void purgeSync({
     final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
     final maxCount = JS_MAX_SAFE_INTEGER })
   {

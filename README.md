@@ -65,8 +65,37 @@ The difference is in the readiness of the objects for
 occurrence happens once a decade, `DiskBytesMap` is always ready for it. Both elements with the same
 hashes will be stored side by side.
 
-`DiskBytesCache` is much more relaxed in this regard. When faced with a rare collision, it will simply
-remove one of the elements. There is nothing important in the cache, is there.
+`DiskBytesCache` is much more relaxed in this regard. When faced with a rare collision, it will
+simply remove one of the elements. There is nothing important in the cache, is there.
+
+## Purge
+
+If the storage has become too large, you can delete the oldest data.
+
+``` dart
+// leave only the freshest 16 Mb
+diskBytes.purgeSync(maxSizeBytes=16*1024*1024);
+  
+// leave only the freshest 1000 elements
+diskBytes.purgeSync(maxCount=1000);              
+```
+
+The constructor has the `updateTimestampsOnRead` argument. This argument determines which elements
+will be "old" at the time of purging.
+
+``` dart
+final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);  // prepare for LRU
+```
+
+In this case, the elements will be deleted according to the LRU criterion. However, accounting for
+usage will require an extra write operation on each read.
+
+``` dart
+final diskBytes = DiskBytesCache(updateTimestampsOnRead=false);  // default
+```
+In this case, the elements will be deleted according to the LRU criterion. However, accounting for
+usage will require an extra write operation on each read.
+
 
 # Example
 

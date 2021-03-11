@@ -43,7 +43,7 @@ void main() {
 
     expect(countFiles(cache.directory), 15);
 
-    cache.compactSync(maxCount: 10);
+    cache.purgeSync(maxCount: 10);
 
     expect(cache.length, 10);
     expect(findEmptySubdirectory(cache.directory), null); // no empty subdirectories
@@ -63,7 +63,7 @@ void main() {
     
     print("Average file size: ${averageFileSize(cache.directory)}");
 
-    cache.compactSync(maxSizeBytes: 5 * 1024);
+    cache.purgeSync(maxSizeBytes: 5 * 1024);
 
     // 5<=n<95 files left
     expect(countFiles(cache.directory), greaterThanOrEqualTo(2));
@@ -84,7 +84,7 @@ void main() {
 
     expect(countFiles(cache.directory), 15);
 
-    cache.compactSync(maxSizeBytes: 7 * 1024, maxCount: 5);
+    cache.purgeSync(maxSizeBytes: 7 * 1024, maxCount: 5);
 
     expect(countFiles(cache.directory), 5);
 
