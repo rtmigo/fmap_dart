@@ -3,8 +3,10 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:meta/meta.dart';
 import 'package:disk_cache/src/10_file_removal.dart';
 import 'package:disk_cache/src/10_readwrite.dart';
+import 'package:disk_cache/src/80_unistor.dart';
 import 'package:path/path.dart' as paths;
 import '00_common.dart';
 import '10_files.dart';
@@ -14,76 +16,66 @@ typedef DeleteFile(File file);
 
 
 /// A persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-abstract class BytesStorageBase {
+abstract class BytesStorageBase extends UniStorage {
 
-  BytesStorageBase(this.directory) {
-    this._initialized = this._init();
-  }
+  BytesStorageBase(directory): super(directory);
 
   String keyToHash(String key);
 
-  Future<BytesStorageBase> _init() async {
-    directory.createSync(recursive: true);
-    this.compactSync();
+  // void compactSync({
+  //   final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
+  //   final maxCount = JS_MAX_SAFE_INTEGER })
+  // {
+  //   List<FileAndStat> files = <FileAndStat>[];
+  //
+  //   List<FileSystemEntity> entries;
+  //   try {
+  //     entries = directory.listSync(recursive: true);
+  //   } on FileSystemException catch (e) {
+  //     throw FileSystemException(
+  //         "DiskCache failed to listSync directory $directory right after creation. "
+  //             "osError: ${e.osError}.");
+  //   }
+  //
+  //   for (final entry in entries) {
+  //     if (entry.path.endsWith(DIRTY_SUFFIX)) {
+  //       deleteSyncCalm(File(entry.path));
+  //       continue;
+  //     }
+  //     if (entry.path.endsWith(DATA_SUFFIX)) {
+  //       final f = File(entry.path);
+  //       files.add(FileAndStat(f));
+  //     }
+  //   }
+  //
+  //   FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: maxCount,
+  //       deleteFile: (file) {
+  //         // alternate deleteFile callback will not only delete file, but also
+  //         // the parent dir, if empty
+  //         deleteSyncCalm(file);
+  //         deleteDirIfEmptySync(file.parent);
+  //       });
+  // }
 
-    return this;
+
+  @override
+  @protected
+  void deleteFile(File file) {
+    file.deleteSync();
+    deleteDirIfEmptySync(file.parent);
   }
 
-  void compactSync({
-    final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
-    final maxCount = JS_MAX_SAFE_INTEGER })
-  {
-    List<FileAndStat> files = <FileAndStat>[];
-
-    List<FileSystemEntity> entries;
-    try {
-      entries = directory.listSync(recursive: true);
-    } on FileSystemException catch (e) {
-      throw FileSystemException(
-          "DiskCache failed to listSync directory $directory right after creation. "
-              "osError: ${e.osError}.");
-    }
-
-    for (final entry in entries) {
-      if (entry.path.endsWith(DIRTY_SUFFIX)) {
-        deleteSyncCalm(File(entry.path));
-        continue;
-      }
-      if (entry.path.endsWith(DATA_SUFFIX)) {
-        final f = File(entry.path);
-        files.add(FileAndStat(f));
-      }
-    }
-
-    FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: maxCount,
-        deleteFile: (file) {
-          // alternate deleteFile callback will not only delete file, but also
-          // the parent dir, if empty
-          deleteSyncCalm(file);
-          deleteDirIfEmptySync(file.parent);
-        });
-  }
-
-  Future<BytesStorageBase> get initialized => this._initialized!;
-
-  Future<BytesStorageBase>? _initialized;
-  final Directory directory;
-
-  Future<bool> delete(String key) async {
-    await this._initialized;
+  bool delete(String key) {
     final file = this._findExistingFile(key);
     if (file==null)
       return false;
-
     assert(file.path.endsWith(DATA_SUFFIX));
-    file.deleteSync();
-    deleteDirIfEmptySync(file.parent);
+    this.deleteFile(file);
     return true;
   }
 
-  Future<File> writeBytes(String key, List<int> data) async {
+  File writeBytes(String key, List<int> data) {
 
-    await this._initialized;
     final cacheFile = this._findExistingFile(key) ?? this._proposeUniqueFile(key);
 
     File? dirtyFile = _uniqueDirtyFn();
@@ -93,7 +85,6 @@ abstract class BytesStorageBase {
       try {
         Directory(paths.dirname(cacheFile.path)).createSync();
       } on FileSystemException {}
-      //print("Writing to $cacheFile");
 
       if (cacheFile.existsSync()) cacheFile.deleteSync();
       dirtyFile.renameSync(cacheFile.path);
@@ -144,9 +135,7 @@ abstract class BytesStorageBase {
     return null;
   }
 
-  Future<Uint8List?> readBytes(String key) async {
-    await this._initialized;
-
+  Uint8List? readBytes(String key) {
     for (final fileCandidate in _keyToExistingFiles(key)) {
       final data = readIfKeyMatchSync(fileCandidate, key);
       if (data != null) {
@@ -154,7 +143,6 @@ abstract class BytesStorageBase {
         return data;
       }
     }
-
     return null;
   }
 
@@ -164,6 +152,45 @@ abstract class BytesStorageBase {
       if (!f.existsSync()) return f;
     }
   }
+
+  @override
+  Uint8List? operator [](Object? key) {
+    return readBytes(key as String);
+  }
+
+  @override
+  void operator []=(String key, List<int>? value) {
+    if (value==null)
+      this.delete(key);
+    else
+      writeBytes(key, value);
+  }
+
+  @override
+  void clear() {
+    this.directory.deleteSync(recursive: true); // todo test
+  }
+
+  @override
+  Iterable<String> get keys sync* {
+    for (final f in listSyncCalm(this.directory, recursive: true)) {
+      //print(f);
+      if (this.isFile(f.path))
+        yield readKeySync(File(f.path));
+    }
+  }
+
+  @override
+  Uint8List? remove(Object? key) {
+    this.delete(key as String);
+  }
+
+  bool isFile(String path)
+  {
+    return FileSystemEntity.isFileSync(path);
+    // todo calm for cache
+  }
+
 }
 
 class BytesStorage extends BytesStorageBase {
@@ -172,4 +199,5 @@ class BytesStorage extends BytesStorageBase {
 
   @override
   String keyToHash(String key) => stringToMd5(key);
+
 }

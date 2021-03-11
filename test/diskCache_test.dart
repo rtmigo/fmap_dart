@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 import 'package:crypto/crypto.dart' as crypto;
 import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
@@ -114,53 +115,11 @@ Directory? findEmptySubdir(Directory d) {
   return null;
 }
 
-void main() {
-
-  test('Disk cache: write and read', () async {
-    final dir = Directory.systemTemp.createTempSync();
-    final cache = BytesStorage(dir); // maxCount: 3, maxSizeBytes: 10
-    // check it's null by default
-    expect(await cache.readBytes("A"), null);
-    // write and check it's not null anymore
-    await cache.writeBytes("A", [1, 2, 3]);
-    expect(await cache.readBytes("A"), [1, 2, 3]);
-    expect(await cache.readBytes("A"), [1, 2, 3]); // reading again
-  });
-
-  test('Disk cache: write and delete', () async {
-    final dir = Directory.systemTemp.createTempSync();
-    final cache = BytesStorage(dir); // maxCount: 3, maxSizeBytes: 10
-    // check it's null by default
-    expect(await cache.readBytes("A"), isNull);
-    // write and check it's not null anymore
-    await cache.writeBytes("A", [1, 2, 3]);
-    expect(await cache.readBytes("A"), isNotNull);
-    // delete
-    expect(await cache.delete("A"), true);
-    // reading the item returns null again
-    expect(await cache.readBytes("A"), isNull);
-    // deleting again does not produce errors, but returns false
-    expect(await cache.delete("A"), false);
-    expect(await cache.delete("A"), false);
-  });
-
-  test('Disk cache: timestamps', () async {
-    final dir = Directory.systemTemp.createTempSync();
-    final cache = BytesStorage(dir);
-    final itemFile = await cache.writeBytes("key", [23, 42]);
-    final lmt = itemFile.lastModifiedSync();
-    // reading the file attribute again gives the same last-modified
-    expect(itemFile.lastModifiedSync(), equals(lmt));
-    await Future.delayed(const Duration(milliseconds: 2100));
-    // now we access the item through the cache object
-    await cache.readBytes("key");
-    // the last-modified is now be changed
-    expect(itemFile.lastModifiedSync(), isNot(equals(lmt)));
-  });
+main() async {
 
   test('hash collisions', () async {
+
     final theDir = Directory.systemTemp.createTempSync();
-    //print(theDir);
 
     final cache = CollidingDiskCache(theDir);
 
@@ -301,6 +260,8 @@ void main() {
   // RANDOM MONSTROUS //////////////////////////////////////////////////////////////////////////////
 
   test('Random monstrous', () async {
+
+    return;
 
     // we will run two async functions that will work in parallel.
     // One will randomly add/read/delete items in the cache.
