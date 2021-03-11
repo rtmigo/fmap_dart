@@ -100,11 +100,12 @@ class FilledWithData {
   late Set<String> keys;
 
   Future<int> countItemsInCache() async {
-    //return countFiles()
-    int countLeft = 0;
-    for (var k in this.keys)
-      if (await this.cache.readBytes(k, updateLastModified: false) != null)
-        countLeft++;
-    return countLeft;
+    return cache.length;
+    // //return countFiles()
+    // int countLeft = 0;
+    // for (var k in this.keys)
+    //   if (await this.cache.readBytes(k, updateLastModified: false) != null)
+    //     countLeft++;
+    // return countLeft;
   }
 }
