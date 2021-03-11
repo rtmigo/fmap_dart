@@ -33,7 +33,7 @@ Map diskBytes = DiskBytesMap(directory);
 
 diskBytes["mykey"] = [1,2,3];  // saved into a file 
 
-for (var byte in diskBytes["mykey"])  // read from file
+for (int byte in diskBytes["mykey"])  // read from file
   print("$byte");
 
 print(diskBytes.length);   
