@@ -45,11 +45,11 @@ abstract class BytesStorageBase {
     }
 
     for (final entry in entries) {
-      if (entry.path.endsWith(_DIRTY_SUFFIX)) {
+      if (entry.path.endsWith(DIRTY_SUFFIX)) {
         deleteSyncCalm(File(entry.path));
         continue;
       }
-      if (entry.path.endsWith(_DATA_SUFFIX)) {
+      if (entry.path.endsWith(DATA_SUFFIX)) {
         final f = File(entry.path);
         files.add(FileAndStat(f));
       }
@@ -75,7 +75,7 @@ abstract class BytesStorageBase {
     if (file==null)
       return false;
 
-    assert(file.path.endsWith(_DATA_SUFFIX));
+    assert(file.path.endsWith(DATA_SUFFIX));
     file.deleteSync();
     deleteDirIfEmptySync(file.parent);
     return true;
@@ -122,8 +122,8 @@ abstract class BytesStorageBase {
   /// It's also possible, that neither of them stores the data for [key].
   Iterable<File> _keyToExistingFiles(String key) sync* {
     final parent = this._keyToHypotheticalDir(key);
-    for (final fse in listCalm(parent))
-      if (fse.path.endsWith(_DATA_SUFFIX))
+    for (final fse in listSyncCalm(parent))
+      if (fse.path.endsWith(DATA_SUFFIX))
         yield File(fse.path);
   }
 
@@ -131,7 +131,7 @@ abstract class BytesStorageBase {
   File _proposeUniqueFile(String key) {
     final dirPath = _keyToHypotheticalDir(key).path;
     for (int i = 0;; ++i) {
-      final candidateFile = File(paths.join(dirPath, "$i$_DATA_SUFFIX"));
+      final candidateFile = File(paths.join(dirPath, "$i$DATA_SUFFIX"));
       if (!candidateFile.existsSync()) return candidateFile;
     }
   }
@@ -160,7 +160,7 @@ abstract class BytesStorageBase {
 
   File _uniqueDirtyFn() {
     for (int i = 0;; ++i) {
-      final f = File(directory.path + "/$i$_DIRTY_SUFFIX");
+      final f = File(directory.path + "/$i$DIRTY_SUFFIX");
       if (!f.existsSync()) return f;
     }
   }

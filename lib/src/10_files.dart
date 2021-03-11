@@ -3,7 +3,9 @@
 
 import 'dart:io';
 
-List<FileSystemEntity> listCalm(Directory d, {bool recursive = false})
+/// Returns the result of [Directory.listSync], providing an empty list 
+/// if [FileSystemException] occurs.
+List<FileSystemEntity> listSyncCalm(Directory d, {bool recursive = false})
 {
   try {
     return d.listSync(recursive: recursive);
