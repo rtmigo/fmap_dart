@@ -3,6 +3,21 @@
 
 import 'dart:io';
 
+List<FileSystemEntity> listIfExists(Directory d, {bool recursive = false})
+{
+  try {
+    return d.listSync(recursive: false);
+  }
+  on FileSystemException catch (e)
+  {
+    //  FileSystemException: Directory listing failed, path = '...'
+    //  (OS Error: No such file or directory, errno = 2)
+    if (e.osError?.errorCode == 2)
+      return [];
+    rethrow;
+  }
+}
+
 bool isDirectoryNotEmptyException(FileSystemException e)
 {
   // https://www-numi.fnal.gov/offline_software/srt_public_context/WebDocs/Errors/unix_system_errors.html

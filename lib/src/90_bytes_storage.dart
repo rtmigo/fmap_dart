@@ -1,28 +1,16 @@
 // SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
 // SPDX-License-Identifier: BSD-3-Clause
 
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:convert/convert.dart';
-import 'package:crypto/crypto.dart' as crypto;
 import 'package:disk_cache/src/10_file_removal.dart';
 import 'package:disk_cache/src/10_readwrite.dart';
 import 'package:path/path.dart' as paths;
-
 import '00_common.dart';
 import '10_files.dart';
-import 'src/00_common.dart';
-import 'src/10_files.dart';
+import '10_hashing.dart';
 
 typedef DeleteFile(File file);
-
-String stringToMd5(String data) {
-  var content = new Utf8Encoder().convert(data);
-  var md5 = crypto.md5;
-  var digest = md5.convert(content);
-  return hex.encode(digest.bytes);
-}
 
 
 /// A persistent data storage that provides access to [Uint8List] binary items by [String] keys.
@@ -72,6 +60,8 @@ abstract class BytesStorageBase {
 
     FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: maxCount,
         deleteFile: (file) {
+          // alternate deleteFile callback will not only delete file, but also
+          // the parent dir, if empty
           deleteSyncCalm(file);
           deleteDirIfEmptySync(file.parent);
         });
@@ -95,7 +85,6 @@ abstract class BytesStorageBase {
   }
 
   Future<File> writeBytes(String key, List<int> data) async {
-    //final cacheFile = _fnToCacheFile(filename);
 
     await this._initialized;
     final cacheFile = this._findExistingFile(key) ?? this._proposeUniqueFile(key);
@@ -135,17 +124,10 @@ abstract class BytesStorageBase {
   /// Any of them may be the file that is currently storing the data for [key].
   /// It's also possible, that neither of them stores the data for [key].
   Iterable<File> _keyToExistingFiles(String key) sync* {
-    // возвращает существующие файлы, в которых _возможно_ хранится значение key
-    final kd = this._keyToHypotheticalDir(key);
-
-    List<FileSystemEntity> files;
-
-    if (kd.existsSync()) {
-      files = kd.listSync();
-      for (final entity in files) {
-        if (entity.path.endsWith(_DATA_SUFFIX)) yield File(entity.path);
-      }
-    }
+    final parent = this._keyToHypotheticalDir(key);
+    for (final fse in listIfExists(parent))
+      if (fse.path.endsWith(_DATA_SUFFIX))
+        yield File(fse.path);
   }
 
   /// Generates a unique filename in a directory that should contain file [key].
