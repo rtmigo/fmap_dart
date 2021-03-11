@@ -25,6 +25,16 @@ void main() {
     if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
   });
 
+  test('updateTimestamps default', () {
+    var z = BytesCache(Directory("labuda321"));
+    expect(z.updateTimestampsOnRead, false);
+  });
+
+  test('updateTimestamps changed', () {
+    var z = BytesCache(Directory("labuda321"), updateTimestampsOnRead: true);
+    expect(z.updateTimestampsOnRead, true);
+  });
+
   test('Purge with maxCount', () async {
 
     // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting

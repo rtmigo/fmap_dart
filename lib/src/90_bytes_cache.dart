@@ -17,7 +17,7 @@ typedef DeleteFile(File file);
 class BytesCache extends BytesStore {
   // this object should not be too insistent when saving data.
 
-  BytesCache(directory) : super(directory);
+  BytesCache(directory, {bool updateTimestampsOnRead=false}) : super(directory, updateTimestampsOnRead);
 
   @override
   @protected
@@ -69,14 +69,14 @@ class BytesCache extends BytesStore {
     //return File("${this._keyFilePrefix(key)}$DATA_SUFFIX");
   }
 
-  Uint8List? readBytesSync(String key, {bool updateLastModified=true}) {
+  Uint8List? readBytesSync(String key) {
     final file = this._keyToFile(key);
     try {
       final data = readIfKeyMatchSync(file, key);
       // data will be null if file contains wrong key (hash collision)
       if (data != null) {
-        if (updateLastModified)
-          setTimestampToNow(file); // calling async func without waiting
+        //if (updateLastModified)
+        maybeUpdateTimestampOnRead(file); // calling async func without waiting
         return data;
       }
     } on FileSystemException catch (_) {

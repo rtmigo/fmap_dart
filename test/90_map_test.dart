@@ -24,6 +24,18 @@ void main() {
     if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
   });
 
+  test('updateTimestamps default', () {
+    var z = BytesMap(Directory("labuda321"));
+    expect(z.updateTimestampsOnRead, false);
+  });
+
+  test('updateTimestamps changed', () {
+    var z = BytesMap(Directory("labuda321"), updateTimestampsOnRead: true);
+    expect(z.updateTimestampsOnRead, true);
+  });
+
+
+
   test('Purge with maxCount', () {
 
     // [!!!] if we call sample.cache.readBytes now, it will lead to rewriting
@@ -100,16 +112,9 @@ void main() {
 
     expect(countFiles(cache.directory), 100);
 
-    // deleting 10 directories
-    deleteRandomItems(cache.directory, 10, FileSystemEntityType.directory);
-
-    // checking that some items are left (and the cache works ok)
+    deleteRandomItems(cache.directory, 1, FileSystemEntityType.directory);
     expect(countFiles(cache.directory), greaterThan(2));
-
-    // deleting 15 more files
-    deleteRandomItems(cache.directory, 15, FileSystemEntityType.file);
-
-    // checking that some items are left (and the cache works ok)
+    deleteRandomItems(cache.directory, 2, FileSystemEntityType.file);
     expect(countFiles(cache.directory), greaterThan(2));
   });
 

@@ -19,7 +19,7 @@ typedef String HashFunc(String key);
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
 class BytesMap extends BytesStore {
 
-  BytesMap(directory): keyToHash=stringToMd5, super(directory);
+  BytesMap(directory, {bool updateTimestampsOnRead=false}): keyToHash=stringToMd5, super(directory, updateTimestampsOnRead);
 
   @internal
   HashFunc keyToHash;
@@ -105,13 +105,13 @@ class BytesMap extends BytesStore {
     return null;
   }
 
-  Uint8List? readBytesSync(String key, {bool updateLastModified=true}) {
+  Uint8List? readBytesSync(String key) {
     for (final file in this._keyToExistingFiles(key)) {
       final data = readIfKeyMatchSync(file, key);
       if (data != null) {
         // this is the file with key=key :)
-        if (updateLastModified)
-          setTimestampToNow(file); // calling async func without waiting
+        //if (updateLastModified)
+        maybeUpdateTimestampOnRead(file); // calling async func without waiting
         return data;
       }
     }

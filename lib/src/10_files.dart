@@ -79,12 +79,3 @@ bool deleteSyncCalm(File file) {
   }
 }
 
-Future<void> setTimestampToNow(File file) async {
-  // since the cache is located in a temporary directory,
-  // any file there can be deleted at any time
-  try {
-    file.setLastModifiedSync(DateTime.now());
-  } on FileSystemException catch (e, _) {
-    print("WARNING: Cannot set timestamp to file $file: $e");
-  }
-}

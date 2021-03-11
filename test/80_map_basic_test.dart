@@ -81,21 +81,6 @@ void runTests(String prefix, BytesStore create(Directory d)) {
 
     expect(map.keys.toSet(), isEmpty);
   });
-
-  test('$prefix Disk cache: timestamp updated', () async {
-
-    final map = create(tempDir!);
-    final itemFile = await map.writeBytesSync("key", [23, 42]);
-    final lmt = itemFile.lastModifiedSync();
-    expect(itemFile.lastModifiedSync(), equals(lmt));
-
-    // reading the same value a bit later
-    await Future.delayed(const Duration(milliseconds: 2100));
-    await map.readBytesSync("key");
-
-    // the last-modified is now be changed
-    expect(itemFile.lastModifiedSync(), isNot(equals(lmt)));
-  });
 }
 
 void main() {

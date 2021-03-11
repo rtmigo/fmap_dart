@@ -17,8 +17,9 @@ typedef String HashFunc(String key);
 abstract class BytesStore extends MapBase<String, List<int>?> {
 
   final Directory directory;
+  final bool updateTimestampsOnRead;
 
-  BytesStore(this.directory);
+  BytesStore(this.directory, this.updateTimestampsOnRead);
 
   @internal
   HashFunc keyToHash = stringToMd5;
@@ -56,7 +57,7 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
   @protected
   void deleteFile(File file);
 
-  Uint8List? readBytesSync(String key, {bool updateLastModified=true});
+  Uint8List? readBytesSync(String key);
   bool deleteSync(String key);
   File writeBytesSync(String key, List<int> data);
 
@@ -92,5 +93,21 @@ abstract class BytesStore extends MapBase<String, List<int>?> {
   @override
   Uint8List? remove(Object? key) {
     this.deleteSync(key as String);
+  }
+
+  @internal
+  void maybeUpdateTimestampOnRead(File file) {
+    if (this.updateTimestampsOnRead)
+      {
+        // scheduling async timestamp modification
+        () async {
+          try {
+            file.setLastModifiedSync(DateTime.now());
+          } on FileSystemException catch (e, _) {
+            // not a big deal ...
+            print("WARNING: Failed set timestamp to file $file: $e");
+          }
+        }();
+      }
   }
 }
