@@ -16,46 +16,11 @@ typedef DeleteFile(File file);
 
 
 /// A persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-abstract class BytesStorageBase extends UniStorage {
+abstract class BytesMapBase extends FileMap {
 
-  BytesStorageBase(directory): super(directory);
+  BytesMapBase(directory): super(directory);
 
   String keyToHash(String key);
-
-  // void compactSync({
-  //   final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
-  //   final maxCount = JS_MAX_SAFE_INTEGER })
-  // {
-  //   List<FileAndStat> files = <FileAndStat>[];
-  //
-  //   List<FileSystemEntity> entries;
-  //   try {
-  //     entries = directory.listSync(recursive: true);
-  //   } on FileSystemException catch (e) {
-  //     throw FileSystemException(
-  //         "DiskCache failed to listSync directory $directory right after creation. "
-  //             "osError: ${e.osError}.");
-  //   }
-  //
-  //   for (final entry in entries) {
-  //     if (entry.path.endsWith(DIRTY_SUFFIX)) {
-  //       deleteSyncCalm(File(entry.path));
-  //       continue;
-  //     }
-  //     if (entry.path.endsWith(DATA_SUFFIX)) {
-  //       final f = File(entry.path);
-  //       files.add(FileAndStat(f));
-  //     }
-  //   }
-  //
-  //   FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: maxCount,
-  //       deleteFile: (file) {
-  //         // alternate deleteFile callback will not only delete file, but also
-  //         // the parent dir, if empty
-  //         deleteSyncCalm(file);
-  //         deleteDirIfEmptySync(file.parent);
-  //       });
-  // }
 
 
   @override
@@ -65,6 +30,7 @@ abstract class BytesStorageBase extends UniStorage {
     deleteDirIfEmptySync(file.parent);
   }
 
+  @override
   bool delete(String key) {
     final file = this._findExistingFile(key);
     if (file==null)
@@ -74,6 +40,7 @@ abstract class BytesStorageBase extends UniStorage {
     return true;
   }
 
+  @override
   File writeBytes(String key, List<int> data) {
 
     final cacheFile = this._findExistingFile(key) ?? this._proposeUniqueFile(key);
@@ -90,7 +57,8 @@ abstract class BytesStorageBase extends UniStorage {
       dirtyFile.renameSync(cacheFile.path);
       dirtyFile = null;
     } finally {
-      if (dirtyFile != null && dirtyFile.existsSync()) dirtyFile.delete();
+      if (dirtyFile != null && dirtyFile.existsSync()) 
+        dirtyFile.delete();
     }
 
     return cacheFile;
@@ -136,10 +104,11 @@ abstract class BytesStorageBase extends UniStorage {
   }
 
   Uint8List? readBytes(String key) {
-    for (final fileCandidate in _keyToExistingFiles(key)) {
-      final data = readIfKeyMatchSync(fileCandidate, key);
+    for (final file in this._keyToExistingFiles(key)) {
+      final data = readIfKeyMatchSync(file, key);
       if (data != null) {
-        setTimestampToNow(fileCandidate);  // calling async func w/o waiting
+        // this is the file with key=key :)
+        setTimestampToNow(file); // calling async func without waiting
         return data;
       }
     }
@@ -154,48 +123,16 @@ abstract class BytesStorageBase extends UniStorage {
   }
 
   @override
-  Uint8List? operator [](Object? key) {
-    return readBytes(key as String);
-  }
-
-  @override
-  void operator []=(String key, List<int>? value) {
-    if (value==null)
-      this.delete(key);
-    else
-      writeBytes(key, value);
-  }
-
-  @override
-  void clear() {
-    this.directory.deleteSync(recursive: true); // todo test
-  }
-
-  @override
-  Iterable<String> get keys sync* {
-    for (final f in listSyncCalm(this.directory, recursive: true)) {
-      //print(f);
-      if (this.isFile(f.path))
-        yield readKeySync(File(f.path));
-    }
-  }
-
-  @override
-  Uint8List? remove(Object? key) {
-    this.delete(key as String);
-  }
-
   bool isFile(String path)
   {
     return FileSystemEntity.isFileSync(path);
-    // todo calm for cache
   }
 
 }
 
-class BytesStorage extends BytesStorageBase {
+class BytesMap extends BytesMapBase {
 
-  BytesStorage(Directory directory) : super(directory);
+  BytesMap(Directory directory) : super(directory);
 
   @override
   String keyToHash(String key) => stringToMd5(key);

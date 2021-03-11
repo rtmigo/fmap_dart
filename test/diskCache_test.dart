@@ -12,7 +12,7 @@ import 'dart:io' show Platform;
 
 /// This class defines intentionally bad hash function. So we don't need to wait 10 years for
 /// a hash collisions
-class CollidingDiskCache extends BytesStorageBase {
+class CollidingDiskCache extends BytesMapBase {
   CollidingDiskCache(Directory directory) : super(directory);
 
   @override

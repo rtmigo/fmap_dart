@@ -6,12 +6,13 @@ import 'package:meta/meta.dart';
 import '00_common.dart';
 import '10_file_removal.dart';
 import '10_files.dart';
+import '10_readwrite.dart';
 
-abstract class UniStorage extends MapBase<String, List<int>?> {
+abstract class FileMap extends MapBase<String, List<int>?> {
 
   final Directory directory;
 
-  UniStorage(this.directory);
+  FileMap(this.directory);
 
   void compactSync({
     final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
@@ -45,4 +46,42 @@ abstract class UniStorage extends MapBase<String, List<int>?> {
 
   @protected
   void deleteFile(File file);
+
+  Uint8List? readBytes(String key);
+  bool delete(String key);
+  File writeBytes(String key, List<int> data);
+
+  @protected
+  bool isFile(String path);
+
+  @override
+  Uint8List? operator [](Object? key) {
+    return readBytes(key as String);
+  }
+
+  @override
+  void operator []=(String key, List<int>? value) {
+    if (value==null)
+      this.delete(key);
+    else
+      writeBytes(key, value);
+  }
+
+  @override
+  void clear() {
+    this.directory.deleteSync(recursive: true); // todo test
+  }
+
+  @override
+  Iterable<String> get keys sync* {
+    for (final f in listSyncCalm(this.directory, recursive: true)) {
+      if (this.isFile(f.path))
+        yield readKeySync(File(f.path));
+    }
+  }
+
+  @override
+  Uint8List? remove(Object? key) {
+    this.delete(key as String);
+  }
 }
