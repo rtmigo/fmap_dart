@@ -20,7 +20,7 @@ void main() {
     if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
   });
 
-  test("map collisions", () {
+  test("cache collisions", () {
 
     //test('BytesMap hash collisions', () async {
 
@@ -71,5 +71,20 @@ void main() {
 
       expect(findEmptySubdir(tempDir!), null); // no empty subdirs
     //});
+  });
+
+  test("cache overwrite", () {
+
+    // test whether new elements (with same hash) overwrite old ones
+
+    final cache = BytesCache(tempDir);
+    cache.keyToHash = badHashFunc;
+
+
+    for (var i = 0; i < 100; ++i) {
+      var key = i.toString();
+      cache.writeBytes(key, [i,i+1,i+2]);
+      expect(cache.readBytes(key), [i,i+1,i+2]);
+    }
   });
 }
