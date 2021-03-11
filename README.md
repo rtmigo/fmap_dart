@@ -2,7 +2,7 @@
 [![Actions Status](https://github.com/rtmigo/dart_disk_cache/workflows/unittest/badge.svg?branch=master)](https://github.com/rtmigo/dart_disk_cache/actions)
 ![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
 
-# disk_cache
+# disk_bytes
 
 `DiskBytesMap` and `DiskBytesCache` are objects for storing binary data in files. They are good for
 small chunks of data that easily fit into a `Uint8List`. For example, to cache data from the web or
@@ -10,29 +10,30 @@ store user images.
 
 ``` dart
 final diskBytes = DiskBytesMap(directory);
-diskBytes.saveBytesSync('myKey', [0x21, 0x23]); // saved into a file!
+diskBytes.saveBytesSync('myKey', [0x21, 0x23]);  // saved into a file!
 Uint8List fromDisk = diskBytes.loadBytesSync('myKey'); 
 ```
 
 Each item actually stored in a separate file. So it's just named files. Fast, simple and reliable.
 
-This does not impose any restrictions on the keys. 
-They can be of any length and can contain any characters.
+This does not impose any restrictions on the keys. They can be of any length and can contain any
+characters.
+
 ``` dart
 diskBytes.saveBytesSync('C:\\con', ...);  // no problem
 diskBytes.saveBytesSync('* :) *', ...);   // no problem
 ```
 
-### As a Map
+## They both are `Map`s
 
 Both objects implement `Map<String, List<int>>`. So they can be used like an ordinary `Map`.
 
 ``` dart
 Map diskBytes = DiskBytesMap(directory);
 
-diskBytes["mykey"] = [1,2,3];
+diskBytes["mykey"] = [1,2,3];  // saved into a file 
 
-for (var byte in diskBytes["mykey"])
+for (var byte in diskBytes["mykey"])  // read from file
   print("$byte");
 
 print(diskBytes.length);   
@@ -50,7 +51,22 @@ diskBytes["b"] = [0, -1, -2];
 print(diskBytes["b"]);  // prints [0, 255, 254]
 ```
 
+## Cache or Map
 
+`DiskBytesMap` is more reliable. `DiskBytesCache` is faster.
+
+Choose the `DiskBytesMap` if it is absolutely important for you that all stored data is readable
+while the files are in place.
+
+Choose `DiskBytesCache` for temporary files that are sometimes deleted randomly.
+
+The difference is in the readiness of the objects for
+[hash collisions](https://en.wikipedia.org/wiki/Collision_(computer_science)). Even if this rare
+occurrence happens once a decade, `DiskBytesMap` is always ready for it. Both elements with the same
+hashes will be stored side by side.
+
+`DiskBytesCache` is much more relaxed in this regard. When faced with a rare collision, it will simply
+remove one of the elements. There is nothing important in the cache, is there.
 
 # Example
 
