@@ -23,7 +23,7 @@ diskBytes.saveBytesSync('C:\\con', ...);  // no problem
 diskBytes.saveBytesSync('* :) *', ...);   // no problem
 ```
 
-## As a Map
+### As a Map
 
 Both objects implement `Map<String, List<int>>`. So they can be used like an ordinary `Map`.
 
