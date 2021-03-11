@@ -28,9 +28,13 @@ diskBytes.saveBytesSync('* :) *', ...);   // no problem
 Both objects implement `Map<String, List<int>>`. So they can be used like an ordinary `Map`.
 
 ``` dart
+Map diskBytes = DiskBytesMap(directory);
+
 diskBytes["mykey"] = [1,2,3];
+
 for (var byte in diskBytes["mykey"])
   print("$byte");
+
 print(diskBytes.length);   
 ```
 
@@ -39,8 +43,6 @@ and `BytesCache` do not store lists or ints. They just accept `List<int>` as an 
 of the list will be truncated to a byte.
 
 ``` dart
-var bytesMap = BytesMap(dir);
-
 diskBytes["a"] = [1, 2, 3];
 print(diskBytes["a"]);  // prints [1, 2, 3]
 
