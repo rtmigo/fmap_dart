@@ -11,11 +11,11 @@ store user images.
 ``` dart
 final diskBytes = DiskBytesMap(directory);
 diskBytes.saveBytesSync('myKey', [0x21, 0x23]); // saved into a file!
-var fromDisk = diskBytes.loadBytesSync('myKey'); 
+Uint8List fromDisk = diskBytes.loadBytesSync('myKey'); 
 ```
 
-The objects rely on the file system to store the data. Each item actually stored in a separate
-file. So there is no central index, that can be broken. It's just named files.
+Each item actually stored in a separate file. So there is no central index, that can be broken.
+It's just named files.
 
 Even if the OS decides to clear the temporary directories, and deletes half of the files, 
 it's not a big deal.
