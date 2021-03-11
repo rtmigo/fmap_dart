@@ -85,7 +85,7 @@ will be considered fresh at the time of purging.
 
 ``` dart
 final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);
-diskBytes.purge(...);
+diskBytes.purge(...);  // LRU
 ```
 
 In this case, the elements will be deleted according to the **LRU** policy. Items that were accessed
@@ -95,7 +95,7 @@ However, accounting for usage will require an extra write operation on each read
 
 ``` dart
 final diskBytes = DiskBytesCache(updateTimestampsOnRead=false);
-diskBytes.purge(...);
+diskBytes.purge(...);  // FIFO
 ```
 
 In this case, it's a **FIFO**. Items that were added recently will remain in the cache.
