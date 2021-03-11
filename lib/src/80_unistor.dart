@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
+// SPDX-License-Identifier: BSD-3-Clause
+
 import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
@@ -13,8 +16,6 @@ abstract class FileMap extends MapBase<String, List<int>?> {
   final Directory directory;
 
   FileMap(this.directory);
-
-  //String keyToHash(String key);
 
   void compactSync({
     final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
