@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+@deprecated
 void writeKeyAndDataSync(File targetFile, String key, List<int> data) {
   RandomAccessFile raf = targetFile.openSync(mode: FileMode.write);
 
@@ -29,6 +30,7 @@ void writeKeyAndDataSync(File targetFile, String key, List<int> data) {
   }
 }
 
+@deprecated
 Uint8List? readIfKeyMatchSync(File file, String key) {
   RandomAccessFile raf = file.openSync(mode: FileMode.read);
 
@@ -59,6 +61,7 @@ Uint8List? readIfKeyMatchSync(File file, String key) {
   }
 }
 
+@deprecated
 String readKeySync(File file) {
   RandomAccessFile raf = file.openSync(mode: FileMode.read);
   try {
