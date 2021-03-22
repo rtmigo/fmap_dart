@@ -10,7 +10,8 @@ import '00_common.dart';
 import '10_file_and_stat.dart';
 import '10_files.dart';
 import '10_hashing.dart';
-import '10_readwrite.dart';
+import '10_readwrite_v2.dart';
+import '10_readwrite_v1.dart';
 
 typedef String HashFunc(String key);
 
@@ -86,7 +87,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
   Iterable<String> get keys sync* {
     for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
       if (this.isFile(f.path))
-        yield readKeySync(File(f.path));
+        yield readKeySyncV1(File(f.path));
     }
   }
 

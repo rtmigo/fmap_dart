@@ -6,7 +6,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 @deprecated
-void writeKeyAndDataSync(File targetFile, String key, List<int> data) {
+void writeKeyAndDataSyncV1(File targetFile, String key, List<int> data) {
   RandomAccessFile raf = targetFile.openSync(mode: FileMode.write);
 
   try {
@@ -31,7 +31,7 @@ void writeKeyAndDataSync(File targetFile, String key, List<int> data) {
 }
 
 @deprecated
-Uint8List? readIfKeyMatchSync(File file, String key) {
+Uint8List? readIfKeyMatchSyncV1(File file, String key) {
   RandomAccessFile raf = file.openSync(mode: FileMode.read);
 
   try {
@@ -62,7 +62,7 @@ Uint8List? readIfKeyMatchSync(File file, String key) {
 }
 
 @deprecated
-String readKeySync(File file) {
+String readKeySyncV1(File file) {
   RandomAccessFile raf = file.openSync(mode: FileMode.read);
   try {
     final versionNum = raf.readSync(1)[0];

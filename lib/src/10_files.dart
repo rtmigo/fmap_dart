@@ -14,6 +14,16 @@ import 'dart:io';
 //   final int enotempty = 41;  // Must be 145 etc.
 // }
 
+bool isFileNotFoundException(FileSystemException e) {
+  if (Platform.isWindows && e.osError?.errorCode == WINDOWS_ERROR_PATH_NOT_FOUND)
+    return true;
+  if ((Platform.isMacOS||Platform.isIOS) && e.osError?.errorCode == MACOS_NO_SUCH_FILE)
+    return true;
+  // assuming we're on linux-like system
+  if (e.osError?.errorCode==LINUX_ENOENT)
+    return true;
+  return false;
+}
 
 const int LINUX_ENOTEMPTY = 39;
 const int LINUX_ENOENT = 2;

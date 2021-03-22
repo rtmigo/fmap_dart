@@ -4,12 +4,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
-import 'package:disk_cache/src/10_readwrite.dart';
+import 'package:disk_cache/src/10_readwrite_v2.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import 'package:path/path.dart' as paths;
 import '00_common.dart';
 import '10_files.dart';
 import '10_hashing.dart';
+import '10_readwrite_v1.dart';
 
 typedef DeleteFile(File file);
 
@@ -49,7 +50,7 @@ class DiskBytesMap extends DiskBytesStore {
 
     File? dirtyFile = _uniqueDirtyFn();
     try {
-      writeKeyAndDataSync(dirtyFile, key, data); //# dirtyFile.writeAsBytes(data);
+      writeKeyAndDataSyncV1(dirtyFile, key, data); //# dirtyFile.writeAsBytes(data);
 
       try {
         Directory(paths.dirname(cacheFile.path)).createSync();
@@ -100,14 +101,14 @@ class DiskBytesMap extends DiskBytesStore {
   /// Tries to find a file for the [key]. If file does not exist, returns `null`.
   File? _findExistingFile(String key) {
     for (final existingFile in this._keyToExistingFiles(key)) {
-      if (readKeySync(existingFile) == key) return existingFile;
+      if (readKeySyncV1(existingFile) == key) return existingFile;
     }
     return null;
   }
 
   Uint8List? readBytesSync(String key) {
     for (final file in this._keyToExistingFiles(key)) {
-      final data = readIfKeyMatchSync(file, key);
+      final data = readIfKeyMatchSyncV1(file, key);
       if (data != null) {
         // this is the file with key=key :)
         //if (updateLastModified)

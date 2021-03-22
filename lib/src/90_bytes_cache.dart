@@ -4,12 +4,13 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:meta/meta.dart';
-import 'package:disk_cache/src/10_readwrite.dart';
+import 'package:disk_cache/src/10_readwrite_v2.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import 'package:path/path.dart' as paths;
 import '00_common.dart';
 import '10_files.dart';
 import '10_hashing.dart';
+import '10_readwrite_v1.dart';
 
 typedef DeleteFile(File file);
 
@@ -43,7 +44,7 @@ class DiskBytesCache extends DiskBytesStore {
 
     bool renamed = false;
     try {
-      writeKeyAndDataSync(dirtyFile, key, data); //# dirtyFile.writeAsBytes(data);
+      writeKeyAndDataSyncV1(dirtyFile, key, data); //# dirtyFile.writeAsBytes(data);
       dirtyFile.renameSync(cacheFile.path);
       renamed = true;
     } finally {
@@ -66,13 +67,12 @@ class DiskBytesCache extends DiskBytesStore {
 
   File _keyToFile(String key) {
     return _combine(this._keyFilePrefix(key), DATA_SUFFIX);
-    //return File("${this._keyFilePrefix(key)}$DATA_SUFFIX");
   }
 
   Uint8List? readBytesSync(String key) {
     final file = this._keyToFile(key);
     try {
-      final data = readIfKeyMatchSync(file, key);
+      final data = readIfKeyMatchSyncV1(file, key);
       // data will be null if file contains wrong key (hash collision)
       if (data != null) {
         //if (updateLastModified)
@@ -93,7 +93,7 @@ class DiskBytesCache extends DiskBytesStore {
   bool containsKey(Object? key) {
     final file = this._keyToFile(key as String);
     try {
-      return readKeySync(file)==key;
+      return readKeySyncV1(file)==key;
     } on FileSystemException catch (_) {
       return false;
     }
