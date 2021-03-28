@@ -47,7 +47,7 @@ class FileAndStat {
   static void deleteOldest(List<FileAndStat> files,
       {int maxSumSize = JS_MAX_SAFE_INTEGER,
         int maxCount = JS_MAX_SAFE_INTEGER,
-        DeleteFile? deleteFile}) {
+        void Function(File file)? deleteFile}) {
 
     files = files.toList();
 

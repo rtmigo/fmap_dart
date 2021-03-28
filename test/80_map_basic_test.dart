@@ -3,6 +3,7 @@
 
 import 'dart:io';
 import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/src/file_stored_map.dart';
 import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
 
@@ -28,6 +29,10 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     expect(map["A"], [1, 2, 3]); // reading again
   });
 
+
+
+
+
   test('$prefix write and delete', () {
     final map = create(tempDir!); // maxCount: 3, maxSizeBytes: 10
 
@@ -50,6 +55,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     //expect(cache.delete("A"), false);
   });
 
+
   test('$prefix list items', () {
     final map = create(tempDir!);
 
@@ -65,6 +71,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
     expect(map.keys.toSet(), {"A", "C"});
   });
+
 
   test('$prefix Disk cache: clear', () {
     final map = create(tempDir!);
@@ -100,6 +107,6 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 }
 
 void main() {
-  runTests("BytesMap:", (dir)=>DiskBytesMap(dir));
-  runTests("BytesCache:", (dir)=>DiskBytesCache(dir));
+  runTests("BytesMap:", (dir)=>StoredBytesMap(dir));
+  // runTests("BytesCache:", (dir)=>DiskBytesCache(dir));
 }

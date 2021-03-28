@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2021 Art Galkin <ortemeo@gmail.com>
 // SPDX-License-Identifier: BSD-3-Clause
 
+import 'package:file_errors/file_errors.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -145,7 +146,7 @@ class BlobsFileReader {
     try {
       _raf = file.openSync(mode: FileMode.read);
     } on FileSystemException catch (exc) {
-      if (!mustExist && isFileNotFoundException(exc)) {
+      if (!mustExist && exc.isNoSuchFileOrDirectory) {
         this._state = State.atFileEnd;
         return;
       } else {
@@ -290,36 +291,87 @@ class BlobsFileReader {
   }
 }
 
-/// Created a copy with file with particular blob replaced or removed.
-bool replaceBlobSync(File source, File target, String newKey, List<int>? newBlob,
-    {bool mustExist: true}) {
-  BlobsFileReader? reader;
-  BlobsFileWriter? writer;
+class Replace {
+  /// Created a copy with file with particular blob replaced or removed.
+  Replace(File source, File target, String newKey, List<int>? newBlob,
+      {bool mustExist: true}) {
+    BlobsFileReader? reader;
+    BlobsFileWriter? writer;
 
-  bool entryWasFound = false;
+    try {
+      reader = BlobsFileReader(source, mustExist: mustExist);
+      writer = BlobsFileWriter(target);
 
-  try {
-    reader = BlobsFileReader(source, mustExist: mustExist);
-    writer = BlobsFileWriter(target);
-    for (var oldKey = reader.readKey(); oldKey != null; oldKey = reader.readKey()) {
-      if (oldKey == newKey) {
-        reader.skipBlob(); // we don't need old data
-        entryWasFound = true; // todo test
-        if (newBlob != null) {
-          // replacing
-          writer.write(newKey, newBlob);
-        } else {
-          // not writing = deleting
-        }
+      // the new data will become the first entry in the file.
+      // Accessing the first record is faster than the others
+
+      if (newBlob != null) {
+        writer.write(newKey, newBlob);
+        this.entriesWritten++;
       } else {
-        // copying old data
-        writer.write(oldKey, reader.readBlob());
+        // not writing = deleting
       }
+
+      for (var oldKey = reader.readKey(); oldKey != null; oldKey = reader.readKey()) {
+        if (oldKey == newKey) {
+          reader.skipBlob(); // we don't need old data
+          this.entryWasFound = true; // todo test
+          continue;
+        } else {
+          // copying old data
+          writer.write(oldKey, reader.readBlob());
+          this.entriesWritten++;
+        }
+      }
+
+    } finally {
+      reader?.closeSync();
+      writer?.closeSync();
     }
-  } finally {
-    reader?.closeSync();
-    writer?.closeSync();
   }
 
-  return entryWasFound;
+  int entriesWritten = 0;
+  bool entryWasFound = false;
 }
+
+// /// Created a copy with file with particular blob replaced or removed.
+// bool replaceBlobSync(File source, File target, String newKey, List<int>? newBlob,
+//     {bool mustExist: true}) {
+//   BlobsFileReader? reader;
+//   BlobsFileWriter? writer;
+//
+//   bool entryWasFound = false;
+//
+//   try {
+//     reader = BlobsFileReader(source, mustExist: mustExist);
+//     writer = BlobsFileWriter(target);
+//
+//     // the new data will become the first entry in the file.
+//     // Accessing the first record is faster than the others
+//
+//     if (newBlob != null) {
+//       writer.write(newKey, newBlob);
+//     } else {
+//       // not writing = deleting
+//     }
+//
+//
+//
+//     for (var oldKey = reader.readKey(); oldKey != null; oldKey = reader.readKey()) {
+//       if (oldKey == newKey) {
+//         reader.skipBlob(); // we don't need old data
+//         entryWasFound = true; // todo test
+//         continue;
+//       } else {
+//         // copying old data
+//         writer.write(oldKey, reader.readBlob());
+//       }
+//     }
+//
+//   } finally {
+//     reader?.closeSync();
+//     writer?.closeSync();
+//   }
+//
+//   return entryWasFound;
+// }

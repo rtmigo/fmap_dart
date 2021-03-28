@@ -187,15 +187,16 @@ void main() {
     }
 
     // REPLACING
-    replaceBlobSync(tempFile, otherTempFile, "two", [1, 50, 777]);
+    Replace(tempFile, otherTempFile, "two", [1, 50, 10]);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
     try {
+      expect(reader.readKey(), "two");
+      expect(reader.readBlob(), [1, 50, 10]);
+
       expect(reader.readKey(), "one");
       expect(reader.readBlob(), [1, 2]);
-      expect(reader.readKey(), "two");
-      expect(reader.readBlob(), [1, 50, 9]);
       expect(reader.readKey(), "three");
       expect(reader.readBlob(), [3]);
     } finally {
@@ -216,7 +217,7 @@ void main() {
     }
 
     // REPLACING
-    replaceBlobSync(tempFile, otherTempFile, "two", null);
+    Replace(tempFile, otherTempFile, "two", null);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
@@ -237,20 +238,32 @@ void main() {
     expect(tempFile.existsSync(), false);
   });
 
-  test("replace with nothing", () {
-    // WRITING
-    expect(tempFile.existsSync(), false);
-    final writer = BlobsFileWriter(tempFile);
-    try {
-      writer.write("one", [1, 2]);
-    } finally {
-      writer.closeSync();
-    }
+  group('replaceBlobSync', () {
 
-    // REPLACING
-    replaceBlobSync(tempFile, otherTempFile, "one", null);
+    test("replace with nothing", () {
+      // WRITING
+      expect(tempFile.existsSync(), false);
+      final writer = BlobsFileWriter(tempFile);
+      try {
+        writer.write("one", [1, 2]);
+      } finally {
+        writer.closeSync();
+      }
 
-    expect(otherTempFile.existsSync(), false);
+      // REPLACING
+      Replace(tempFile, otherTempFile, "one", null);
+
+      expect(otherTempFile.existsSync(), false);
+    });
+
+    test("replace when no source", () {
+      // there is no source file
+      expect(tempFile.existsSync(), false);
+      // we we are "replacing" an entry in non-existent file
+      Replace(tempFile, otherTempFile, "one", [1,2,3], mustExist: false);
+      // new file must be created
+      expect(otherTempFile.existsSync(), true);
+    });
   });
 
   group("random tests", () {

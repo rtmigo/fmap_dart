@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
 // SPDX-License-Identifier: BSD-3-Clause
 
+import 'package:file_errors/file_errors.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -35,7 +36,7 @@ class StoredBytesMap extends DiskBytesStore {
   String _keyFilePrefix(String key) {
     String hash = this.keyToHash(key);
     assert(!hash.contains(paths.style.context.separator));
-    return paths.join(this.directory.path, "$hash$DATA_SUFFIX");
+    return paths.join(this.directory.path, hash);
   }
 
   File _combine(String prefix, String suffix) {
@@ -43,15 +44,16 @@ class StoredBytesMap extends DiskBytesStore {
     return File("$prefix$suffix");
   }
 
-  File _keyToFile(String key) {
+  @visibleForTesting
+  File keyToFile(String key) {
     return _combine(this._keyFilePrefix(key), DATA_SUFFIX);
   }
 
 
-  @override
-  void deleteSync(String key) {
-    return this.writeBytesSync(key, null);
-  }
+  // @override
+  // void deleteSync(String key) {
+  //   return this.writeBytesSync(key, null);
+  // }
 
   @override
   bool isFile(String path) {
@@ -62,7 +64,7 @@ class StoredBytesMap extends DiskBytesStore {
 
   @override
   Uint8List? readBytesSync(String key) {
-    final file = _keyToFile(key);
+    final file = keyToFile(key);
     BlobsFileReader? reader;
     try {
       reader = BlobsFileReader(file);
@@ -74,23 +76,57 @@ class StoredBytesMap extends DiskBytesStore {
         }
       }
     }
+    on FileSystemException catch (e) {
+      if (e.isNoSuchFileOrDirectory) {
+        return null;
+      }
+      rethrow;
+    }
     finally {
       reader?.closeSync();
     }
   }
+  
+  // @visibleForTesting
+  // File? lastWrittenFile;
+  
 
   bool _writeOrDelete(String key, List<int>? data) {
+    
+    //this.lastWrittenFile = null;
+    
     final prefix = this._keyFilePrefix(key);
     final cacheFile = _combine(prefix, DATA_SUFFIX);
     final dirtyFile = _combine(prefix, DIRTY_SUFFIX);
 
-    bool entryWasFound;
     bool renamed = false;
     try {
-      entryWasFound = replaceBlobSync(cacheFile, dirtyFile, key, data, mustExist: false);
-      dirtyFile.renameSync(cacheFile.path);
+      final repl = Replace(cacheFile, dirtyFile, key, data, mustExist: false);
+      assert(data==null || dirtyFile.existsSync());
+
+      if (repl.entriesWritten>=1) {
+        dirtyFile.renameSync(cacheFile.path);
+      } else {
+        //assert(!dirtyFile.existsSync());
+        deleteSyncCalm(cacheFile);
+      }
+
+      // try {
+      //   dirtyFile.renameSync(cacheFile.path);
+      // } on FileSystemException catch (exc) {
+      //   if (exc.isNoSuchFileOrDirectory && data==null) {
+      //     // we were deleting an entry from the file. If it was the only entry,
+      //     // there is no file created, and it's ok
+      //   }
+      //   else {
+      //     rethrow;
+      //   }
+      // }
+
+
       renamed = true;
-      return entryWasFound;
+      //this.lastWrittenFile = cacheFile;
+      return repl.entryWasFound;
     }
     finally {
       if (!renamed) {
@@ -100,5 +136,15 @@ class StoredBytesMap extends DiskBytesStore {
   }
 
   @override
-  void writeBytesSync(String key, List<int>? data) => _writeOrDelete(key, data);
+  bool deleteSync(String key) {
+    return _writeOrDelete(key, null);
+  }
+
+  @override
+  void writeBytesSync(String key, List<int> data) {
+    _writeOrDelete(key, data);
+  }
+
+  // @override
+  // void writeBytesSync(String key, List<int>? data) => _writeOrDelete(key, data);
 }

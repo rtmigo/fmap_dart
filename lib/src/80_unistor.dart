@@ -4,14 +4,14 @@
 import 'dart:collection';
 import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:disk_cache/src/10_readwrite_v3.dart';
 import 'package:meta/meta.dart';
 
 import '00_common.dart';
 import '10_file_and_stat.dart';
 import '10_files.dart';
 import '10_hashing.dart';
-import '10_readwrite_v2.dart';
-import '10_readwrite_v1.dart';
 
 typedef String HashFunc(String key);
 
@@ -60,7 +60,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
 
   Uint8List? readBytesSync(String key);
   bool deleteSync(String key);
-  File writeBytesSync(String key, List<int> data);
+  void writeBytesSync(String key, List<int> data);
 
   @protected
   bool isFile(String path);
@@ -85,9 +85,15 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
 
   @override
   Iterable<String> get keys sync* {
+    // TODO move from this class
     for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
-      if (this.isFile(f.path))
-        yield readKeySyncV1(File(f.path));
+      if (this.isFile(f.path)) {
+        final reader = BlobsFileReader(File(f.path));
+        for (var key = reader.readKey(); key != null; key = reader.readKey()) {
+          yield key;
+          reader.skipBlob();
+        }
+      }
     }
   }
 
