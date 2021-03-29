@@ -43,7 +43,7 @@ void runTests(String prefix, Fmap create(Directory d), bool mustUpdate) {
 
 void main() {
   runTests("non", (dir) => Fmap(dir), false);
-  runTests("updating", (dir) => Fmap(dir, updateTimestampsOnRead: true), true);
+  runTests("updating", (dir) => Fmap(dir, policy: Policy.lru), true);
   //runTests("BytesMap:", (dir)=>DiskBytesMap(dir), false);
   //runTests("BytesCache:", (dir)=>DiskBytesCache(dir), false);
 

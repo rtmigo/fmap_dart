@@ -1,5 +1,5 @@
 name: disk_cache
-description: Library for persistent storage or caching
+description: Library for persistent storage or caching.
 version: 0.0.1+2
 author:
 homepage: https://github.com/rtmigo/fmap

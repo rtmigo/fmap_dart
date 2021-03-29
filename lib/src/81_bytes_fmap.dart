@@ -20,11 +20,18 @@ typedef DeleteFile(File file);
 
 typedef String HashFunc(String key);
 
+enum Policy {
+  fifo,
+  lru
+}
+
 
 
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
 class Fmap<T> extends MapBase<String, T?> {
-  Fmap(this.directory, {this.updateTimestampsOnRead = false}) : keyToHash = stringToMd5;
+  Fmap(this.directory, {Policy policy = Policy.fifo}):
+    updateTimestampsOnRead = policy == Policy.lru,
+    keyToHash = stringToMd5;
 
   //super(directory, updateTimestampsOnRead);
 
