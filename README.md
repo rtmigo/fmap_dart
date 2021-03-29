@@ -62,8 +62,8 @@ format and in the more basic `List`. When saving, each `int` will be truncated t
 the range 0..255.
 
 ``` dart
-var blobs = Fmap<Uint8List>(directory);
-blobs['x'] = myBinaryData;
+fmap['blob1'] = [0x12, 0x34, 0x55];
+fmap['blob2'] = myFile.readAsBytesSync(); 
 ```
 
 
