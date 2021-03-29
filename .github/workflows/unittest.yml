@@ -18,43 +18,32 @@ on:
       - '**.txt'
 
 jobs:
-#  test:
-#    timeout-minutes: 5
-#    runs-on: ${{ matrix.os }}
-#    strategy:
-#      matrix:
-#        os: [macos-latest, ubuntu-latest, windows-latest]
-#        sdk: [2.12.0]
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: dart-lang/setup-dart@v1
-#        with:
-#          sdk: ${{ matrix.sdk }}
-#      - name: Install dependencies
-#        run: dart pub get
-#      - name: Run tests
-#        un: dart test
+  test:
+    timeout-minutes: 5
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        sdk: [2.12.0]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+      - name: Install dependencies
+        run: dart pub get
+      - name: Run tests
+        run: dart test
 
-  merge-branch:
+  merge-to-master:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
 
-      - name: Merge staging -> uat
+      - name: Merge current -> master
         uses: devmasx/merge-branch@v1.3.1
         with:
           type: now
           target_branch: master
           github_token: ${{ github.token }}
-
-#    steps:
-#      - uses: actions/checkout@v2
-##        with:
-##          token: ${{secrets.PAT}}
-#      - run: |
-#          # do something
-#          git config --global user.name 'ArtIG'
-#          git config --global user.email 'rtmigo@users.noreply.github.com'
-#          git checkout master
-#          git merge dev
-##          #git push -u origin master
