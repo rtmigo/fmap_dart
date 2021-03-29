@@ -17,7 +17,8 @@ fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 print(fmap['keyA']); // read from file
 ```
 
-The storage is most efficient for storing large objects: blobs and strings. Although it can store small ones like bool and int without any problems.
+The storage is most efficient for storing large objects: blobs and strings. 
+Although it can store small ones like `bool` or `int`.
 
 This object implements `Map`, so it can be used in the same way.
 
