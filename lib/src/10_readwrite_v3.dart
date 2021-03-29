@@ -3,8 +3,10 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'dart:collection';
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
 import 'package:file_errors/file_errors.dart';
 
 import '00_common.dart';
@@ -14,6 +16,53 @@ const SIGNATURE_BYTE_1 = 0x4B;
 const SIGNATURE_BYTE_2 = 0x42;
 
 const ENTRY_END_MARKER = 0x42;
+
+class TypedBlob implements Comparable {
+  TypedBlob(this.type, this.bytes) {
+    RangeError.checkValueInInterval(this.type, 0, 0xFE);
+  }
+  final List<int> bytes;
+  final int type;
+
+  static const typeBytes = 0;
+  static const typeString = 0;
+
+  @override
+  bool operator ==(Object other) => this.compareTo(other)==0;
+
+  static int _compareTwoLists(List<int> a, List<int> b) {
+    // comparing length
+    int lenCmp = a.length.compareTo(b.length);
+    if (lenCmp != 0) {
+      return lenCmp;
+    }
+    // comparing items
+    assert(a.length == b.length);
+    for (var i = 0; i < b.length; ++i) {
+      int cmp = a[i].compareTo(b[i]);
+      if (cmp != 0) {
+        return cmp;
+      }
+    }
+    // all equal
+    return 0;
+  }
+
+  @override
+  int compareTo(other) {
+    if (other is TypedBlob) {
+      {
+        int cmp = this.type.compareTo(other.type);
+        if (cmp != 0) {
+          return cmp;
+        }
+      }
+      return _compareTwoLists(this.bytes, other.bytes);
+    } else {
+      return -1;
+    }
+  }
+}
 
 /// The file is essentially an analog of the TAR format, but extremely minimized.
 ///
@@ -193,6 +242,8 @@ class BlobsFileReader {
   int _currentEntryBlobSize = -1;
   int _currentEntryType = -1;
 
+  int get currentEntryType => _currentEntryType;
+
   /// We assume that we are exactly at the beginning of the entry. This method reads the header
   /// and changes values [currentEntryKey] and [_currentEntryBlobSize]. If if was the last
   /// entry (no more data), the [currentEntryKey] if set to [null].
@@ -238,7 +289,7 @@ class BlobsFileReader {
     return utf8.decode(keyBytes);
   }
 
-  Uint8List readBlob() {
+  TypedBlob readBlob() {
     if (_state != State.atBlobStart) {
       throw StateError('Cannot read entry: current state is $_state');
     }
@@ -265,7 +316,7 @@ class BlobsFileReader {
 
     this._state = State.atEntryStart;
 
-    return blobBytes;
+    return TypedBlob(this._currentEntryType, blobBytes);
   }
 
   void skipBlob() {
@@ -331,8 +382,9 @@ class Replace {
           continue;
         } else {
           // copying old data
-          final et = reader._currentEntryType;
-          writer.write(oldKey, reader.readBlob(), et);
+          //final et = reader._currentEntryType;
+          final tb = reader.readBlob();
+          writer.write(oldKey, tb.bytes, tb.type);
           this.entriesWritten++;
         }
       }
@@ -343,7 +395,7 @@ class Replace {
   }
 
   int entriesWritten = 0;
-  Uint8List? oldData;
+  TypedBlob? oldData;
   //bool entryWasFound = false;
 }
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -19,11 +20,13 @@ typedef DeleteFile(File file);
 
 typedef String HashFunc(String key);
 
+
+
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-class BytesFmap extends MapBase<String, List<int>?> {
-  BytesFmap(this.directory, {this.updateTimestampsOnRead = false})
-      : keyToHash = stringToMd5;
-        //super(directory, updateTimestampsOnRead);
+class BytesFmap<T> extends MapBase<String, T?> {
+  BytesFmap(this.directory, {this.updateTimestampsOnRead = false}) : keyToHash = stringToMd5;
+
+  //super(directory, updateTimestampsOnRead);
 
   final Directory directory;
   final bool updateTimestampsOnRead;
@@ -40,7 +43,7 @@ class BytesFmap extends MapBase<String, List<int>?> {
     } on FileSystemException catch (e) {
       throw FileSystemException(
           "DiskCache failed to listSync directory $directory right after creation. "
-              "osError: ${e.osError}.");
+          "osError: ${e.osError}.");
     }
 
     for (final entry in entries) {
@@ -57,30 +60,44 @@ class BytesFmap extends MapBase<String, List<int>?> {
     FileAndStat.deleteOldest(files,
         maxSumSize: maxSizeBytes,
         maxCount: JS_MAX_SAFE_INTEGER,
-        deleteFile: (file) => this.deleteFile(file));
-  }
-
-  // @protected
-  // void deleteFile(File file);
-
-  // Uint8List? readBytesSync(String key);
-  // bool deleteSync(String key);
-  // void writeBytesSync(String key, List<int> data);
-  //
-  // @protected
-  // bool isFile(String path);
-
-  @override
-  Uint8List? operator [](Object? key) {
-    return readBytesSync(key as String);
+        deleteFile: (file) => file.deleteSync());
   }
 
   @override
-  void operator []=(String key, List<int>? value) {
-    if (value == null)
+  T? operator [](Object? key) {
+    return _deserialize(readBytesSync(key as String));
+  }
+
+  T? _deserialize(TypedBlob? typedBlob) {
+    if (typedBlob==null) {
+      return null;
+    }
+    switch (typedBlob.type) {
+      case TypedBlob.typeBytes:
+        return typedBlob.bytes as T;
+      case TypedBlob.typeString:
+        return utf8.decode(typedBlob.bytes) as T;
+      default:
+        throw FallThroughError();
+    }
+  }
+
+  @override
+  void operator []=(String key, T? value) {
+    if (value == null) {
       this.deleteSync(key);
-    else
-      writeBytesSync(key, value);
+    }
+    else {
+      if (value is List<int>) {
+        writeBytesSync(key, TypedBlob(TypedBlob.typeBytes, value));
+      } else if (value is String) {
+        writeBytesSync(key, TypedBlob(TypedBlob.typeString, utf8.encode(value)));
+      } else {
+        throw TypeError();
+      }
+
+    }
+
   }
 
   @override
@@ -90,9 +107,8 @@ class BytesFmap extends MapBase<String, List<int>?> {
 
   @override
   Iterable<String> get keys sync* {
-    // TODO move from this class
     for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
-      if (this.isFile(f.path)) {
+      if (FileSystemEntity.isFileSync(f.path)) {
         BlobsFileReader? reader;
         try {
           reader = BlobsFileReader(File(f.path));
@@ -103,21 +119,20 @@ class BytesFmap extends MapBase<String, List<int>?> {
         } finally {
           reader?.closeSync();
         }
-
       }
     }
   }
 
   @override
-  Uint8List? remove(Object? key) {
-    return this.deleteSync(key as String);
+  T? remove(Object? key) {
+    return _deserialize(this.deleteSync(key as String));
   }
 
   @internal
   void maybeUpdateTimestampOnRead(File file) {
     if (this.updateTimestampsOnRead) {
       // scheduling async timestamp modification
-          () async {
+      () async {
         try {
           file.setLastModifiedSync(DateTime.now());
         } on FileSystemException catch (e, _) {
@@ -128,14 +143,8 @@ class BytesFmap extends MapBase<String, List<int>?> {
     }
   }
 
+  // KEYS AND FILES ////////////////////////////////////////////////////////////////////////////////
 
-  // @internal
-  // HashFunc keyToHash;
-
-  @override
-  void deleteFile(File file) {
-    file.deleteSync(); // TODO Outdated?
-  }
 
   String _keyFilePrefix(String key) {
     String hash = this.keyToHash(key);
@@ -153,13 +162,10 @@ class BytesFmap extends MapBase<String, List<int>?> {
     return _combine(this._keyFilePrefix(key), DATA_SUFFIX);
   }
 
-  @override
-  bool isFile(String path) {
-    return FileSystemEntity.isFileSync(path); // TODO Outdated?
-  }
+  //////////////////////////////////////////////////////////////////////////////////////////////////
 
-  @override
-  Uint8List? readBytesSync(String key) {
+  @visibleForTesting
+  TypedBlob? readBytesSync(String key) {
     final file = keyToFile(key);
     BlobsFileReader? reader;
     try {
@@ -182,11 +188,7 @@ class BytesFmap extends MapBase<String, List<int>?> {
     }
   }
 
-  // @visibleForTesting
-  // File? lastWrittenFile;
-
-  Uint8List? _writeOrDelete(String key, List<int>? data, {wantOldData=false}) {
-    //this.lastWrittenFile = null;
+  TypedBlob? _writeOrDelete(String key, TypedBlob? data, {wantOldData = false}) {
 
     final prefix = this._keyFilePrefix(key);
     final cacheFile = _combine(prefix, DATA_SUFFIX);
@@ -197,14 +199,15 @@ class BytesFmap extends MapBase<String, List<int>?> {
     bool renamed = false;
     try {
       final replaceResult =
-          Replace(cacheFile, dirtyFile, key, data, 0, mustExist: false, wantOldData: wantOldData);
+          Replace(cacheFile, dirtyFile, key, data?.bytes, data?.type ?? 0, mustExist: false, wantOldData: wantOldData);
       assert(data == null || dirtyFile.existsSync());
 
       if (replaceResult.entriesWritten >= 1) {
+        // at least one entry written to the new file. Replacing the old file
         dirtyFile.renameSync(cacheFile.path);
       } else {
         // nothing is written, so no more data to keep in the file
-        assert(replaceResult.entriesWritten==0);
+        assert(replaceResult.entriesWritten == 0);
         deleteSyncCalm(cacheFile);
       }
       renamed = true;
@@ -216,13 +219,11 @@ class BytesFmap extends MapBase<String, List<int>?> {
     }
   }
 
-
-  Uint8List? deleteSync(String key) {
+  TypedBlob? deleteSync(String key) {
     return _writeOrDelete(key, null, wantOldData: true);
   }
 
-
-  void writeBytesSync(String key, List<int> data) {
+  void writeBytesSync(String key, TypedBlob data) {
     _writeOrDelete(key, data);
   }
 }

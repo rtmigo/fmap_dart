@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart' as crypto;
 import 'package:disk_cache/disk_cache.dart';
 import 'package:errno/errno.dart';
 import 'package:file_errors/file_errors.dart';
+import 'package:disk_cache/src/10_readwrite_v3.dart';
 
 void deleteTempDir(Directory d) {
   try {
@@ -92,7 +93,7 @@ Future<void> populate(BytesFmap theCache,
   final smallDelay = () => Future.delayed(Duration(milliseconds: 25));
   final longDelay = () => Future.delayed(Duration(milliseconds: lmtMatters ? 2050 : 25));
 
-  theCache.writeBytesSync(KEY_EARLIEST, List.filled(1024, 5));
+  theCache.writeBytesSync(KEY_EARLIEST, TypedBlob(0, List.filled(1024, 5)));
   allKeys.add(KEY_EARLIEST);
 
   await longDelay();
@@ -104,12 +105,12 @@ Future<void> populate(BytesFmap theCache,
   for (int i in indexesInRandomOrder) {
     final key = i.toString();
     allKeys.add(key);
-    theCache.writeBytesSync(key, List.filled(1024, i));
+    theCache.writeBytesSync(key, TypedBlob(0, List.filled(1024, i)));
     await smallDelay();
   }
 
   await longDelay();
-  theCache.writeBytesSync(KEY_LATEST, List.filled(1024, 5));
+  theCache.writeBytesSync(KEY_LATEST, TypedBlob(0, List.filled(1024, 5)));
   allKeys.add(KEY_LATEST);
 
   assert(allKeys.length == n);

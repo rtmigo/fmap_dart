@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
+import 'package:disk_cache/src/10_readwrite_v3.dart';
 
 import 'helper.dart';
 
@@ -24,7 +25,7 @@ void runTests(String prefix, BytesFmap create(Directory d), bool mustUpdate) {
     const key = "key";
 
     final map = create(tempDir);
-    map.writeBytesSync(key, [23, 42]);
+    map.writeBytesSync(key, TypedBlob(0, [23, 42]));
     final lmt = map.keyToFile(key).lastModifiedSync();
     expect(map.keyToFile(key).lastModifiedSync(), equals(lmt));
 

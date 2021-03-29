@@ -46,7 +46,7 @@ void main() {
     expect(tempFile.statSync().size, 43);
     final reader = BlobsFileReader(tempFile);
     expect(reader.readKey(), "Key in UTF8: это ключ");
-    expect(reader.readBlob(), [4, 5, 6, 7]);
+    expect(reader.readBlob(), TypedBlob(0, [4, 5, 6, 7]));
     expect(reader.readKey(), null);
   });
 
@@ -68,11 +68,11 @@ void main() {
     final reader = BlobsFileReader(tempFile);
     try {
       expect(reader.readKey(), "one");
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 2]));
       expect(reader.readKey(), "two");
-      expect(reader.readBlob(), []);
+      expect(reader.readBlob(), TypedBlob(0, []));
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob(), TypedBlob(0, [3]));
     } finally {
       reader.closeSync();
     }
@@ -100,7 +100,7 @@ void main() {
       expect(reader.readKey(), "two");
       reader.skipBlob();
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3, 4, 5]);
+      expect(reader.readBlob(), TypedBlob(0, [3, 4, 5]));
     } finally {
       reader.closeSync();
     }
@@ -131,7 +131,7 @@ void main() {
       expect(reader.readKey(), "one");
 
       expect(() => reader.readKey(), throwsStateError);
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 2]));
 
       expect(() => reader.readBlob(), throwsStateError);
       expect(() => reader.skipBlob(), throwsStateError);
@@ -148,7 +148,7 @@ void main() {
       expect(reader.readKey(), "three");
 
       expect(() => reader.readKey(), throwsStateError);
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob(), TypedBlob(0, [3]));
 
       expect(reader.readKey(), null);
       expect(() => reader.readBlob(), throwsStateError);
@@ -193,12 +193,12 @@ void main() {
     final reader = BlobsFileReader(otherTempFile);
     try {
       expect(reader.readKey(), "two");
-      expect(reader.readBlob(), [1, 50, 10]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 50, 10]));
 
       expect(reader.readKey(), "one");
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 2]));
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob(), TypedBlob(0, [3]));
     } finally {
       reader.closeSync();
     }
@@ -223,9 +223,9 @@ void main() {
     final reader = BlobsFileReader(otherTempFile);
     try {
       expect(reader.readKey(), "one");
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob().bytes, [1, 2]);
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob().bytes, [3]);
     } finally {
       reader.closeSync();
     }
@@ -301,7 +301,8 @@ void main() {
         try {
           for (var key = reader.readKey(); key != null; key = reader.readKey()) {
             if (keysToRead.contains(key)) {
-              expect(reader.readBlob(), sourceBlobs[key]);
+              // todo test types
+              expect(reader.readBlob().bytes, sourceBlobs[key]);
               foundCount++;
               sumKeysRandomlyRead++;
             } else {

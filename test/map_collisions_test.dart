@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
+import 'package:disk_cache/src/10_readwrite_v3.dart';
 
 import 'helper.dart';
 
@@ -32,7 +33,7 @@ void main() {
 
     for (var i = 0; i < 100; ++i) {
       var key = i.toString();
-      cache.writeBytesSync(key, [i, i + 10]);
+      cache.writeBytesSync(key, TypedBlob(0, [i, i + 10]));
       allFiles.add(cache.keyToFile(key));
       //allSubdirs.add(file.parent);
       allKeys.add(key);
@@ -45,7 +46,7 @@ void main() {
 
       var bytes = cache.readBytesSync(key);
       if (bytes != null) {
-        expect(bytes, [i, i + 10]);
+        expect(bytes, TypedBlob(0, [i, i + 10]));
         stillInCacheCount++;
       }
     }
@@ -79,8 +80,8 @@ void main() {
 
     for (var i = 0; i < 100; ++i) {
       var key = i.toString();
-      cache.writeBytesSync(key, [i, i + 1, i + 2]);
-      expect(cache.readBytesSync(key), [i, i + 1, i + 2]);
+      cache.writeBytesSync(key, TypedBlob(0, [i, i + 1, i + 2]));
+      expect(cache.readBytesSync(key), TypedBlob(0, [i, i + 1, i + 2]));
     }
   });
 }
