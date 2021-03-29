@@ -35,28 +35,27 @@ for (var entry in fmap.entries) {
 
 The storage can store such basic types as `String`, `int`, `double` and `bool`.
 
+
 Can be read as dynamic types ...
 
 ``` dart
-var fmap = Fmap(directory);
+var objects = Fmap(directory);
 var myJsonString = fmap['key']; 
 ```
 
 Or more strictly, limiting to generic arguments:
 
 ``` dart
-var fmap = Fmap<String>(directory);
-var myJsonString = fmap['key']; 
-```
-
-If necessary, you can use multiple Fmap at the same time, linked to the same directory
-
-``` dart
 var strings = Fmap<String>(directory);
-var ints = Fmap<int>(directory);
-var myJsonString = strings['keyA']; 
-var myInt = ints['keyB'];
+var myJsonString = strings['key']; 
 ```
+
+In addition, all types derived from `List<int>` are treated as lists of bytes.
+This allows you to efficiently save and load **blobs** both in the `Uint8List` 
+format and in the more basic `List`. 
+
+When saving, each int will be truncated to the range 0..255
+
 
 
 
