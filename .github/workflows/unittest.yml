@@ -47,4 +47,6 @@ jobs:
           # do something
           git config --global user.name 'ArtIG'
           git config --global user.email 'rtmigo@users.noreply.github.com'
-          git push -u origin master
+          git checkout master
+          git merge dev
+#          #git push -u origin master
