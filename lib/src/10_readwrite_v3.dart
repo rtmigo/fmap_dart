@@ -142,9 +142,8 @@ class BlobsFileReader {
     assert(this._raf == null);
 
     // opening file, ignoring "file not exist" errors if mustExist is false
-    RandomAccessFile raf;
     try {
-      _raf = file.openSync(mode: FileMode.read);
+      this._raf = file.openSync(mode: FileMode.read);
     } on FileSystemException catch (exc) {
       if (!mustExist && exc.isNoSuchFileOrDirectory) {
         this._state = State.atFileEnd;
@@ -155,7 +154,7 @@ class BlobsFileReader {
     }
 
     // READING THE HEADER
-    List<int> header = _raf!.readSync(3);
+    List<int> header = this._raf!.readSync(3);
     this._cachedPosition += 3;
     if (header[0] != SIGNATURE_BYTE_1 || header[1] != SIGNATURE_BYTE_2 || header[2] != 0x03) {
       throw FileFormatError('Unexpected header $header.');
