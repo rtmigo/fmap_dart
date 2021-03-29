@@ -35,6 +35,13 @@ jobs:
       - name: Run tests
         run: dart test
 
+  analyze:
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dart-lang/setup-dart@v1
+      - name: Analyze
+        run: flutter analyze
+
   merge-to-staging:
     needs: test
     runs-on: ubuntu-latest
