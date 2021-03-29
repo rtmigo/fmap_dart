@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
 import 'dart:io';
@@ -14,23 +14,22 @@ import '00_common.dart';
 import '10_files.dart';
 import '10_hashing.dart';
 
-
 typedef DeleteFile(File file);
 
 typedef String HashFunc(String key);
 
-
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
 class StoredBytesMap extends DiskBytesStore {
-
-  StoredBytesMap(directory, {bool updateTimestampsOnRead=false}): keyToHash=stringToMd5, super(directory, updateTimestampsOnRead);
+  StoredBytesMap(directory, {bool updateTimestampsOnRead = false})
+      : keyToHash = stringToMd5,
+        super(directory, updateTimestampsOnRead);
 
   @internal
   HashFunc keyToHash;
 
   @override
   void deleteFile(File file) {
-    file.deleteSync();  // TODO Outdated?
+    file.deleteSync(); // TODO Outdated?
   }
 
   String _keyFilePrefix(String key) {
@@ -48,7 +47,6 @@ class StoredBytesMap extends DiskBytesStore {
   File keyToFile(String key) {
     return _combine(this._keyFilePrefix(key), DATA_SUFFIX);
   }
-
 
   // @override
   // void deleteSync(String key) {
@@ -70,46 +68,40 @@ class StoredBytesMap extends DiskBytesStore {
       maybeUpdateTimestampOnRead(file); // calling async func without waiting
       reader = BlobsFileReader(file);
       for (var storedKey = reader.readKey(); storedKey != null; storedKey = reader.readKey()) {
-        if (storedKey==key) {
+        if (storedKey == key) {
           return reader.readBlob();
         } else {
           reader.skipBlob();
         }
       }
-
-    }
-    on FileSystemException catch (e) {
+    } on FileSystemException catch (e) {
       if (e.isNoSuchFileOrDirectory) {
         return null;
       }
       rethrow;
-    }
-    finally {
+    } finally {
       reader?.closeSync();
     }
   }
-  
+
   // @visibleForTesting
   // File? lastWrittenFile;
-  
 
   bool _writeOrDelete(String key, List<int>? data) {
-    
     //this.lastWrittenFile = null;
-    
+
     final prefix = this._keyFilePrefix(key);
     final cacheFile = _combine(prefix, DATA_SUFFIX);
     final dirtyFile = _combine(prefix, DIRTY_SUFFIX);
 
-
-    assert(this.keyToFile(key).path==cacheFile.path, 'ktf ${keyToFile(key)} cf $cacheFile');
+    assert(this.keyToFile(key).path == cacheFile.path, 'ktf ${keyToFile(key)} cf $cacheFile');
 
     bool renamed = false;
     try {
       final repl = Replace(cacheFile, dirtyFile, key, data, mustExist: false);
-      assert(data==null || dirtyFile.existsSync());
+      assert(data == null || dirtyFile.existsSync());
 
-      if (repl.entriesWritten>=1) {
+      if (repl.entriesWritten >= 1) {
         dirtyFile.renameSync(cacheFile.path);
       } else {
         //assert(!dirtyFile.existsSync());
@@ -128,12 +120,10 @@ class StoredBytesMap extends DiskBytesStore {
       //   }
       // }
 
-
       renamed = true;
       //this.lastWrittenFile = cacheFile;
       return repl.entryWasFound;
-    }
-    finally {
+    } finally {
       if (!renamed) {
         deleteSyncCalm(dirtyFile);
       }

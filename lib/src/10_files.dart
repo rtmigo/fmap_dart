@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
 import 'dart:io';

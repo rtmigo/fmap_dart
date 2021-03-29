@@ -1,6 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2021 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
-
 
 import 'dart:io';
 
@@ -11,10 +10,8 @@ import "package:test/test.dart";
 import 'helper.dart';
 
 void main() {
-
   late Directory tempDir;
   late StoredBytesMap cache;
-
 
   setUp(() async {
     tempDir = Directory.systemTemp.createTempSync();
@@ -37,11 +34,9 @@ void main() {
     expect(z.updateTimestampsOnRead, true);
   });
 
-
   // // RANDOM DELETIONS ///////////////////////////////////////////////////////////////////////////
 
   test('Deleting random files', () async {
-
     expect(countFiles(cache.directory), 15);
 
     deleteRandomItems(cache.directory, 3, FileSystemEntityType.file);

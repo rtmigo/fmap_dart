@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2021 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
 import 'dart:convert';
@@ -293,8 +293,7 @@ class BlobsFileReader {
 
 class Replace {
   /// Created a copy with file with particular blob replaced or removed.
-  Replace(File source, File target, String newKey, List<int>? newBlob,
-      {bool mustExist: true}) {
+  Replace(File source, File target, String newKey, List<int>? newBlob, {bool mustExist: true}) {
     BlobsFileReader? reader;
     BlobsFileWriter? writer;
 
@@ -323,7 +322,6 @@ class Replace {
           this.entriesWritten++;
         }
       }
-
     } finally {
       reader?.closeSync();
       writer?.closeSync();

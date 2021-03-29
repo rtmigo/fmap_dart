@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2021 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
 import 'dart:collection';
@@ -16,7 +16,6 @@ import '10_hashing.dart';
 typedef String HashFunc(String key);
 
 abstract class DiskBytesStore extends MapBase<String, List<int>?> {
-
   final Directory directory;
   final bool updateTimestampsOnRead;
 
@@ -25,8 +24,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
   @internal
   HashFunc keyToHash = stringToMd5;
 
-  void purgeSync(int maxSizeBytes)
-  {
+  void purgeSync(int maxSizeBytes) {
     List<FileAndStat> files = <FileAndStat>[];
 
     List<FileSystemEntity> entries;
@@ -35,7 +33,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
     } on FileSystemException catch (e) {
       throw FileSystemException(
           "DiskCache failed to listSync directory $directory right after creation. "
-              "osError: ${e.osError}.");
+          "osError: ${e.osError}.");
     }
 
     for (final entry in entries) {
@@ -49,8 +47,10 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
       }
     }
 
-    FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: JS_MAX_SAFE_INTEGER,
-        deleteFile: (file)=>this.deleteFile(file));
+    FileAndStat.deleteOldest(files,
+        maxSumSize: maxSizeBytes,
+        maxCount: JS_MAX_SAFE_INTEGER,
+        deleteFile: (file) => this.deleteFile(file));
   }
 
   @protected
@@ -70,7 +70,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
 
   @override
   void operator []=(String key, List<int>? value) {
-    if (value==null)
+    if (value == null)
       this.deleteSync(key);
     else
       writeBytesSync(key, value);
@@ -86,7 +86,6 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
     // TODO move from this class
     for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
       if (this.isFile(f.path)) {
-
         BlobsFileReader? reader;
         try {
           reader = BlobsFileReader(File(f.path));
@@ -94,8 +93,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
             yield key;
             reader.skipBlob();
           }
-        }
-        finally {
+        } finally {
           reader?.closeSync();
         }
       }
@@ -109,17 +107,16 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
 
   @internal
   void maybeUpdateTimestampOnRead(File file) {
-    if (this.updateTimestampsOnRead)
-      {
-        // scheduling async timestamp modification
-        () async {
-          try {
-            file.setLastModifiedSync(DateTime.now());
-          } on FileSystemException catch (e, _) {
-            // not a big deal ...
-            print("WARNING: Failed set timestamp to file $file: $e");
-          }
-        }();
-      }
+    if (this.updateTimestampsOnRead) {
+      // scheduling async timestamp modification
+      () async {
+        try {
+          file.setLastModifiedSync(DateTime.now());
+        } on FileSystemException catch (e, _) {
+          // not a big deal ...
+          print("WARNING: Failed set timestamp to file $file: $e");
+        }
+      }();
+    }
   }
 }

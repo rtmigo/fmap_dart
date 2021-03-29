@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
 import 'dart:io';
@@ -31,10 +31,6 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     expect(map["A"], [1, 2, 3]); // reading again
   });
 
-
-
-
-
   test('$prefix write and delete', () {
     final map = create(tempDir); // maxCount: 3, maxSizeBytes: 10
 
@@ -57,7 +53,6 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     //expect(cache.delete("A"), false);
   });
 
-
   test('$prefix list items', () {
     final map = create(tempDir);
 
@@ -73,7 +68,6 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
     expect(map.keys.toSet(), {"A", "C"});
   });
-
 
   test('$prefix Disk cache: clear', () {
     final map = create(tempDir);
@@ -109,6 +103,6 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 }
 
 void main() {
-  runTests("BytesMap:", (dir)=>StoredBytesMap(dir));
+  runTests("BytesMap:", (dir) => StoredBytesMap(dir));
   // runTests("BytesCache:", (dir)=>DiskBytesCache(dir));
 }

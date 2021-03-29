@@ -1,6 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
-
 
 import 'dart:convert';
 import 'dart:io';
@@ -15,11 +14,8 @@ void deleteTempDir(Directory d) {
     if (d.existsSync()) {
       d.deleteSync(recursive: true);
     }
-  }
-  on FileSystemException catch (exc)
-  {
-    if (!exc.isWindowsError(WindowsErrors.sharingViolation))
-      rethrow;
+  } on FileSystemException catch (exc) {
+    if (!exc.isWindowsError(WindowsErrors.sharingViolation)) rethrow;
   }
 }
 
@@ -37,8 +33,7 @@ String badHashFunc(String data) {
 
 Directory? findEmptySubdirectory(Directory d) {
   for (final fsEntry in d.listSync(recursive: true))
-    if (fsEntry is Directory && fsEntry.listSync().length == 0)
-      return fsEntry;
+    if (fsEntry is Directory && fsEntry.listSync().length == 0) return fsEntry;
   return null;
 }
 
@@ -47,23 +42,21 @@ int countFiles(Directory dir) {
 }
 
 int averageFileSize(Directory dir) {
-
   int sum = 0;
   int count = 0;
   for (var fse in dir.listSync(recursive: true))
     if (FileSystemEntity.isFileSync(fse.path)) {
-        sum+=File(fse.path).statSync().size;
-        count++;
-      }
-  return (sum/count).round();
+      sum += File(fse.path).statSync().size;
+      count++;
+    }
+  return (sum / count).round();
 }
 
 int sumFilesSize(Directory dir) {
-
   int sum = 0;
   for (var fse in dir.listSync(recursive: true))
     if (FileSystemEntity.isFileSync(fse.path)) {
-      sum+=File(fse.path).statSync().size;
+      sum += File(fse.path).statSync().size;
     }
   return sum;
 }
@@ -88,16 +81,16 @@ void deleteRandomItems(Directory dir, int count, FileSystemEntityType type,
 // first and last when alphabetically sorted. So we will "hide" them between
 // other keys
 const KEY_EARLIEST = "5_first";
-const KEY_LATEST  = "10_first";
+const KEY_LATEST = "10_first";
 
 /// Fills the map with [n] blobs named `[KEY_EARLIEST, "3", "20", "6" ... KEY_LATEST]`.
-Future<void> populate(DiskBytesStore theCache, {lmtMatters = false, int n=100, int sizeEach=1024}) async {
-
+Future<void> populate(DiskBytesStore theCache,
+    {lmtMatters = false, int n = 100, int sizeEach = 1024}) async {
   List<String> allKeys = <String>[];
 
   // last-modification times on FAT are rounded to nearest 2 seconds
-  final smallDelay = ()=>Future.delayed(Duration(milliseconds: 25));
-  final longDelay  = ()=>Future.delayed(Duration(milliseconds: lmtMatters ? 2050 : 25));
+  final smallDelay = () => Future.delayed(Duration(milliseconds: 25));
+  final longDelay = () => Future.delayed(Duration(milliseconds: lmtMatters ? 2050 : 25));
 
   theCache.writeBytesSync(KEY_EARLIEST, List.filled(1024, 5));
   allKeys.add(KEY_EARLIEST);
@@ -105,8 +98,7 @@ Future<void> populate(DiskBytesStore theCache, {lmtMatters = false, int n=100, i
   await longDelay();
 
   final indexesInRandomOrder = <int>[];
-  for (int i = 0; i < n-2; ++i)
-    indexesInRandomOrder.add(i);
+  for (int i = 0; i < n - 2; ++i) indexesInRandomOrder.add(i);
   indexesInRandomOrder.shuffle();
 
   for (int i in indexesInRandomOrder) {
@@ -120,12 +112,11 @@ Future<void> populate(DiskBytesStore theCache, {lmtMatters = false, int n=100, i
   theCache.writeBytesSync(KEY_LATEST, List.filled(1024, 5));
   allKeys.add(KEY_LATEST);
 
-  assert(allKeys.length==n);
-  assert(allKeys.length==allKeys.toSet().length); // all keys we added are unique
+  assert(allKeys.length == n);
+  assert(allKeys.length == allKeys.toSet().length); // all keys we added are unique
   assert(allKeys.contains(KEY_EARLIEST));
   assert(allKeys.contains(KEY_LATEST));
   allKeys.sort();
-  assert(allKeys.first!=KEY_EARLIEST); // keys that were first/last chronologically
-  assert(allKeys.last!=KEY_LATEST);   // a not first/last alphabetically
+  assert(allKeys.first != KEY_EARLIEST); // keys that were first/last chronologically
+  assert(allKeys.last != KEY_LATEST); // a not first/last alphabetically
 }
-
