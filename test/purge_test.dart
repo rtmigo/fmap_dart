@@ -5,7 +5,7 @@
 import 'dart:io';
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
-import 'package:disk_cache/src/file_stored_map.dart';
+import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
@@ -19,7 +19,7 @@ void main() {
   });
 
   tearDown(() {
-    if (tempDir.existsSync()) { tempDir.deleteSync(recursive: true); }
+    deleteTempDir(tempDir);
   });
 
   test("purge", () async {

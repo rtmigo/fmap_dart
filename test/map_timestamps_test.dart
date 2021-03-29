@@ -4,19 +4,21 @@
 
 import 'dart:io';
 import 'package:disk_cache/src/80_unistor.dart';
-import 'package:disk_cache/src/file_stored_map.dart';
+import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
 import 'package:disk_cache/disk_cache.dart';
 
+import 'helper.dart';
+
 void runTests(String prefix, StoredBytesMap create(Directory d), bool mustUpdate) {
-  Directory? tempDir;
+  late Directory tempDir;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync();
   });
 
   tearDown(() {
-    if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
+    deleteTempDir(tempDir);
   });
 
 

@@ -7,7 +7,21 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:disk_cache/src/80_unistor.dart';
+import 'package:file_errors/file_errors.dart';
+import 'package:errno/errno.dart';
 
+void deleteTempDir(Directory d) {
+  try {
+    if (d.existsSync()) {
+      d.deleteSync(recursive: true);
+    }
+  }
+  on FileSystemException catch (exc)
+  {
+    if (!exc.isWindowsError(WindowsErrors.sharingViolation))
+      rethrow;
+  }
+}
 
 String badHashFunc(String data) {
   // returns only 16 possible hash values.

@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
+import 'helper.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:disk_cache/src/10_files.dart';
 import 'package:disk_cache/src/10_hashing.dart';
@@ -21,7 +22,7 @@ void main() {
   });
 
   tearDown(() {
-    tempDir.deleteSync(recursive: true);
+    deleteTempDir(tempDir);
   });
 
   test('listIfExists when does not exist', () async {

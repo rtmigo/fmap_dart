@@ -8,6 +8,8 @@ import 'package:disk_cache/src/10_readwrite_v3.dart';
 import "package:test/test.dart";
 import 'package:xrandom/xrandom.dart';
 
+import 'helper.dart';
+
 void main() {
   int sumKeysRandomlyRead = 0;
 
@@ -22,9 +24,7 @@ void main() {
   });
 
   tearDown(() {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
+    deleteTempDir(tempDir);
   });
 
   tearDownAll(() {
