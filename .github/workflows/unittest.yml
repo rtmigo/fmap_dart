@@ -35,16 +35,17 @@ jobs:
 #      - name: Run tests
 #        un: dart test
 
-  tomaster:
+  merge-branch:
     runs-on: ubuntu-latest
-    #needs: [test]
     steps:
-      uses: devmasx/merge-branch@v1.3.1
-      with:
-        type: now
-        from_branch: dev
-        target_branch: master
-        github_token: ${{ github.token }}
+      - uses: actions/checkout@master
+
+      - name: Merge staging -> uat
+        uses: devmasx/merge-branch@v1.3.1
+        with:
+          type: now
+          target_branch: master
+          github_token: ${{ github.token }}
 
 #    steps:
 #      - uses: actions/checkout@v2
