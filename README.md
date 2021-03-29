@@ -32,15 +32,15 @@ If the storage has become too large, you can delete the oldest data.
 
 ``` dart
 // leave only the freshest 16 Mb
-diskBytes.purgeSync(16*1024*1024);
+fmap.purgeSync(16*1024*1024);
 ```
 
 The constructor has the `updateTimestampsOnRead` argument. This argument determines which elements
 will be considered fresh at the time of purging.
 
 ``` dart
-final diskBytes = DiskBytesCache(updateTimestampsOnRead=true);
-diskBytes.purge(...);  // LRU
+final fmap = Fmap(updateTimestampsOnRead=true);
+fmap.purge(...);  // LRU
 ```
 
 In this case, the elements will be deleted according to the **LRU** policy. Items that were accessed
@@ -49,8 +49,8 @@ recently or added recently will remain in the cache.
 However, accounting for usage will require an extra write operation on each read.
 
 ``` dart
-final diskBytes = DiskBytesCache(updateTimestampsOnRead=false);
-diskBytes.purge(...);  // FIFO
+final fmap = Fmap(updateTimestampsOnRead=false);
+fmap.purge(...);  // FIFO
 ```
 
 In this case, it's a **FIFO**. Items that were added recently will remain in the cache.
