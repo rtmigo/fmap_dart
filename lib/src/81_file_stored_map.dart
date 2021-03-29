@@ -56,8 +56,6 @@ class StoredBytesMap extends DiskBytesStore {
   @override
   bool isFile(String path) {
     return FileSystemEntity.isFileSync(path); // TODO Outdated?
-    // TODO: implement isFile
-    throw UnimplementedError();
   }
 
   @override
