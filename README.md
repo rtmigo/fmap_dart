@@ -10,8 +10,9 @@ storage.
 ``` dart
 Map fmap = Fmap(directory);
 
-fmap['keyA'] = 'my string'; // saved into a file
-fmap['keyB'] = 5;           // saved into a file
+fmap['keyA'] = 'my string'; // saved string into a file
+fmap['keyB'] = 5;           // saved int into a file
+fmap['keyC'] = [23,42,77];  // saved three bytes into a file
 
 print(fmap['keyA']); // read from file
 ```
