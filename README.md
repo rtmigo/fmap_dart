@@ -32,6 +32,8 @@ diskBytes.saveBytesSync('C:\\con', ...);  // no problem
 diskBytes.saveBytesSync('*_*', ...);      // no problem
 ```
 
+Since each item is stored in a separate file, storage is most suitable for storing large objects: blobs and strings.
+
 ## Purge
 
 If the storage has become too large, you can delete the oldest data.
