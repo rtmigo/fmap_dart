@@ -1,6 +1,7 @@
 ![Generic badge](https://img.shields.io/badge/status-draft-red.svg)
 ![Generic badge](https://img.shields.io/badge/testing_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
 
+
 # disk_bytes
 
 `DiskBytesMap` and `DiskBytesCache` are objects for storing binary data in files. They are good for

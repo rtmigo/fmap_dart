@@ -36,7 +36,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
 
   test('$prefix write and delete', () {
-    final map = create(tempDir!); // maxCount: 3, maxSizeBytes: 10
+    final map = create(tempDir); // maxCount: 3, maxSizeBytes: 10
 
     // check it's null by default
     expect(map["A"], isNull);
@@ -59,7 +59,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
 
   test('$prefix list items', () {
-    final map = create(tempDir!);
+    final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
 
@@ -76,7 +76,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
 
   test('$prefix Disk cache: clear', () {
-    final map = create(tempDir!);
+    final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
 
@@ -92,7 +92,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
   });
 
   test('$prefix Contains', () {
-    final map = create(tempDir!);
+    final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
 

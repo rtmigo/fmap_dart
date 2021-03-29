@@ -86,10 +86,17 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
     // TODO move from this class
     for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
       if (this.isFile(f.path)) {
-        final reader = BlobsFileReader(File(f.path));
-        for (var key = reader.readKey(); key != null; key = reader.readKey()) {
-          yield key;
-          reader.skipBlob();
+
+        BlobsFileReader? reader;
+        try {
+          reader = BlobsFileReader(File(f.path));
+          for (var key = reader.readKey(); key != null; key = reader.readKey()) {
+            yield key;
+            reader.skipBlob();
+          }
+        }
+        finally {
+          reader?.closeSync();
         }
       }
     }
