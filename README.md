@@ -27,7 +27,8 @@ diskBytes.saveBytesSync('C:\\con', ...);  // no problem
 diskBytes.saveBytesSync('*_*', ...);      // no problem
 ```
 
-Since each item is stored in a separate file, storage is most suitable for storing large objects: blobs and strings.
+
+Since each item is stored in a separate file, storage is most efficient for storing large objects: blobs and strings. Although it can store small ones like bool and int without any problems.
 
 ## Purge
 
