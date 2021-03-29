@@ -30,7 +30,7 @@ void main() {
   });
 
   test('updateTimestamps changed', () {
-    var z = Fmap(Directory("labuda321"), updateTimestampsOnRead: true);
+    var z = Fmap(Directory("labuda321"), policy: Policy.lru);
     expect(z.updateTimestampsOnRead, true);
   });
 
