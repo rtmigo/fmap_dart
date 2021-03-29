@@ -96,7 +96,7 @@ Two policies are supported: FIFO and LRU. By default, this is FIFO.
 If you want the `purgeSync` method to purge storage with LRU policy, you must
 not only create `Fmap(policy: Policy.lru)` before purging, but always
 create the object this way. It will cause `Fmap` to update the the last-used 
-timestamps for every an item is read.
+timestamps every time an item is read.
 
 When you do not specify this argument, the timestamps are only updates on 
 writes, but not on reads. The order of the elements becomes closer to the FIFO.
