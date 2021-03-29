@@ -51,7 +51,7 @@ var strings = Fmap<String>(directory);
 var myJsonString = strings['json'];  // definitely a string 
 
 // but beware of type errors:
-var myIntValue = strings['number'];  // oops :)
+var myIntValue = strings['number'];  // throws expection
 ```
 
 ## Blobs (binary data)
