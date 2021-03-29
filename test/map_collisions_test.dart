@@ -24,7 +24,7 @@ void main() {
   test("cache collisions", () {
     //test('BytesMap hash collisions', () async {
 
-    final cache = BytesFmap(tempDir);
+    final cache = Fmap(tempDir);
     cache.keyToHash = badHashFunc;
 
     //Set<Directory> allSubdirs = Set<Directory>();
@@ -75,7 +75,7 @@ void main() {
   test("cache overwrite", () {
     // test whether new elements (with same hash) overwrite old ones
 
-    final cache = BytesFmap(tempDir);
+    final cache = Fmap(tempDir);
     cache.keyToHash = badHashFunc;
 
     for (var i = 0; i < 100; ++i) {

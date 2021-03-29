@@ -23,8 +23,8 @@ typedef String HashFunc(String key);
 
 
 /// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
-class BytesFmap<T> extends MapBase<String, T?> {
-  BytesFmap(this.directory, {this.updateTimestampsOnRead = false}) : keyToHash = stringToMd5;
+class Fmap<T> extends MapBase<String, T?> {
+  Fmap(this.directory, {this.updateTimestampsOnRead = false}) : keyToHash = stringToMd5;
 
   //super(directory, updateTimestampsOnRead);
 
