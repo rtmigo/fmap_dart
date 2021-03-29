@@ -4,7 +4,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-It is a `Map` data structure. But all of its elements are stored in files.
+This is a `Map` data structure. But all of its elements are stored in files.
 
 This solution can be used as a **cache** or **persistent** key-value **storage**.
 
