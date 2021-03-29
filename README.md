@@ -40,16 +40,16 @@ If the storage has become too large, you can delete the oldest data.
 fmap.purgeSync(16*1024*1024);
 ```
 
-The constructor has the `updateTimestampsOnRead` argument. This argument determines which elements
-will be considered fresh at the time of purging.
+The constructor has the `updateTimestampsOnRead` argument. This argument 
+determines which elements will be considered fresh at the time of purging.
 
 ``` dart
 final fmap = Fmap(updateTimestampsOnRead=true);
 fmap.purge(...);  // LRU
 ```
 
-In this case, the elements will be deleted according to the **LRU** policy. Items that were accessed
-recently or added recently will remain in the cache.
+In this case, the elements will be deleted according to the **LRU** policy. 
+Items that were accessed recently or added recently will remain in the storage.
 
 However, accounting for usage will require an extra write operation on each read.
 
@@ -58,7 +58,8 @@ final fmap = Fmap(updateTimestampsOnRead=false);
 fmap.purge(...);  // FIFO
 ```
 
-In this case, it's a **FIFO**. Items that were added recently will remain in the cache.
+In this case, it's a **FIFO**. Items that were added recently will remain in 
+the cache.
 
 This is the default mode. This prevents wear to the SSD drives.
 
