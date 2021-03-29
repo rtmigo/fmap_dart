@@ -4,7 +4,8 @@
 
 # fmap
 
-File based key value store.
+А `Map` stored in the file system. Equally suitable for caching and persistent 
+storage.
 
 ``` dart
 Map fmap = Fmap(directory);
@@ -14,6 +15,11 @@ fmap['keyB'] = 5;           // saved into a file
 
 print(fmap['keyA']); // read from file
 ```
+
+An object can store different types of data, but is best suited for storing 
+blobs and strings.
+
+
 
 Each item actually stored in a separate file. So it's just named files. 
 Fast, simple and reliable.
