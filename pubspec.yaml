@@ -1,6 +1,6 @@
 name: disk_cache
 description: Bytes disk cache
-version: 0.0.1
+version: 0.0.1+1
 author:
 homepage: https://github.com/rtmigo/dart_disk_cache
 
