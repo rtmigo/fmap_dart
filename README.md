@@ -4,8 +4,9 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-А `Map` stored in the file system. Equally suitable for caching and persistent 
-storage.
+It is a `Map` data structure. But all of its elements are stored in files.
+
+This solution can be used as a cache or persistent key-value storage.
 
 ``` dart
 Map fmap = Fmap(directory);
