@@ -91,14 +91,14 @@ constructor.
 final fmap = Fmap(dir, policy: Policy.lru);
 ```
 
-Two modes are supported: FIFO and LRU. By default, this is FIFO.
+Two policies are supported: FIFO and LRU. By default, this is FIFO.
 
-If you want the `purgeSync` method to purge storage in LRU mode, you must always 
-use an `Fmap` object with `Policy.lru`. This will cause `Fmap` to update the 
-last-used timestamp every time an element is read.
+If you want the `purgeSync` method to purge storage with LRU policy, you must
+always use an `Fmap` object with `Policy.lru`. This will cause `Fmap` to update 
+the last-used timestamp every time an element is read.
 
-If you do not specify this argument, the timestamp is not updated - and the 
-order of the elements becomes closer to the FIFO.
+When you do not specify this argument, the timestamp is only updates on writes,
+but not on reads. The order of the elements becomes closer to the FIFO.
 
 
 
