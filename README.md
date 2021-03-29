@@ -11,7 +11,7 @@ storage.
 Map fmap = Fmap(directory);
 
 fmap['keyA'] = 'my string';         // saved string into a file
-fmap['keyB'] = 5;                   // saved int into a file
+fmap['keyB'] = 777;                 // saved int into a file
 fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 
 print(fmap['keyA']); // read from file
