@@ -52,10 +52,13 @@ var myJsonString = strings['key'];
 
 In addition, all types derived from `List<int>` are treated as lists of bytes.
 This allows you to efficiently save and load **blobs** both in the `Uint8List` 
-format and in the more basic `List`. 
+format and in the more basic `List`. When saving, each int will be truncated to 
+the range 0..255.
 
-When saving, each int will be truncated to the range 0..255
-
+``` dart
+var blobs = Fmap<Uint8List>(directory);
+blobs['x'] = myBinaryData;
+```
 
 
 
