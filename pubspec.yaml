@@ -1,8 +1,8 @@
 name: disk_cache
-description: Bytes disk cache
-version: 0.0.1+1
+description: Library for persistent storage or caching
+version: 0.0.1+2
 author:
-homepage: https://github.com/rtmigo/dart_disk_cache
+homepage: https://github.com/rtmigo/fmap
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
