@@ -65,7 +65,7 @@ class BytesFmap<T> extends MapBase<String, T?> {
 
   @override
   T? operator [](Object? key) {
-    return _deserialize(readTypedBlobSync(key as String));
+    return _deserialize(readSync(key as String));
   }
 
   T? _deserialize(TypedBlob? typedBlob) {
@@ -80,6 +80,24 @@ class BytesFmap<T> extends MapBase<String, T?> {
         return typedBlob.bytes as T;
       case TypedBlob.typeString:
         return utf8.decode(typedBlob.bytes) as T;
+      case TypedBlob.typeInt:
+        {
+          final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
+          return sl.getInt64(0) as T;
+        }
+      case TypedBlob.typeDouble:
+        {
+          final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
+          return sl.getFloat64(0) as T;
+        }
+      case TypedBlob.typeBool:
+        {
+          return (typedBlob.bytes[0]!=0) as T;
+          //#final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
+          //return sl.ge(0) as T;
+        }
+
+
       default:
         throw FallThroughError();
     }
@@ -92,9 +110,19 @@ class BytesFmap<T> extends MapBase<String, T?> {
     }
     else {
       if (value is List<int>) {
-        writeBytesSync(key, TypedBlob(TypedBlob.typeBytes, value));
+        writeSync(key, TypedBlob(TypedBlob.typeBytes, value));
       } else if (value is String) {
-        writeBytesSync(key, TypedBlob(TypedBlob.typeString, utf8.encode(value)));
+        writeSync(key, TypedBlob(TypedBlob.typeString, utf8.encode(value)));
+      } else if (value is int) {
+        final bd = ByteData(8);
+        bd.setInt64(0, value);
+        writeSync(key, TypedBlob(TypedBlob.typeInt, bd.buffer.asUint8List()));
+      } else if (value is double) {
+        final bd = ByteData(8);
+        bd.setFloat64(0, value);
+        writeSync(key, TypedBlob(TypedBlob.typeDouble, bd.buffer.asUint8List()));
+      } else if (value is bool) {
+        writeSync(key, TypedBlob(TypedBlob.typeBool, [value?1:0]));
       } else {
         throw TypeError();
       }
@@ -168,7 +196,7 @@ class BytesFmap<T> extends MapBase<String, T?> {
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   @visibleForTesting
-  TypedBlob? readTypedBlobSync(String key) {
+  TypedBlob? readSync(String key) {
     final file = keyToFile(key);
     BlobsFileReader? reader;
     try {
@@ -226,7 +254,7 @@ class BytesFmap<T> extends MapBase<String, T?> {
     return _writeOrDelete(key, null, wantOldData: true);
   }
 
-  void writeBytesSync(String key, TypedBlob data) {
+  void writeSync(String key, TypedBlob data) {
     _writeOrDelete(key, data);
   }
 }
