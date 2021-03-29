@@ -4,7 +4,7 @@
 import 'dart:io';
 
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/81_file_stored_map.dart';
+import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
@@ -21,7 +21,7 @@ void main() {
   });
 
   test("purge", () async {
-    final cache = StoredBytesMap(tempDir);
+    final cache = BytesFmap(tempDir);
     await populate(cache);
 
     {

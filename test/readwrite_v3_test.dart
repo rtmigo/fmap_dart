@@ -36,17 +36,17 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("Key in UTF8: это ключ", [4, 5, 6, 7]);
+      writer.write("Key in UTF8: это ключ", [4, 5, 6, 7], 0);
     } finally {
       writer.closeSync();
     }
 
     // READING
     expect(tempFile.existsSync(), true);
-    expect(tempFile.statSync().size, 42);
+    expect(tempFile.statSync().size, 43);
     final reader = BlobsFileReader(tempFile);
     expect(reader.readKey(), "Key in UTF8: это ключ");
-    expect(reader.readBlob(), [4, 5, 6, 7]);
+    expect(reader.readBlob(), TypedBlob(0, [4, 5, 6, 7]));
     expect(reader.readKey(), null);
   });
 
@@ -56,9 +56,9 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 1);
+      writer.write("three", [3], 2);
     } finally {
       writer.closeSync();
     }
@@ -68,11 +68,11 @@ void main() {
     final reader = BlobsFileReader(tempFile);
     try {
       expect(reader.readKey(), "one");
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 2]));
       expect(reader.readKey(), "two");
-      expect(reader.readBlob(), []);
+      expect(reader.readBlob(), TypedBlob(1, []));
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob(), TypedBlob(2, [3]));
     } finally {
       reader.closeSync();
     }
@@ -84,9 +84,9 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3, 4, 5]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3, 4, 5], 0);
     } finally {
       writer.closeSync();
     }
@@ -100,7 +100,7 @@ void main() {
       expect(reader.readKey(), "two");
       reader.skipBlob();
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3, 4, 5]);
+      expect(reader.readBlob(), TypedBlob(0, [3, 4, 5]));
     } finally {
       reader.closeSync();
     }
@@ -115,9 +115,9 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
@@ -131,7 +131,7 @@ void main() {
       expect(reader.readKey(), "one");
 
       expect(() => reader.readKey(), throwsStateError);
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 2]));
 
       expect(() => reader.readBlob(), throwsStateError);
       expect(() => reader.skipBlob(), throwsStateError);
@@ -148,7 +148,7 @@ void main() {
       expect(reader.readKey(), "three");
 
       expect(() => reader.readKey(), throwsStateError);
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob(), TypedBlob(0, [3]));
 
       expect(reader.readKey(), null);
       expect(() => reader.readBlob(), throwsStateError);
@@ -179,26 +179,26 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
 
     // REPLACING
-    Replace(tempFile, otherTempFile, "two", [1, 50, 10]);
+    Replace(tempFile, otherTempFile, "two", [1, 50, 10], 0);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
     try {
       expect(reader.readKey(), "two");
-      expect(reader.readBlob(), [1, 50, 10]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 50, 10]));
 
       expect(reader.readKey(), "one");
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob(), TypedBlob(0, [1, 2]));
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob(), TypedBlob(0, [3]));
     } finally {
       reader.closeSync();
     }
@@ -209,23 +209,23 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", [100, 101]);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [100, 101], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
 
     // REPLACING
-    Replace(tempFile, otherTempFile, "two", null);
+    Replace(tempFile, otherTempFile, "two", null, 0);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
     try {
       expect(reader.readKey(), "one");
-      expect(reader.readBlob(), [1, 2]);
+      expect(reader.readBlob().bytes, [1, 2]);
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), [3]);
+      expect(reader.readBlob().bytes, [3]);
     } finally {
       reader.closeSync();
     }
@@ -244,13 +244,13 @@ void main() {
       expect(tempFile.existsSync(), false);
       final writer = BlobsFileWriter(tempFile);
       try {
-        writer.write("one", [1, 2]);
+        writer.write("one", [1, 2], 0);
       } finally {
         writer.closeSync();
       }
 
       // REPLACING
-      Replace(tempFile, otherTempFile, "one", null);
+      Replace(tempFile, otherTempFile, "one", null, 0);
 
       expect(otherTempFile.existsSync(), false);
     });
@@ -259,7 +259,7 @@ void main() {
       // there is no source file
       expect(tempFile.existsSync(), false);
       // we we are "replacing" an entry in non-existent file
-      Replace(tempFile, otherTempFile, "one", [1, 2, 3], mustExist: false);
+      Replace(tempFile, otherTempFile, "one", [1, 2, 3], 0, mustExist: false);
       // new file must be created
       expect(otherTempFile.existsSync(), true);
     });
@@ -282,7 +282,7 @@ void main() {
         BlobsFileWriter bfw = BlobsFileWriter(tempFile);
         try {
           for (final entry in sourceBlobs.entries) {
-            bfw.write(entry.key, entry.value);
+            bfw.write(entry.key, entry.value, 0);
           }
         } finally {
           bfw.closeSync();
@@ -301,7 +301,8 @@ void main() {
         try {
           for (var key = reader.readKey(); key != null; key = reader.readKey()) {
             if (keysToRead.contains(key)) {
-              expect(reader.readBlob(), sourceBlobs[key]);
+              // todo test types
+              expect(reader.readBlob().bytes, sourceBlobs[key]);
               foundCount++;
               sumKeysRandomlyRead++;
             } else {

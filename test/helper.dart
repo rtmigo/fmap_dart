@@ -5,9 +5,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/disk_cache.dart';
 import 'package:errno/errno.dart';
 import 'package:file_errors/file_errors.dart';
+import 'package:disk_cache/src/10_readwrite_v3.dart';
 
 void deleteTempDir(Directory d) {
   try {
@@ -84,7 +85,7 @@ const KEY_EARLIEST = "5_first";
 const KEY_LATEST = "10_first";
 
 /// Fills the map with [n] blobs named `[KEY_EARLIEST, "3", "20", "6" ... KEY_LATEST]`.
-Future<void> populate(DiskBytesStore theCache,
+Future<void> populate(BytesFmap theCache,
     {lmtMatters = false, int n = 100, int sizeEach = 1024}) async {
   List<String> allKeys = <String>[];
 
@@ -92,7 +93,7 @@ Future<void> populate(DiskBytesStore theCache,
   final smallDelay = () => Future.delayed(Duration(milliseconds: 25));
   final longDelay = () => Future.delayed(Duration(milliseconds: lmtMatters ? 2050 : 25));
 
-  theCache.writeBytesSync(KEY_EARLIEST, List.filled(1024, 5));
+  theCache.writeBytesSync(KEY_EARLIEST, TypedBlob(0, List.filled(1024, 5)));
   allKeys.add(KEY_EARLIEST);
 
   await longDelay();
@@ -104,12 +105,12 @@ Future<void> populate(DiskBytesStore theCache,
   for (int i in indexesInRandomOrder) {
     final key = i.toString();
     allKeys.add(key);
-    theCache.writeBytesSync(key, List.filled(1024, i));
+    theCache.writeBytesSync(key, TypedBlob(0, List.filled(1024, i)));
     await smallDelay();
   }
 
   await longDelay();
-  theCache.writeBytesSync(KEY_LATEST, List.filled(1024, 5));
+  theCache.writeBytesSync(KEY_LATEST, TypedBlob(0, List.filled(1024, 5)));
   allKeys.add(KEY_LATEST);
 
   assert(allKeys.length == n);

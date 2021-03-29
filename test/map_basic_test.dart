@@ -3,13 +3,12 @@
 
 import 'dart:io';
 
-import 'package:disk_cache/src/80_unistor.dart';
-import 'package:disk_cache/src/81_file_stored_map.dart';
+import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
 
-void runTests(String prefix, DiskBytesStore create(Directory d)) {
+void runTests(String prefix, BytesFmap create(Directory d)) {
   late Directory tempDir;
 
   setUp(() {
@@ -44,6 +43,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     // delete
     map.remove("A");
 
+
     // reading the item returns null again
     expect(map["A"], isNull);
 
@@ -52,6 +52,21 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     //expect(cache.delete("A"), false);
     //expect(cache.delete("A"), false);
   });
+
+  test('delete', () {
+    final map = create(tempDir);
+    map["A"] = [1, 2, 3];
+    expect(map["A"], isNotNull);
+
+    // deleting must return the removed item
+    expect(map.remove("A"), [1,2,3]);
+    expect(map["A"], isNull);
+
+    // deleting when the item does not exist returns null
+    expect(map.remove("A"), isNull);
+  });
+
+
 
   test('$prefix list items', () {
     final map = create(tempDir);
@@ -100,9 +115,15 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
     expect(map.containsKey("Y"), false);
     expect(map.containsKey("C"), true);
   });
+
+  test('String', () {
+    final map = create(tempDir);
+    map["A"] = "hello";
+    expect(map['A'], 'hello');
+  });
 }
 
 void main() {
-  runTests("BytesMap:", (dir) => StoredBytesMap(dir));
+  runTests("BytesMap:", (dir) => BytesFmap(dir));
   // runTests("BytesCache:", (dir)=>DiskBytesCache(dir));
 }
