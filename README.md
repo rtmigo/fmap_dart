@@ -17,7 +17,8 @@ fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 print(fmap['keyA']); // read from file
 ```
 
-The storage is most efficient for storing large objects: blobs and strings. Although it can store small ones like bool and int without any problems.
+The storage is most efficient for storing large objects: blobs and strings. 
+Although it can store small ones like `bool` or `int`.
 
 This object implements `Map`, so it can be used in the same way.
 
@@ -88,7 +89,7 @@ Which elements are removed depends on the `policy` argument passed to the
 constructor.
 
 ``` dart
-final fmap = Fmap(dir, policy: Policy.lru);
+final fmap = Fmap(dir, policy: Policy.fifo);
 ```
 
 Two policies are supported: FIFO and LRU. By default, this is FIFO.
@@ -96,7 +97,7 @@ Two policies are supported: FIFO and LRU. By default, this is FIFO.
 If you want the `purgeSync` method to purge storage with LRU policy, you must
 not only create `Fmap(policy: Policy.lru)` before purging, but always
 create the object this way. It will cause `Fmap` to update the the last-used 
-timestamps for every an item is read.
+timestamps every time an item is read.
 
 When you do not specify this argument, the timestamps are only updates on 
 writes, but not on reads. The order of the elements becomes closer to the FIFO.
