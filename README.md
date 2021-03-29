@@ -40,14 +40,14 @@ Can be read as dynamic types ...
 
 ``` dart
 var objects = Fmap(directory);
-var myJsonString = fmap['key']; 
+var myJsonString = fmap['key']; // a dynamic type
 ```
 
 Or more strictly, limiting to generic arguments:
 
 ``` dart
 var strings = Fmap<String>(directory);
-var myJsonString = strings['key']; 
+var myJsonString = strings['key'];  // definitely a string 
 ```
 
 ## Blobs (binary data)
