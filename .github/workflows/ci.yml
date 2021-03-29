@@ -36,6 +36,7 @@ jobs:
         run: dart test
 
   analyze:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: dart-lang/setup-dart@v1
