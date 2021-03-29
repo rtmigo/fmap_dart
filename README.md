@@ -33,6 +33,24 @@ for (var entry in fmap.entries) {
 
 The storage can store such basic types as `String`, `int`, `double` and `bool`.
 
+Can be read as dynamic types ...
+
+``` dart
+Map fmap = Fmap(directory);
+
+var myJsonString = fmap['key']; 
+```
+
+Or more strictly, limiting to generic arguments:
+
+``` dart
+Map fmap = Fmap<String>(directory);
+
+var myJsonString = fmap['key']; 
+```
+
+
+
 This object implements `Map`, so it can be used in the same way.
 
 ## Purge
