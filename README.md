@@ -36,18 +36,20 @@ for (var entry in fmap.entries) {
 The storage can store such basic types as `String`, `int`, `double` and `bool`.
 
 
-Can be read as dynamic types ...
+They can be read as dynamic types ...
 
 ``` dart
 var objects = Fmap(directory);
-var myJsonString = fmap['key']; // a dynamic type
+var myJsonString = fmap['json']; // a dynamic type
+var myIntValue = fmap['number']; // a dynamic type
 ```
 
 Or more strictly, limiting to generic arguments:
 
 ``` dart
 var strings = Fmap<String>(directory);
-var myJsonString = strings['key'];  // definitely a string 
+var myJsonString = strings['json'];  // definitely a string 
+var myIntValue = strings['number'];  // OOPS, TypeError
 ```
 
 ## Blobs (binary data)
