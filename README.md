@@ -18,9 +18,6 @@ fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 print(fmap['keyA']); // read from file
 ```
 
-The storage is most efficient for storing large objects: blobs and strings. 
-Although it can store small ones like `bool` or `int`.
-
 This object implements `Map`, so it can be used in the same way.
 
 ``` dart
@@ -55,6 +52,10 @@ var myJsonString = strings['json'];  // definitely a string
 // but now only strings can be read or written
 var myIntValue = strings['number'];  // throws exception
 ```
+
+Each item of the storage is kept in a separate file. This makes the storage 
+most efficient when storing not ints, but larger objects, such as strings 
+or blobs.
 
 ## Blobs (binary data)
 
