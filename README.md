@@ -63,7 +63,10 @@ the range 0..255.
 
 ``` dart
 fmap['blob1'] = [0x12, 0x34, 0x55];
-fmap['blob2'] = myFile.readAsBytesSync(); 
+fmap['blob2'] = myFile.readAsBytesSync();
+
+// when reading, we are always getting an Uint8List  
+Uint8List myBlob = fmap['blob1'];
 ```
 
 
