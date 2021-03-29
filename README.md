@@ -19,6 +19,18 @@ print(fmap['keyA']); // read from file
 
 The storage is most efficient for storing large objects: blobs and strings. Although it can store small ones like bool and int without any problems.
 
+This object implements Map, so it can be used in the same way.
+
+``` dart
+Map fmap = Fmap(directory);
+
+print('Count of items: ${fmap.length}');
+
+for (var entry in fmap.entries) {
+    print('Item ${entry.name} ${entry.value}'); 
+}
+```
+
 ## Purge
 
 If the storage has become too large, you can delete the oldest data.
