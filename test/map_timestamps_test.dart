@@ -1,5 +1,6 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
 
 import 'dart:io';
 import 'package:disk_cache/src/80_unistor.dart';
