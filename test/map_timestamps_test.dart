@@ -10,7 +10,7 @@ import 'package:disk_cache/src/10_readwrite_v3.dart';
 
 import 'helper.dart';
 
-void runTests(String prefix, BytesFmap create(Directory d), bool mustUpdate) {
+void runTests(String prefix, Fmap create(Directory d), bool mustUpdate) {
   late Directory tempDir;
 
   setUp(() {
@@ -42,8 +42,8 @@ void runTests(String prefix, BytesFmap create(Directory d), bool mustUpdate) {
 }
 
 void main() {
-  runTests("non", (dir) => BytesFmap(dir), false);
-  runTests("updating", (dir) => BytesFmap(dir, updateTimestampsOnRead: true), true);
+  runTests("non", (dir) => Fmap(dir), false);
+  runTests("updating", (dir) => Fmap(dir, updateTimestampsOnRead: true), true);
   //runTests("BytesMap:", (dir)=>DiskBytesMap(dir), false);
   //runTests("BytesCache:", (dir)=>DiskBytesCache(dir), false);
 

@@ -9,7 +9,7 @@ import "package:test/test.dart";
 
 import 'helper.dart';
 
-void runTests(String prefix, BytesFmap create(Directory d)) {
+void runTests(String prefix, Fmap create(Directory d)) {
   late Directory tempDir;
 
   setUp(() {
@@ -174,7 +174,7 @@ void runTests(String prefix, BytesFmap create(Directory d)) {
 
   test('Generic string', () {
 
-    final map = BytesFmap<String>(tempDir);
+    final map = Fmap<String>(tempDir);
 
     map['a'] = 'hello';
     map['c'] = 'hi';
@@ -185,7 +185,7 @@ void runTests(String prefix, BytesFmap create(Directory d)) {
 
   test('Generic Uint8List', () {
 
-    final map = BytesFmap<Uint8List>(tempDir);
+    final map = Fmap<Uint8List>(tempDir);
 
     map['a'] = Uint8List.fromList([1,2,3]);
     map['c'] = Uint8List.fromList([4,5]);
@@ -197,6 +197,6 @@ void runTests(String prefix, BytesFmap create(Directory d)) {
 }
 
 void main() {
-  runTests("BytesMap:", (dir) => BytesFmap(dir));
+  runTests("BytesMap:", (dir) => Fmap(dir));
   // runTests("BytesCache:", (dir)=>DiskBytesCache(dir));
 }

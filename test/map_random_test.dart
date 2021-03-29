@@ -22,7 +22,7 @@ void main() {
     deleteTempDir(tempDir);
   });
 
-  Future performRandomWritesAndDeletions(BytesFmap cache) async {
+  Future performRandomWritesAndDeletions(Fmap cache) async {
     cache.keyToHash = badHashFunc;
     await populate(cache);
 
@@ -89,6 +89,6 @@ void main() {
   }
 
   test("Random stress", () async {
-    await performRandomWritesAndDeletions(BytesFmap(tempDir));
+    await performRandomWritesAndDeletions(Fmap(tempDir));
   });
 }

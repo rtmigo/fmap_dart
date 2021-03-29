@@ -21,7 +21,7 @@ void main() {
   });
 
   test("purge", () async {
-    final cache = BytesFmap(tempDir);
+    final cache = Fmap(tempDir);
     await populate(cache);
 
     {
