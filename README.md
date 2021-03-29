@@ -49,7 +49,9 @@ Or more strictly, limiting to generic arguments:
 ``` dart
 var strings = Fmap<String>(directory);
 var myJsonString = strings['json'];  // definitely a string 
-var myIntValue = strings['number'];  // OOPS, TypeError
+
+// but beware of type errors:
+var myIntValue = strings['number'];  // oops :)
 ```
 
 ## Blobs (binary data)
