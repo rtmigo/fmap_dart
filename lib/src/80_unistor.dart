@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2021 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
 
 import 'dart:collection';
 import 'dart:io';
@@ -25,9 +25,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
   @internal
   HashFunc keyToHash = stringToMd5;
 
-  void purgeSync({
-    final int maxSizeBytes = JS_MAX_SAFE_INTEGER,
-    final maxCount = JS_MAX_SAFE_INTEGER })
+  void purgeSync(int maxSizeBytes)
   {
     List<FileAndStat> files = <FileAndStat>[];
 
@@ -51,7 +49,7 @@ abstract class DiskBytesStore extends MapBase<String, List<int>?> {
       }
     }
 
-    FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: maxCount,
+    FileAndStat.deleteOldest(files, maxSumSize: maxSizeBytes, maxCount: JS_MAX_SAFE_INTEGER,
         deleteFile: (file)=>this.deleteFile(file));
   }
 

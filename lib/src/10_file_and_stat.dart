@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
 
 import 'dart:io';
 
 import '../disk_cache.dart';
 import '00_common.dart';
-import '90_bytes_map.dart';
+
 
 const _DEBUG_LOGGING = false;
 

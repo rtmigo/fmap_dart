@@ -1,10 +1,12 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
 
 import 'dart:io';
 import 'dart:math';
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/src/file_stored_map.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
@@ -81,12 +83,10 @@ void main() {
     assert(maxKeysCountEver>5);
   }
 
-  test("Random map", () async {
-    await performRandomWritesAndDeletions(DiskBytesMap(tempDir));
+  test("Random stress", () async {
+    await performRandomWritesAndDeletions(StoredBytesMap(tempDir));
   });
 
-  test("Random cache", () async {
-    await performRandomWritesAndDeletions(DiskBytesCache(tempDir));
-  });
+
 
 }

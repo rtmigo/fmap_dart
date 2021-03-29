@@ -1,5 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
 
 import 'package:file_errors/file_errors.dart';
 import 'dart:io';
@@ -13,7 +13,7 @@ import 'package:path/path.dart' as paths;
 import '00_common.dart';
 import '10_files.dart';
 import '10_hashing.dart';
-import '10_readwrite_v1.dart';
+
 
 typedef DeleteFile(File file);
 
@@ -67,6 +67,7 @@ class StoredBytesMap extends DiskBytesStore {
     final file = keyToFile(key);
     BlobsFileReader? reader;
     try {
+      maybeUpdateTimestampOnRead(file); // calling async func without waiting
       reader = BlobsFileReader(file);
       for (var storedKey = reader.readKey(); storedKey != null; storedKey = reader.readKey()) {
         if (storedKey==key) {
@@ -75,6 +76,7 @@ class StoredBytesMap extends DiskBytesStore {
           reader.skipBlob();
         }
       }
+
     }
     on FileSystemException catch (e) {
       if (e.isNoSuchFileOrDirectory) {
@@ -98,6 +100,9 @@ class StoredBytesMap extends DiskBytesStore {
     final prefix = this._keyFilePrefix(key);
     final cacheFile = _combine(prefix, DATA_SUFFIX);
     final dirtyFile = _combine(prefix, DIRTY_SUFFIX);
+
+
+    assert(this.keyToFile(key).path==cacheFile.path, 'ktf ${keyToFile(key)} cf $cacheFile');
 
     bool renamed = false;
     try {
