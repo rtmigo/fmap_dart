@@ -57,8 +57,8 @@ void main() {
     final writer = BlobsFileWriter(tempFile);
     try {
       writer.write("one", [1, 2], 0);
-      writer.write("two", [], 0);
-      writer.write("three", [3], 0);
+      writer.write("two", [], 1);
+      writer.write("three", [3], 2);
     } finally {
       writer.closeSync();
     }
@@ -70,9 +70,9 @@ void main() {
       expect(reader.readKey(), "one");
       expect(reader.readBlob(), TypedBlob(0, [1, 2]));
       expect(reader.readKey(), "two");
-      expect(reader.readBlob(), TypedBlob(0, []));
+      expect(reader.readBlob(), TypedBlob(1, []));
       expect(reader.readKey(), "three");
-      expect(reader.readBlob(), TypedBlob(0, [3]));
+      expect(reader.readBlob(), TypedBlob(2, [3]));
     } finally {
       reader.closeSync();
     }

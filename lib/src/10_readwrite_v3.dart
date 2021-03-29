@@ -3,12 +3,8 @@
 
 import 'dart:convert';
 import 'dart:io';
-import 'dart:collection';
 import 'dart:typed_data';
-
-import 'package:collection/collection.dart';
 import 'package:file_errors/file_errors.dart';
-
 import '00_common.dart';
 import 'byte_sequence.dart';
 
@@ -25,7 +21,7 @@ class TypedBlob implements Comparable {
   final int type;
 
   static const typeBytes = 0;
-  static const typeString = 0;
+  static const typeString = 1;
 
   @override
   bool operator ==(Object other) => this.compareTo(other)==0;

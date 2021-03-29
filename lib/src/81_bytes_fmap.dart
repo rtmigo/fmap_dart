@@ -65,13 +65,16 @@ class BytesFmap<T> extends MapBase<String, T?> {
 
   @override
   T? operator [](Object? key) {
-    return _deserialize(readBytesSync(key as String));
+    return _deserialize(readTypedBlobSync(key as String));
   }
 
   T? _deserialize(TypedBlob? typedBlob) {
     if (typedBlob==null) {
       return null;
     }
+
+    //print("THE TYPE ${typedBlob.type}");
+
     switch (typedBlob.type) {
       case TypedBlob.typeBytes:
         return typedBlob.bytes as T;
@@ -165,7 +168,7 @@ class BytesFmap<T> extends MapBase<String, T?> {
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   @visibleForTesting
-  TypedBlob? readBytesSync(String key) {
+  TypedBlob? readTypedBlobSync(String key) {
     final file = keyToFile(key);
     BlobsFileReader? reader;
     try {

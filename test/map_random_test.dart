@@ -39,6 +39,9 @@ void main() {
     final typesOfActionsPerformed = Set<int>();
     int maxKeysCountEver = 0;
 
+    Map<String,TypedBlob> reference = Map<String,TypedBlob>();
+
+
     // TODO purge
     // TODO compare to Map
 
@@ -54,18 +57,23 @@ void main() {
           case 0: // add a key
             final newKey = random.nextInt(UNIQUE_KEYS_COUNT).toRadixString(16);
             keys.add(newKey);
-            cache.writeBytesSync(newKey, TypedBlob(0, List.filled(random.nextInt(2048), 42)));
+            final item = TypedBlob(random.nextInt(2), List.filled(random.nextInt(2048), 42));
+            reference[newKey] = item;
+            cache.writeBytesSync(newKey, item);
             break;
           case 1: // remove previously added key
             if (keys.length > 0) {
               final randomOldKey = keys.removeAt(random.nextInt(keys.length));
-              cache.deleteSync(randomOldKey);
+              ;
+              final returned = cache.deleteSync(randomOldKey);
+              expect(returned, reference.remove(randomOldKey));
             }
             break;
           case 2: // read a value
             if (keys.length > 0) {
               final randomKey = keys[random.nextInt(keys.length)];
-              cache[randomKey];
+              final existingValue = cache.readTypedBlobSync(randomKey);
+              expect(existingValue, reference[randomKey]);
             }
             break;
           default:

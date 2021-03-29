@@ -115,6 +115,12 @@ void runTests(String prefix, BytesFmap create(Directory d)) {
     expect(map.containsKey("Y"), false);
     expect(map.containsKey("C"), true);
   });
+
+  test('String', () {
+    final map = create(tempDir);
+    map["A"] = "hello";
+    expect(map['A'], 'hello');
+  });
 }
 
 void main() {

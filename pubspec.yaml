@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   file_errors: ^1.0.3
-  collection: ^1.15.0
+  #collection: ^1.15.0
   #  path: ../file_errors
   #file_errors:
   #  path: ../file_errors

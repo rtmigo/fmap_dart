@@ -31,7 +31,7 @@ void runTests(String prefix, BytesFmap create(Directory d), bool mustUpdate) {
 
     // reading the same value a bit later
     await Future.delayed(const Duration(milliseconds: 2100));
-    await map.readBytesSync("key");
+    await map.readTypedBlobSync("key");
 
     if (mustUpdate)
       // the last-modified is now be changed

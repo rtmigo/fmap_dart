@@ -44,7 +44,7 @@ void main() {
     for (var i = 0; i < 100; ++i) {
       var key = i.toString();
 
-      var bytes = cache.readBytesSync(key);
+      var bytes = cache.readTypedBlobSync(key);
       if (bytes != null) {
         expect(bytes, TypedBlob(0, [i, i + 10]));
         stillInCacheCount++;
@@ -61,7 +61,7 @@ void main() {
 
     for (final key in allKeys.toList()..shuffle()) {
       cache.deleteSync(key);
-      expect(cache.readBytesSync(key), isNull);
+      expect(cache.readTypedBlobSync(key), isNull);
     }
 
     // making sure that both files and subdirectories are deleted
@@ -81,7 +81,7 @@ void main() {
     for (var i = 0; i < 100; ++i) {
       var key = i.toString();
       cache.writeBytesSync(key, TypedBlob(0, [i, i + 1, i + 2]));
-      expect(cache.readBytesSync(key), TypedBlob(0, [i, i + 1, i + 2]));
+      expect(cache.readTypedBlobSync(key), TypedBlob(0, [i, i + 1, i + 2]));
     }
   });
 }
