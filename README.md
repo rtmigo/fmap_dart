@@ -52,7 +52,7 @@ Or more strictly, limiting to generic arguments:
 var strings = Fmap<String>(directory);
 var myJsonString = strings['json'];  // definitely a string 
 
-// but beware of type errors:
+// but now only strings can be read or written
 var myIntValue = strings['number'];  // throws exception
 ```
 
