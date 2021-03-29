@@ -1,6 +1,6 @@
 # https://github.com/dart-lang/setup-dart
 
-name: unittest
+name: test-and-merge
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
       - name: Run tests
         run: dart test
 
-  merge-to-master:
+  merge-to-staging:
     needs: test
     runs-on: ubuntu-latest
     steps:
@@ -45,5 +45,5 @@ jobs:
         uses: devmasx/merge-branch@v1.3.1
         with:
           type: now
-          target_branch: master
+          target_branch: staging
           github_token: ${{ github.token }}
