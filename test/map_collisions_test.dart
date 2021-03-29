@@ -4,7 +4,7 @@
 import 'dart:io';
 
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/81_file_stored_map.dart';
+import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
@@ -23,7 +23,7 @@ void main() {
   test("cache collisions", () {
     //test('BytesMap hash collisions', () async {
 
-    final cache = StoredBytesMap(tempDir);
+    final cache = BytesFmap(tempDir);
     cache.keyToHash = badHashFunc;
 
     //Set<Directory> allSubdirs = Set<Directory>();
@@ -74,7 +74,7 @@ void main() {
   test("cache overwrite", () {
     // test whether new elements (with same hash) overwrite old ones
 
-    final cache = StoredBytesMap(tempDir);
+    final cache = BytesFmap(tempDir);
     cache.keyToHash = badHashFunc;
 
     for (var i = 0; i < 100; ++i) {

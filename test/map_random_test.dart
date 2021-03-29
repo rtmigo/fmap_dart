@@ -4,8 +4,7 @@
 import 'dart:io';
 
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/80_unistor.dart';
-import 'package:disk_cache/src/81_file_stored_map.dart';
+import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 import 'package:xrandom/xrandom.dart';
 
@@ -22,7 +21,7 @@ void main() {
     deleteTempDir(tempDir);
   });
 
-  Future performRandomWritesAndDeletions(DiskBytesStore cache) async {
+  Future performRandomWritesAndDeletions(BytesFmap cache) async {
     cache.keyToHash = badHashFunc;
     await populate(cache);
 
@@ -81,6 +80,6 @@ void main() {
   }
 
   test("Random stress", () async {
-    await performRandomWritesAndDeletions(StoredBytesMap(tempDir));
+    await performRandomWritesAndDeletions(BytesFmap(tempDir));
   });
 }

@@ -38,6 +38,7 @@ const ENTRY_END_MARKER = 0x42;
 ///   ---------|-----------------------------------------
 ///   2 bytes  | key size in bytes
 ///   4 bytes  | blob size in bytes
+///   1 byte   | data type (enum)
 ///   variable | key string encoded in UTF-8
 ///   variable | the blob data
 ///   1 byte   | constant 0x42 - for consistency checking
@@ -69,7 +70,9 @@ class BlobsFileWriter {
     this._raf!.writeFromSync([SIGNATURE_BYTE_1, SIGNATURE_BYTE_2, 0x03]);
   }
 
-  void write(String key, List<int> blob) {
+  void write(String key, List<int> blob, int dataType) {
+    RangeError.checkValueInInterval(dataType, 0, 0xFE, "dataType");
+
     if (this._raf == null) {
       this._openAndWriteHeader();
     }
@@ -88,9 +91,11 @@ class BlobsFileWriter {
 
     // ENTRY HEADER
 
-    final entryHeaderBuffer = ByteSequence(ByteData(2 + 4));
+    final entryHeaderBuffer = ByteSequence(ByteData(2 + 4 + 1));
     entryHeaderBuffer.writeUint16(keyBytes.length);
     entryHeaderBuffer.writeUint32(blob.length);
+    entryHeaderBuffer.writeUint8(dataType);
+
     _raf!.writeFromSync(entryHeaderBuffer.data.buffer.asInt8List());
 
     // ENTRY KEY
@@ -186,6 +191,7 @@ class BlobsFileReader {
   int _cachedPositionVal = 0;
 
   int _currentEntryBlobSize = -1;
+  int _currentEntryType = -1;
 
   /// We assume that we are exactly at the beginning of the entry. This method reads the header
   /// and changes values [currentEntryKey] and [_currentEntryBlobSize]. If if was the last
@@ -201,22 +207,24 @@ class BlobsFileReader {
       throw StateError('Cannot read entry: current state is $_state');
     }
 
-    final entryHeaderBuffer = ByteSequence(ByteData.sublistView(_raf!.readSync(2 + 4)));
+    final entryHeaderBuffer = ByteSequence(ByteData.sublistView(_raf!.readSync(2+4+1)));
     this._cachedPosition += entryHeaderBuffer.data.lengthInBytes;
 
     if (entryHeaderBuffer.data.lengthInBytes == 0) {
       // no more entries
       //this._currentEntryKey = null;
       this._currentEntryBlobSize = -1;
+      this._currentEntryType = -1;
       this._state = State.atFileEnd;
       return null;
-    } else if (entryHeaderBuffer.data.lengthInBytes != 6) {
+    } else if (entryHeaderBuffer.data.lengthInBytes != 2+4+1) {
       throw FileFormatError('Unexpected count of bytes at entry start.');
     }
 
     // decoding key size and blob size
     int keySize = entryHeaderBuffer.readUint16();
     this._currentEntryBlobSize = entryHeaderBuffer.readUint32();
+    this._currentEntryType = entryHeaderBuffer.readUint8();
 
     // reading the key
     final keyBytes = _raf!.readSync(keySize);
@@ -292,7 +300,7 @@ class BlobsFileReader {
 
 class Replace {
   /// Created a copy with file with particular blob replaced or removed.
-  Replace(File source, File target, String newKey, List<int>? newBlob, {bool mustExist: true}) {
+  Replace(File source, File target, String newKey, List<int>? newBlob, int newDataType, {bool mustExist: true, bool wantOldData=false}) {
     BlobsFileReader? reader;
     BlobsFileWriter? writer;
 
@@ -304,7 +312,7 @@ class Replace {
       // Accessing the first record is faster than the others
 
       if (newBlob != null) {
-        writer.write(newKey, newBlob);
+        writer.write(newKey, newBlob, newDataType);
         this.entriesWritten++;
       } else {
         // not writing = deleting
@@ -312,12 +320,19 @@ class Replace {
 
       for (var oldKey = reader.readKey(); oldKey != null; oldKey = reader.readKey()) {
         if (oldKey == newKey) {
-          reader.skipBlob(); // we don't need old data
-          this.entryWasFound = true; // todo test
+          if (wantOldData) {
+            this.oldData = reader.readBlob();
+          } else {
+            reader.skipBlob();
+          }
+
+          //reader.skipBlob(); // we don't need old data
+          //this.entryWasFound = true; // todo test
           continue;
         } else {
           // copying old data
-          writer.write(oldKey, reader.readBlob());
+          final et = reader._currentEntryType;
+          writer.write(oldKey, reader.readBlob(), et);
           this.entriesWritten++;
         }
       }
@@ -328,7 +343,8 @@ class Replace {
   }
 
   int entriesWritten = 0;
-  bool entryWasFound = false;
+  Uint8List? oldData;
+  //bool entryWasFound = false;
 }
 
 // /// Created a copy with file with particular blob replaced or removed.

@@ -5,7 +5,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/disk_cache.dart';
 import 'package:errno/errno.dart';
 import 'package:file_errors/file_errors.dart';
 
@@ -84,7 +84,7 @@ const KEY_EARLIEST = "5_first";
 const KEY_LATEST = "10_first";
 
 /// Fills the map with [n] blobs named `[KEY_EARLIEST, "3", "20", "6" ... KEY_LATEST]`.
-Future<void> populate(DiskBytesStore theCache,
+Future<void> populate(BytesFmap theCache,
     {lmtMatters = false, int n = 100, int sizeEach = 1024}) async {
   List<String> allKeys = <String>[];
 

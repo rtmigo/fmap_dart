@@ -4,12 +4,12 @@
 import 'dart:io';
 
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/81_file_stored_map.dart';
+import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
 
-void runTests(String prefix, StoredBytesMap create(Directory d), bool mustUpdate) {
+void runTests(String prefix, BytesFmap create(Directory d), bool mustUpdate) {
   late Directory tempDir;
 
   setUp(() {
@@ -41,8 +41,8 @@ void runTests(String prefix, StoredBytesMap create(Directory d), bool mustUpdate
 }
 
 void main() {
-  runTests("non", (dir) => StoredBytesMap(dir), false);
-  runTests("updating", (dir) => StoredBytesMap(dir, updateTimestampsOnRead: true), true);
+  runTests("non", (dir) => BytesFmap(dir), false);
+  runTests("updating", (dir) => BytesFmap(dir, updateTimestampsOnRead: true), true);
   //runTests("BytesMap:", (dir)=>DiskBytesMap(dir), false);
   //runTests("BytesCache:", (dir)=>DiskBytesCache(dir), false);
 

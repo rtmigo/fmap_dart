@@ -36,14 +36,14 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("Key in UTF8: это ключ", [4, 5, 6, 7]);
+      writer.write("Key in UTF8: это ключ", [4, 5, 6, 7], 0);
     } finally {
       writer.closeSync();
     }
 
     // READING
     expect(tempFile.existsSync(), true);
-    expect(tempFile.statSync().size, 42);
+    expect(tempFile.statSync().size, 43);
     final reader = BlobsFileReader(tempFile);
     expect(reader.readKey(), "Key in UTF8: это ключ");
     expect(reader.readBlob(), [4, 5, 6, 7]);
@@ -56,9 +56,9 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
@@ -84,9 +84,9 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3, 4, 5]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3, 4, 5], 0);
     } finally {
       writer.closeSync();
     }
@@ -115,9 +115,9 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
@@ -179,15 +179,15 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", []);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
 
     // REPLACING
-    Replace(tempFile, otherTempFile, "two", [1, 50, 10]);
+    Replace(tempFile, otherTempFile, "two", [1, 50, 10], 0);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
@@ -209,15 +209,15 @@ void main() {
     expect(tempFile.existsSync(), false);
     final writer = BlobsFileWriter(tempFile);
     try {
-      writer.write("one", [1, 2]);
-      writer.write("two", [100, 101]);
-      writer.write("three", [3]);
+      writer.write("one", [1, 2], 0);
+      writer.write("two", [100, 101], 0);
+      writer.write("three", [3], 0);
     } finally {
       writer.closeSync();
     }
 
     // REPLACING
-    Replace(tempFile, otherTempFile, "two", null);
+    Replace(tempFile, otherTempFile, "two", null, 0);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
@@ -244,13 +244,13 @@ void main() {
       expect(tempFile.existsSync(), false);
       final writer = BlobsFileWriter(tempFile);
       try {
-        writer.write("one", [1, 2]);
+        writer.write("one", [1, 2], 0);
       } finally {
         writer.closeSync();
       }
 
       // REPLACING
-      Replace(tempFile, otherTempFile, "one", null);
+      Replace(tempFile, otherTempFile, "one", null, 0);
 
       expect(otherTempFile.existsSync(), false);
     });
@@ -259,7 +259,7 @@ void main() {
       // there is no source file
       expect(tempFile.existsSync(), false);
       // we we are "replacing" an entry in non-existent file
-      Replace(tempFile, otherTempFile, "one", [1, 2, 3], mustExist: false);
+      Replace(tempFile, otherTempFile, "one", [1, 2, 3], 0, mustExist: false);
       // new file must be created
       expect(otherTempFile.existsSync(), true);
     });
@@ -282,7 +282,7 @@ void main() {
         BlobsFileWriter bfw = BlobsFileWriter(tempFile);
         try {
           for (final entry in sourceBlobs.entries) {
-            bfw.write(entry.key, entry.value);
+            bfw.write(entry.key, entry.value, 0);
           }
         } finally {
           bfw.closeSync();

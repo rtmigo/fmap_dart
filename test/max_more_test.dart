@@ -4,18 +4,18 @@
 import 'dart:io';
 
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/81_file_stored_map.dart';
+import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
 
 void main() {
   late Directory tempDir;
-  late StoredBytesMap cache;
+  late BytesFmap cache;
 
   setUp(() async {
     tempDir = Directory.systemTemp.createTempSync();
-    cache = StoredBytesMap(tempDir);
+    cache = BytesFmap(tempDir);
     cache.keyToHash = badHashFunc;
     await populate(cache);
   });
@@ -25,12 +25,12 @@ void main() {
   });
 
   test('updateTimestamps default', () {
-    var z = StoredBytesMap(Directory("labuda321"));
+    var z = BytesFmap(Directory("labuda321"));
     expect(z.updateTimestampsOnRead, false);
   });
 
   test('updateTimestamps changed', () {
-    var z = StoredBytesMap(Directory("labuda321"), updateTimestampsOnRead: true);
+    var z = BytesFmap(Directory("labuda321"), updateTimestampsOnRead: true);
     expect(z.updateTimestampsOnRead, true);
   });
 
