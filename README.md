@@ -17,19 +17,7 @@ fmap['keyC'] = [23,42,77];  // saved three bytes into a file
 print(fmap['keyA']); // read from file
 ```
 
-Each item actually stored in a separate file. So it's just named files. 
-Fast, simple and reliable.
-
-This does not impose any restrictions on the keys. They can be of any length 
-and can contain any characters.
-
-``` dart
-diskBytes.saveBytesSync('C:\\con', ...);  // no problem
-diskBytes.saveBytesSync('*_*', ...);      // no problem
-```
-
-
-Since each item is stored in a separate file, storage is most efficient for storing large objects: blobs and strings. Although it can store small ones like bool and int without any problems.
+The storage is most efficient for storing large objects: blobs and strings. Although it can store small ones like bool and int without any problems.
 
 ## Purge
 
