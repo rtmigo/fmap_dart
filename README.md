@@ -1,6 +1,6 @@
 ![Generic badge](https://img.shields.io/badge/status-draft-red.svg)
-[![Actions Status](https://github.com/rtmigo/dart_disk_cache/workflows/unittest/badge.svg?branch=master)](https://github.com/rtmigo/dart_disk_cache/actions)
-![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
+![Generic badge](https://img.shields.io/badge/testing_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
+
 
 # disk_bytes
 
@@ -29,9 +29,9 @@ diskBytes.saveBytesSync('*_*', ...);      // no problem
 Both objects implement `Map<String, List<int>>`. So they can be used like an ordinary `Map`.
 
 ``` dart
-Map diskBytes = DiskBytesMap(directory);
+Map fmap = Fmap<Uint8List>(directory);
 
-diskBytes["mykey"] = [1,2,3];  // saved into a file 
+fmap["mykey"] = [1,2,3];  // saved into a file 
 
 for (int byte in diskBytes["mykey"])  // read from file
   print("$byte");
@@ -74,10 +74,7 @@ If the storage has become too large, you can delete the oldest data.
 
 ``` dart
 // leave only the freshest 16 Mb
-diskBytes.purgeSync(maxSizeBytes=16*1024*1024);
-  
-// leave only the freshest 1000 elements
-diskBytes.purgeSync(maxCount=1000);              
+diskBytes.purgeSync(16*1024*1024);
 ```
 
 The constructor has the `updateTimestampsOnRead` argument. This argument determines which elements

@@ -1,11 +1,14 @@
-// SPDX-FileCopyrightText: (c) 2021 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
 
 import 'dart:io';
 
 import 'package:disk_cache/src/10_readwrite_v3.dart';
 import "package:test/test.dart";
 import 'package:xrandom/xrandom.dart';
+
+import 'helper.dart';
 
 void main() {
   int sumKeysRandomlyRead = 0;
@@ -21,9 +24,7 @@ void main() {
   });
 
   tearDown(() {
-    if (tempDir.existsSync()) {
-      tempDir.deleteSync(recursive: true);
-    }
+    deleteTempDir(tempDir);
   });
 
   tearDownAll(() {

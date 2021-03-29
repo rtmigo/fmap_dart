@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
+
 import 'dart:typed_data';
 
 class ByteSequence {

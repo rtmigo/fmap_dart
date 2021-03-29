@@ -4,37 +4,57 @@ name: unittest
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
     paths-ignore:
       - 'example/*'
       - '**.md'
       - '**.txt'
 
   pull_request:
-    branches: [master]
+    branches: [dev]
     paths-ignore:
       - 'example/*'
       - '**.md'
       - '**.txt'
 
 jobs:
-  test:
-    timeout-minutes: 5
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest] # [ubuntu-latest, macos-latest, windows-latest]
-        # dart is null-safe since 2.12 ...
-        sdk: [2.12.0]
-        #sdk: [stable, beta, dev, 2.12.0-29.10.beta]
+#  test:
+#    timeout-minutes: 5
+#    runs-on: ${{ matrix.os }}
+#    strategy:
+#      matrix:
+#        os: [macos-latest, ubuntu-latest, windows-latest]
+#        sdk: [2.12.0]
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: dart-lang/setup-dart@v1
+#        with:
+#          sdk: ${{ matrix.sdk }}
+#      - name: Install dependencies
+#        run: dart pub get
+#      - name: Run tests
+#        un: dart test
+
+  merge-branch:
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: dart-lang/setup-dart@v1
+      - uses: actions/checkout@master
+
+      - name: Merge staging -> uat
+        uses: devmasx/merge-branch@v1.3.1
         with:
-          sdk: ${{ matrix.sdk }}
+          type: now
+          target_branch: master
+          github_token: ${{ github.token }}
 
-      - name: Install dependencies
-        run: dart pub get
-
-      - name: Run tests
-        run: dart test
+#    steps:
+#      - uses: actions/checkout@v2
+##        with:
+##          token: ${{secrets.PAT}}
+#      - run: |
+#          # do something
+#          git config --global user.name 'ArtIG'
+#          git config --global user.email 'rtmigo@users.noreply.github.com'
+#          git checkout master
+#          git merge dev
+##          #git push -u origin master

@@ -1,12 +1,27 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
 
 import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:disk_cache/src/80_unistor.dart';
+import 'package:errno/errno.dart';
+import 'package:file_errors/file_errors.dart';
 
+void deleteTempDir(Directory d) {
+  try {
+    if (d.existsSync()) {
+      d.deleteSync(recursive: true);
+    }
+  }
+  on FileSystemException catch (exc)
+  {
+    if (!exc.isWindowsError(WindowsErrors.sharingViolation))
+      rethrow;
+  }
+}
 
 String badHashFunc(String data) {
   // returns only 16 possible hash values.
@@ -41,6 +56,16 @@ int averageFileSize(Directory dir) {
         count++;
       }
   return (sum/count).round();
+}
+
+int sumFilesSize(Directory dir) {
+
+  int sum = 0;
+  for (var fse in dir.listSync(recursive: true))
+    if (FileSystemEntity.isFileSync(fse.path)) {
+      sum+=File(fse.path).statSync().size;
+    }
+  return sum;
 }
 
 /// Removes random files or directories from the [dir].

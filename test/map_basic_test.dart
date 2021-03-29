@@ -1,25 +1,27 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
 
 import 'dart:io';
+
 import 'package:disk_cache/src/80_unistor.dart';
-import 'package:disk_cache/src/file_stored_map.dart';
+import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
-import 'package:disk_cache/disk_cache.dart';
+
+import 'helper.dart';
 
 void runTests(String prefix, DiskBytesStore create(Directory d)) {
-  Directory? tempDir;
+  late Directory tempDir;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync();
   });
 
   tearDown(() {
-    if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
+    deleteTempDir(tempDir);
   });
 
   test('$prefix write and read', () {
-    final map = create(tempDir!); // maxCount: 3, maxSizeBytes: 10
+    final map = create(tempDir); // maxCount: 3, maxSizeBytes: 10
     // check it's null by default
     expect(map["A"], null);
     // write and check it's not null anymore
@@ -34,7 +36,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
 
   test('$prefix write and delete', () {
-    final map = create(tempDir!); // maxCount: 3, maxSizeBytes: 10
+    final map = create(tempDir); // maxCount: 3, maxSizeBytes: 10
 
     // check it's null by default
     expect(map["A"], isNull);
@@ -57,7 +59,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
 
   test('$prefix list items', () {
-    final map = create(tempDir!);
+    final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
 
@@ -74,7 +76,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
 
 
   test('$prefix Disk cache: clear', () {
-    final map = create(tempDir!);
+    final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
 
@@ -90,7 +92,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
   });
 
   test('$prefix Contains', () {
-    final map = create(tempDir!);
+    final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
 

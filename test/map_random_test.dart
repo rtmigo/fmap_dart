@@ -1,24 +1,27 @@
-// SPDX-FileCopyrightText: (c) 2020 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
 
 import 'dart:io';
 import 'dart:math';
+
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
 
 void main() {
 
-  Directory? tempDir;
+  late Directory tempDir;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync();
   });
 
   tearDown(() {
-    if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
+    deleteTempDir(tempDir);
   });
 
   Future performRandomWritesAndDeletions(DiskBytesStore cache) async {
@@ -66,7 +69,7 @@ void main() {
           case 2: // read a value
             if (keys.length>0) {
               final randomKey = keys[random.nextInt(keys.length)];
-              var x = cache[randomKey];
+              cache[randomKey];
             }
             break;
           default:
@@ -81,12 +84,10 @@ void main() {
     assert(maxKeysCountEver>5);
   }
 
-  test("Random map", () async {
-    await performRandomWritesAndDeletions(DiskBytesMap(tempDir));
+  test("Random stress", () async {
+    await performRandomWritesAndDeletions(StoredBytesMap(tempDir));
   });
 
-  test("Random cache", () async {
-    await performRandomWritesAndDeletions(DiskBytesCache(tempDir));
-  });
+
 
 }

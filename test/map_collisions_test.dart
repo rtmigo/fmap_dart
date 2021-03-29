@@ -1,30 +1,32 @@
-// SPDX-FileCopyrightText: (c) 2021 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
+// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
+
 
 import 'dart:io';
+
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/80_unistor.dart';
+import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
 
 void main() {
 
-  Directory? tempDir;
+  late Directory tempDir;
 
   setUp(() {
     tempDir = Directory.systemTemp.createTempSync();
   });
 
   tearDown(() {
-    if (tempDir!.existsSync()) tempDir!.deleteSync(recursive: true);
+    deleteTempDir(tempDir);
   });
 
   test("cache collisions", () {
 
     //test('BytesMap hash collisions', () async {
 
-      final cache = DiskBytesCache(tempDir);
+      final cache = StoredBytesMap(tempDir);
       cache.keyToHash = badHashFunc;
 
       //Set<Directory> allSubdirs = Set<Directory>();
@@ -33,9 +35,8 @@ void main() {
 
       for (var i = 0; i < 100; ++i) {
         var key = i.toString();
-        final file = cache.writeBytesSync(key, [i, i + 10]);
-
-        allFiles.add(file);
+        cache.writeBytesSync(key, [i, i + 10]);
+        allFiles.add(cache.keyToFile(key));
         //allSubdirs.add(file.parent);
         allKeys.add(key);
       }
@@ -52,7 +53,7 @@ void main() {
         }
       }
 
-      expect(stillInCacheCount, 15);
+      expect(stillInCacheCount, 100);
 
       // make sure that all the files and the subdirectories are still in place
       //for (final d in allSubdirs) expect(d.existsSync(), isTrue);
@@ -69,7 +70,7 @@ void main() {
       //for (final d in allSubdirs) expect(d.existsSync(), isFalse);
       for (final f in allFiles) expect(f.existsSync(), isFalse);
 
-      expect(findEmptySubdirectory(tempDir!), null); // no empty subdirs
+      expect(findEmptySubdirectory(tempDir), null); // no empty subdirs
     //});
   });
 
@@ -77,7 +78,7 @@ void main() {
 
     // test whether new elements (with same hash) overwrite old ones
 
-    final cache = DiskBytesCache(tempDir);
+    final cache = StoredBytesMap(tempDir);
     cache.keyToHash = badHashFunc;
 
 

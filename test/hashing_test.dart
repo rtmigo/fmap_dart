@@ -1,6 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2021 Art Galkin <ortemeo@gmail.com>
-// SPDX-License-Identifier: BSD-3-Clause
-
+// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-License-Identifier: MIT
 
 import 'dart:math';
 
@@ -9,7 +8,6 @@ import "package:test/test.dart";
 
 import 'helper.dart';
 
-
 void main() {
   test('MD5', () {
     expect(stringToMd5("Don't panic"), "6a1e03f6a6dee59ef4d9f1b332e86b6d");
@@ -17,15 +15,14 @@ void main() {
   });
 
   test('Bad hash func', () {
-    final r=Random();
+    final r = Random();
     final hashes = Set<String>();
-    for (int i=0; i<100000; ++i) {
-      final randomText = i.toString()+" "+r.nextInt(0xFFFFFFFF).toString();
+    for (int i = 0; i < 100000; ++i) {
+      final randomText = i.toString() + " " + r.nextInt(0xFFFFFFFF).toString();
       hashes.add(badHashFunc(randomText));
     }
     // although we made hashed for 100000 different strings, there
     // are only 16 unique hash values generated
     expect(hashes.length, 16);
   });
-
 }
