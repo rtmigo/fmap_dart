@@ -10,9 +10,9 @@ storage.
 ``` dart
 Map fmap = Fmap(directory);
 
-fmap['keyA'] = 'my string'; // saved string into a file
-fmap['keyB'] = 5;           // saved int into a file
-fmap['keyC'] = [23,42,77];  // saved three-bytes blob into a file
+fmap['keyA'] = 'my string';         // saved string into a file
+fmap['keyB'] = 5;                   // saved int into a file
+fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 
 print(fmap['keyA']); // read from file
 ```
@@ -51,7 +51,7 @@ var strings = Fmap<String>(directory);
 var myJsonString = strings['json'];  // definitely a string 
 
 // but beware of type errors:
-var myIntValue = strings['number'];  // throws expection
+var myIntValue = strings['number'];  // throws exception
 ```
 
 ## Blobs (binary data)
@@ -62,7 +62,7 @@ format and in the more basic `List`. When saving, each `int` will be truncated t
 the range 0..255.
 
 ``` dart
-fmap['blob1'] = [0x12, 0x34, 0x55];
+fmap['blob1'] = [0x12, 0x34, 0x56];
 fmap['blob2'] = myFile.readAsBytesSync();
 ```
 
