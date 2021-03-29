@@ -2,7 +2,7 @@
 ![Generic badge](https://img.shields.io/badge/testing_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
 
 
-# fmap
+# [fmap](https://github.com/rtmigo/fmap)
 
 А `Map` stored in the file system. Equally suitable for caching and persistent 
 storage.
