@@ -93,7 +93,7 @@ Future<void> populate(BytesFmap theCache,
   final smallDelay = () => Future.delayed(Duration(milliseconds: 25));
   final longDelay = () => Future.delayed(Duration(milliseconds: lmtMatters ? 2050 : 25));
 
-  theCache.writeBytesSync(KEY_EARLIEST, TypedBlob(0, List.filled(1024, 5)));
+  theCache.writeSync(KEY_EARLIEST, TypedBlob(0, List.filled(1024, 5)));
   allKeys.add(KEY_EARLIEST);
 
   await longDelay();
@@ -105,12 +105,12 @@ Future<void> populate(BytesFmap theCache,
   for (int i in indexesInRandomOrder) {
     final key = i.toString();
     allKeys.add(key);
-    theCache.writeBytesSync(key, TypedBlob(0, List.filled(1024, i)));
+    theCache.writeSync(key, TypedBlob(0, List.filled(1024, i)));
     await smallDelay();
   }
 
   await longDelay();
-  theCache.writeBytesSync(KEY_LATEST, TypedBlob(0, List.filled(1024, 5)));
+  theCache.writeSync(KEY_LATEST, TypedBlob(0, List.filled(1024, 5)));
   allKeys.add(KEY_LATEST);
 
   assert(allKeys.length == n);

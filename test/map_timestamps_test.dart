@@ -25,13 +25,13 @@ void runTests(String prefix, BytesFmap create(Directory d), bool mustUpdate) {
     const key = "key";
 
     final map = create(tempDir);
-    map.writeBytesSync(key, TypedBlob(0, [23, 42]));
+    map.writeSync(key, TypedBlob(0, [23, 42]));
     final lmt = map.keyToFile(key).lastModifiedSync();
     expect(map.keyToFile(key).lastModifiedSync(), equals(lmt));
 
     // reading the same value a bit later
     await Future.delayed(const Duration(milliseconds: 2100));
-    await map.readTypedBlobSync("key");
+    await map.readSync("key");
 
     if (mustUpdate)
       // the last-modified is now be changed

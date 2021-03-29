@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
@@ -116,11 +117,83 @@ void runTests(String prefix, BytesFmap create(Directory d)) {
     expect(map.containsKey("C"), true);
   });
 
-  test('String', () {
+  test('string', () {
     final map = create(tempDir);
     map["A"] = "hello";
+    map["B"] = "good bye";
     expect(map['A'], 'hello');
+    expect(map['B'], 'good bye');
   });
+
+  test('int', () {
+    final map = create(tempDir);
+    map["A"] = 1024;
+    map["B"] = 5;
+    expect(map['A'], 1024);
+    expect(map['B'], 5);
+  });
+
+  test('bool', () {
+    final map = create(tempDir);
+    map["A"] = true;
+    map["B"] = false;
+    expect(map['A'], true);
+    expect(map['B'], false);
+  });
+
+  test('double', () {
+    final map = create(tempDir);
+    map["A"] = 3.1415;
+    map["B"] = 2.7183;
+    expect(map['A'], 3.1415);
+    expect(map['B'], 2.7183);
+  });
+
+  test('Type mix', () {
+
+    final map = create(tempDir);
+
+    map['a'] = 'hello';
+    map['b'] = [1,2,3];
+    map['c'] = 'hi';
+    map['d'] = [5];
+
+    expect(map['a'], 'hello');
+    expect(map['b'], [1,2,3]);
+    expect(map['c'], 'hi');
+    expect(map['d'], [5]);
+
+    map['b'] = 'new string';
+    map['c'] = [7,7,7];
+    expect(map['a'], 'hello');
+    expect(map['b'], 'new string');
+    expect(map['c'], [7,7,7]);
+    expect(map['d'], [5]);
+
+  });
+
+  test('Generic string', () {
+
+    final map = BytesFmap<String>(tempDir);
+
+    map['a'] = 'hello';
+    map['c'] = 'hi';
+
+    expect(map['a'], 'hello');
+    expect(map['c'], 'hi');
+  });
+
+  test('Generic Uint8List', () {
+
+    final map = BytesFmap<Uint8List>(tempDir);
+
+    map['a'] = Uint8List.fromList([1,2,3]);
+    map['c'] = Uint8List.fromList([4,5]);
+
+    expect(map['a'], [1,2,3]);
+    expect(map['c'], [4,5]);
+  });
+
 }
 
 void main() {

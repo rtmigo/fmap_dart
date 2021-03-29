@@ -59,7 +59,7 @@ void main() {
             keys.add(newKey);
             final item = TypedBlob(random.nextInt(2), List.filled(random.nextInt(2048), 42));
             reference[newKey] = item;
-            cache.writeBytesSync(newKey, item);
+            cache.writeSync(newKey, item);
             break;
           case 1: // remove previously added key
             if (keys.length > 0) {
@@ -72,7 +72,7 @@ void main() {
           case 2: // read a value
             if (keys.length > 0) {
               final randomKey = keys[random.nextInt(keys.length)];
-              final existingValue = cache.readTypedBlobSync(randomKey);
+              final existingValue = cache.readSync(randomKey);
               expect(existingValue, reference[randomKey]);
             }
             break;
