@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
-import 'package:file_errors/file_errors.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_errors/file_errors.dart';
+
 import '00_common.dart';
-import '10_files.dart';
 import 'byte_sequence.dart';
 
 const SIGNATURE_BYTE_1 = 0x4B;

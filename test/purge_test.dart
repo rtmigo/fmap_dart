@@ -3,8 +3,8 @@
 
 
 import 'dart:io';
+
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/80_unistor.dart';
 import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
 

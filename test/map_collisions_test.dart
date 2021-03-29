@@ -3,8 +3,8 @@
 
 
 import 'dart:io';
+
 import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/80_unistor.dart';
 import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
 
@@ -70,7 +70,7 @@ void main() {
       //for (final d in allSubdirs) expect(d.existsSync(), isFalse);
       for (final f in allFiles) expect(f.existsSync(), isFalse);
 
-      expect(findEmptySubdirectory(tempDir!), null); // no empty subdirs
+      expect(findEmptySubdirectory(tempDir), null); // no empty subdirs
     //});
   });
 

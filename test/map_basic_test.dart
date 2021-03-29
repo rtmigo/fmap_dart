@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 import 'dart:io';
+
 import 'package:disk_cache/src/80_unistor.dart';
 import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
@@ -20,7 +21,7 @@ void runTests(String prefix, DiskBytesStore create(Directory d)) {
   });
 
   test('$prefix write and read', () {
-    final map = create(tempDir!); // maxCount: 3, maxSizeBytes: 10
+    final map = create(tempDir); // maxCount: 3, maxSizeBytes: 10
     // check it's null by default
     expect(map["A"], null);
     // write and check it's not null anymore

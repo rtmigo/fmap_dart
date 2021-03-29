@@ -4,6 +4,7 @@
 
 import 'dart:io';
 import 'dart:math';
+
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import 'package:disk_cache/src/81_file_stored_map.dart';
@@ -68,7 +69,7 @@ void main() {
           case 2: // read a value
             if (keys.length>0) {
               final randomKey = keys[random.nextInt(keys.length)];
-              var x = cache[randomKey];
+              cache[randomKey];
             }
             break;
           default:

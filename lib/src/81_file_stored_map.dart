@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
-import 'package:file_errors/file_errors.dart';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:disk_cache/src/10_readwrite_v3.dart';
 import 'package:disk_cache/src/80_unistor.dart';
+import 'package:file_errors/file_errors.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as paths;
 
