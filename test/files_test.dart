@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
 import 'dart:io';
@@ -10,7 +10,6 @@ import "package:test/test.dart";
 import 'helper.dart';
 
 void main() {
-
   Directory tempDir = Directory("/tmp"); // will redefined
 
   setUp(() {
@@ -27,7 +26,6 @@ void main() {
   });
 
   test('listIfExists when exists', () async {
-
     File(path.join(tempDir.path, "a.txt")).writeAsStringSync(":)");
     File(path.join(tempDir.path, "b.txt")).writeAsStringSync("(:");
 

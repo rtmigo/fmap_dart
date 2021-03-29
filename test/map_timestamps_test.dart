@@ -1,6 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
-
 
 import 'dart:io';
 
@@ -21,9 +20,7 @@ void runTests(String prefix, StoredBytesMap create(Directory d), bool mustUpdate
     deleteTempDir(tempDir);
   });
 
-
   test('$prefix Disk cache: timestamp updated', () async {
-
     const key = "key";
 
     final map = create(tempDir);
@@ -44,12 +41,11 @@ void runTests(String prefix, StoredBytesMap create(Directory d), bool mustUpdate
 }
 
 void main() {
-  runTests("non", (dir)=>StoredBytesMap(dir), false);
-  runTests("updating", (dir)=>StoredBytesMap(dir, updateTimestampsOnRead: true), true);
+  runTests("non", (dir) => StoredBytesMap(dir), false);
+  runTests("updating", (dir) => StoredBytesMap(dir, updateTimestampsOnRead: true), true);
   //runTests("BytesMap:", (dir)=>DiskBytesMap(dir), false);
   //runTests("BytesCache:", (dir)=>DiskBytesCache(dir), false);
 
   //runTests("BytesMap updating:", (dir)=>DiskBytesMap(dir, updateTimestampsOnRead: true), true);
   //runTests("BytesCache updating:", (dir)=>DiskBytesCache(dir, updateTimestampsOnRead: true), true);
-
 }

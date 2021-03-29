@@ -1,19 +1,17 @@
-// SPDX-FileCopyrightText: (c) 2020 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2020 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
 
-
 import 'dart:io';
-import 'dart:math';
 
 import 'package:disk_cache/disk_cache.dart';
 import 'package:disk_cache/src/80_unistor.dart';
 import 'package:disk_cache/src/81_file_stored_map.dart';
 import "package:test/test.dart";
+import 'package:xrandom/xrandom.dart';
 
 import 'helper.dart';
 
 void main() {
-
   late Directory tempDir;
 
   setUp(() {
@@ -25,7 +23,6 @@ void main() {
   });
 
   Future performRandomWritesAndDeletions(DiskBytesStore cache) async {
-
     cache.keyToHash = badHashFunc;
     await populate(cache);
 
@@ -33,7 +30,7 @@ void main() {
     const ACTIONS = 3000;
     const MAX_DELAY = 3000;
 
-    final random = Random();
+    final random = Drandom();
     const UNIQUE_KEYS_COUNT = 50;
 
     List<Future> futures = [];
@@ -49,8 +46,7 @@ void main() {
       futures.add(Future.delayed(Duration(milliseconds: random.nextInt(MAX_DELAY))).then((_) {
         // after the random delay perform a random action
 
-        if (keys.length>maxKeysCountEver)
-          maxKeysCountEver = keys.length;
+        if (keys.length > maxKeysCountEver) maxKeysCountEver = keys.length;
 
         int act = random.nextInt(3);
         typesOfActionsPerformed.add(act);
@@ -61,13 +57,13 @@ void main() {
             cache.writeBytesSync(newKey, List.filled(random.nextInt(2048), 42));
             break;
           case 1: // remove previously added key
-            if (keys.length>0) {
+            if (keys.length > 0) {
               final randomOldKey = keys.removeAt(random.nextInt(keys.length));
               cache.deleteSync(randomOldKey);
             }
             break;
           case 2: // read a value
-            if (keys.length>0) {
+            if (keys.length > 0) {
               final randomKey = keys[random.nextInt(keys.length)];
               cache[randomKey];
             }
@@ -80,14 +76,11 @@ void main() {
 
     await Future.wait(futures);
     //print(typesOfActionsPerformed);
-    assert(typesOfActionsPerformed.length==3);
-    assert(maxKeysCountEver>5);
+    assert(typesOfActionsPerformed.length == 3);
+    assert(maxKeysCountEver > 5);
   }
 
   test("Random stress", () async {
     await performRandomWritesAndDeletions(StoredBytesMap(tempDir));
   });
-
-
-
 }

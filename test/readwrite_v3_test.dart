@@ -1,6 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2021 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
-
 
 import 'dart:io';
 
@@ -240,7 +239,6 @@ void main() {
   });
 
   group('replaceBlobSync', () {
-
     test("replace with nothing", () {
       // WRITING
       expect(tempFile.existsSync(), false);
@@ -261,7 +259,7 @@ void main() {
       // there is no source file
       expect(tempFile.existsSync(), false);
       // we we are "replacing" an entry in non-existent file
-      Replace(tempFile, otherTempFile, "one", [1,2,3], mustExist: false);
+      Replace(tempFile, otherTempFile, "one", [1, 2, 3], mustExist: false);
       // new file must be created
       expect(otherTempFile.existsSync(), true);
     });

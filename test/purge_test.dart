@@ -1,6 +1,5 @@
-// SPDX-FileCopyrightText: (c) 2021 Artёm I.G. <github.com/rtmigo>
+// SPDX-FileCopyrightText: (c) 2021 Artёm IG <github.com/rtmigo>
 // SPDX-License-Identifier: MIT
-
 
 import 'dart:io';
 
@@ -11,7 +10,6 @@ import "package:test/test.dart";
 import 'helper.dart';
 
 void main() {
-
   late Directory tempDir;
 
   setUp(() {
@@ -23,7 +21,6 @@ void main() {
   });
 
   test("purge", () async {
-
     final cache = StoredBytesMap(tempDir);
     await populate(cache);
 
@@ -33,7 +30,7 @@ void main() {
       expect(sfz, lessThan(120 * 1024));
     }
 
-    cache.purgeSync(75*1024);
+    cache.purgeSync(75 * 1024);
 
     {
       int sfz = sumFilesSize(tempDir);
@@ -41,7 +38,7 @@ void main() {
       expect(sfz, lessThan(80 * 1024));
     }
 
-    cache.purgeSync(30*1024);
+    cache.purgeSync(30 * 1024);
 
     {
       int sfz = sumFilesSize(tempDir);
@@ -49,14 +46,11 @@ void main() {
       expect(sfz, lessThan(40 * 1024));
     }
 
-    cache.purgeSync(0*1024);
+    cache.purgeSync(0 * 1024);
 
     {
       int sfz = sumFilesSize(tempDir);
       expect(sfz, 0);
     }
-
   });
-
-
 }
