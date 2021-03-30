@@ -18,13 +18,9 @@ new_readme=$(echo "$old_readme" | perl -p0e 's|^.*?\r# |# \1|')
 new_readme=$(echo "$new_readme" |  tr '\r' '\n')
 echo "$new_readme" > "$temp_pub_dir/README.md"
 
-#open .
-#exit
-
 dartfmt -w .
 dart pub get
 dart analyze
 
-dart pub publish --dry-run
-#flutter pub publish
-#open "$temp_pub_dir"
+#dart pub publish --dry-run
+dart pub publish
