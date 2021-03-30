@@ -1,6 +1,6 @@
 name: fmap
-description: A `Map` implementation that stores its entries in files. Can be used as a cache or persistent key-value storage.
-version: 0.1.1+2
+description: File-based key-value collection implementead as a Map. Good for caching and blob storage.
+version: 0.1.1+3
 repository: https://github.com/rtmigo/fmap
 
 environment:
