@@ -30,7 +30,7 @@ void main() {
       expect(sfz, lessThan(120 * 1024));
     }
 
-    cache.purgeSync(75 * 1024);
+    cache.purge(75 * 1024);
 
     {
       int sfz = sumFilesSize(tempDir);
@@ -38,7 +38,7 @@ void main() {
       expect(sfz, lessThan(80 * 1024));
     }
 
-    cache.purgeSync(30 * 1024);
+    cache.purge(30 * 1024);
 
     {
       int sfz = sumFilesSize(tempDir);
@@ -46,7 +46,7 @@ void main() {
       expect(sfz, lessThan(40 * 1024));
     }
 
-    cache.purgeSync(0 * 1024);
+    cache.purge(0 * 1024);
 
     {
       int sfz = sumFilesSize(tempDir);
