@@ -7,9 +7,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-Dart library with a `Map` implementation that stores its entries in files.
-
-Can be used as a **cache** or **persistent** key-value **storage**.
+`Fmap` is a file-based key-value collection. Good for caching and blob storage.
 
 ``` dart
 var fmap = Fmap(directory);
@@ -21,11 +19,9 @@ fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 print(fmap['keyA']); // read from file
 ```
 
-This object has the same API as ordinary `Map`.
+`Fmap` implements a `Map`, so it can be used the same way.
 
 ``` dart
-Map fmap = Fmap(directory);
-
 print('Count of items: ${fmap.length}');
 
 for (var entry in fmap.entries) {
