@@ -29,7 +29,7 @@ for (var entry in fmap.entries) {
 }
 ```
 
-## Create
+## Creating
 
 For permanent data storage
 
