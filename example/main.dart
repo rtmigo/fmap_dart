@@ -19,8 +19,5 @@ void main() {
   // saving two bytes
   fmap["myKey"] = [0x23, 0x21];
 
-  fmap["x"] = [0, -1, -2];
-  print(fmap["x"]);
-
   // after restart diskCache["myKey"] will load the data
 }

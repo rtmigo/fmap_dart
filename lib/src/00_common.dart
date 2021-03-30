@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 const JS_MAX_SAFE_INTEGER = 9007199254740991;
-const DIRTY_SUFFIX = ".dirt";
-const DATA_SUFFIX = ".kbl"; // "keyed blobs list"
+const DIRTY_SUFFIX = '.dirt';
+const DATA_SUFFIX = '.kbl'; // "keyed blobs list"
 
 class FileFormatError implements Exception {
   FileFormatError(this.message);

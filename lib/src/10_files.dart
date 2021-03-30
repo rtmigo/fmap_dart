@@ -23,9 +23,10 @@ void deleteDirIfEmptySync(Directory d) {
   try {
     d.deleteSync(recursive: false);
   } on FileSystemException catch (e) {
-    if (!e.isDirectoryNotEmpty)
-      print("WARNING: Got unexpected osError.errorCode=${e.osError?.errorCode} "
-          "trying to remove directory.");
+    if (!e.isDirectoryNotEmpty) {
+      print('WARNING: Got unexpected osError.errorCode=${e.osError?.errorCode} '
+          'trying to remove directory.');
+    }
   }
 }
 
@@ -34,7 +35,7 @@ bool deleteSyncCalm(File file) {
     file.deleteSync();
     return true;
   } on FileSystemException catch (e) {
-    print("WARNING: Failed to delete $file: $e");
+    print('WARNING: Failed to delete $file: $e');
     return false;
   }
 }
