@@ -29,6 +29,13 @@ for (var entry in fmap.entries) {
 }
 ```
 
+## Create
+
+``` dart
+var fmap = Fmap(Directory('/path/to/mydata'));
+```
+
+
 ## Types
 
 The object is intended primarily for storing values of type `String` 
