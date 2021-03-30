@@ -46,8 +46,8 @@ var fmap = Fmap.temp(); // will be placed into "<temp>/fmap" dir
 To store cached data in a specific subdirectory of the system temporary directory
 
 ``` dart
-var blobs = Fmap.temp(subdir: 'blobsCache');
-var texts = Fmap.temp(subdir: 'textsCache');
+var blobs = Fmap.temp(subdir: 'blobsCache'); // <temp>/blobsCache
+var texts = Fmap.temp(subdir: 'textsCache'); // <temp>/textsCache
 ```
 
 
