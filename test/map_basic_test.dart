@@ -21,23 +21,53 @@ void runTests(String prefix, Fmap create(Directory d)) {
     deleteTempDir(tempDir);
   });
 
-  group("in non-existent dir", () {
+  group('in non-existent dir', () {
     test('write then read', () {
       final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
-      map["A"] = [1, 2, 3];
-      expect(map["A"], [1, 2, 3]);
+      map['A'] = [1, 2, 3];
+      expect(map['A'], [1, 2, 3]);
     });
 
     test('read then write', () {
       final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
-      expect(map["A"], null);
-      map["A"] = [1, 2, 3];
-      expect(map["A"], [1, 2, 3]);
+      expect(map['A'], null);
+      map['A'] = [1, 2, 3];
+      expect(map['A'], [1, 2, 3]);
     });
 
     test('list', () {
       final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
       expect(map.entries.toList().length, 0);
+    });
+
+  });
+
+  group('in temp dir', () {
+    test('no param', () {
+      final map = Fmap.temp();
+      expect(map.directory.path.endsWith('fmap'), isTrue);
+      map['A'] = [1, 2, 3];
+      expect(map['A'], [1, 2, 3]);
+      map.directory.deleteSync(recursive: true);
+    });
+
+    test('subdirname', () {
+      final map = Fmap.temp(subdir: 'tempSubdir123');
+      expect(map.directory.path.endsWith('tempSubdir123'), isTrue);
+      map['A'] = [1, 2, 3];
+      expect(map['A'], [1, 2, 3]);
+      assert(map.directory.path.contains('temp'));
+      map.directory.deleteSync(recursive: true);
+    });
+
+    test('with policy', () {
+      final map = Fmap.temp(policy: Policy.lru);
+      expect(map.updateTimestampsOnRead, isTrue);
+    });
+
+    test('without policy', () {
+      final map = Fmap.temp();
+      expect(map.updateTimestampsOnRead, isFalse);
     });
 
   });

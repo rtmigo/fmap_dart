@@ -29,7 +29,7 @@ for (var entry in fmap.entries) {
 }
 ```
 
-## Create
+## Creating
 
 For permanent data storage
 
@@ -37,17 +37,24 @@ For permanent data storage
 var fmap = Fmap(Directory('/path/to/mydata'));
 ```
 
-To store cached data in the system temporary directory
+To cache temporary data in the system temporary directory
 
 ``` dart
-var fmap = Fmap.temp();
+var fmap = Fmap.temp(); // will be placed into "<temp>/fmap" dir
 ```
 
-To store cached data in a specific subdirectory of the system temporary directory
+To cache temporary data in a specific subdirectory of the system temporary directory
 
 ``` dart
-var blobs = Fmap.temp(subdir: 'blobsCache');
-var texts = Fmap.temp(subdir: 'textsCache');
+var blobs = Fmap.temp(subdir: 'blobsCache'); // <temp>/blobsCache
+var texts = Fmap.temp(subdir: 'textsCache'); // <temp>/textsCache
+```
+
+If all the storage items have the same type, you can specify it with generics
+
+``` dart
+var strings1 = Fmap<String>(directory);
+var strings2 = Fmap.temp<String>();
 ```
 
 
@@ -86,18 +93,7 @@ fmap['double'] = 5.0;
 fmap['bool'] = true;
 ```
 
-When creating an Fmap object, you can also restrict the type of stored values 
-by using generics.
-
-``` dart
-var strings = Fmap<String>(directory);
-var myJsonString = strings['json'];  // definitely a string 
-
-// but now only strings can be read or written
-var myIntValue = strings['number'];  // throws exception
-```
-
-## Purge
+## Purging
 
 If the storage has become too large, you can delete the oldest data.
 

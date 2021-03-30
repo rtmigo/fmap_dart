@@ -1,3 +1,7 @@
+# 0.2.0
+
+- Added .temp() static method
+
 # 0.1.1+4
 
 - Example updated

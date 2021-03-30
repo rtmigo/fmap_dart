@@ -60,8 +60,8 @@ class Fmap<T> extends MapBase<String, T?> {
   /// when the object is created.
   final Directory directory;
 
-  @internal
   @visibleForTesting
+  @internal
   final bool updateTimestampsOnRead;
 
   @internal
