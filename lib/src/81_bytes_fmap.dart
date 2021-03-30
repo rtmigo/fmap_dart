@@ -18,7 +18,13 @@ import '10_hashing.dart';
 
 typedef HashFunc = String Function(String key);
 
-enum Policy { fifo, lru }
+enum Policy {
+  // First in first out. The cache evicts the entries in the order they were added, without
+  // any regard to how often or how many times they were accessed before.
+  fifo,
+  // Least recently used. Discards the least recently used items first. This algorithm requires
+  // keeping track of what was used when.
+  lru }
 
 /// A [Map] implementation that stores its entries in files.
 ///
@@ -44,13 +50,20 @@ class Fmap<T> extends MapBase<String, T?> {
   @visibleForTesting
   late Directory innerDir;
 
+
+  /// The directory inside which the data is stored. The directory can be non-existent
+  /// when the object is created.
   final Directory directory;
+
+  @internal
+  @visibleForTesting
   final bool updateTimestampsOnRead;
 
   @internal
   HashFunc keyToHash = stringToMd5;
 
-  void purgeSync(int maxSizeBytes) {
+  /// Removes old data from storage, reducing the maximum total file size to [maxSizeBytes].
+  void purge(int maxSizeBytes) {
     List<FileAndStat> files = <FileAndStat>[];
 
     List<FileSystemEntity> entries;
@@ -200,6 +213,7 @@ class Fmap<T> extends MapBase<String, T?> {
   }
 
   @visibleForTesting
+  @internal
   File keyToFile(String key) {
     return _combine(this._keyFilePrefix(key), DATA_SUFFIX);
   }
@@ -207,6 +221,7 @@ class Fmap<T> extends MapBase<String, T?> {
   //////////////////////////////////////////////////////////////////////////////////////////////////
 
   @visibleForTesting
+  @internal
   TypedBlob? readSync(String key) {
     final file = keyToFile(key);
     BlobsFileReader? reader;
@@ -260,10 +275,14 @@ class Fmap<T> extends MapBase<String, T?> {
     }
   }
 
+  @visibleForTesting
+  @internal
   TypedBlob? deleteSync(String key) {
     return _writeOrDelete(key, null, wantOldData: true);
   }
 
+  @visibleForTesting
+  @internal
   void writeSync(String key, TypedBlob data) {
     _writeOrDelete(key, data);
   }

@@ -7,7 +7,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-Dart library with a `Map` implementation that stores its elements in files.
+Dart library with a `Map` implementation that stores its entries in files.
 
 Can be used as a **cache** or **persistent** key-value **storage**.
 
@@ -36,7 +36,7 @@ for (var entry in fmap.entries) {
 ## Types
 
 The object is intended primarily for storing values of type `String` 
-and `Uint8List`.
+and `Uint8List` (blobs).
 
 ``` dart
 var objects = Fmap(directory);
