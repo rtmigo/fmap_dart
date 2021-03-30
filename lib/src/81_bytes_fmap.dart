@@ -45,6 +45,7 @@ class Fmap<T> extends MapBase<String, T?> {
   }
 
   static Fmap temp<TYPE>({String subdir = 'fmap', Policy policy = Policy.fifo}) {
+    // TODO unittest
     return Fmap<TYPE>(Directory(paths.join(Directory.systemTemp.path, subdir)), policy: policy);
   }
 
