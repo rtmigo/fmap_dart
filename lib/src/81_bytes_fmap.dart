@@ -31,9 +31,16 @@ enum Policy {
 class Fmap<T> extends MapBase<String, T?> {
   Fmap(this.directory, {Policy policy = Policy.fifo}):
     updateTimestampsOnRead = policy == Policy.lru,
-    keyToHash = stringToMd5;
+    keyToHash = stringToMd5 {
+
+    this.innerDir = Directory(paths.join(directory.path, 'v1'));
+  }
 
   //super(directory, updateTimestampsOnRead);
+
+  @internal
+  @visibleForTesting
+  late Directory innerDir;
 
   final Directory directory;
   final bool updateTimestampsOnRead;
@@ -46,10 +53,10 @@ class Fmap<T> extends MapBase<String, T?> {
 
     List<FileSystemEntity> entries;
     try {
-      entries = directory.listSync(recursive: true);
+      entries = innerDir.listSync(recursive: true);
     } on FileSystemException catch (e) {
       throw FileSystemException(
-          "DiskCache failed to listSync directory $directory right after creation. "
+          "DiskCache failed to listSync directory $innerDir right after creation. "
           "osError: ${e.osError}.");
     }
 
@@ -140,12 +147,12 @@ class Fmap<T> extends MapBase<String, T?> {
 
   @override
   void clear() {
-    this.directory.deleteSync(recursive: true);
+    this.innerDir.deleteSync(recursive: true);
   }
 
   @override
   Iterable<String> get keys sync* {
-    for (final f in listSyncOrEmpty(this.directory, recursive: true)) {
+    for (final f in listSyncOrEmpty(this.innerDir, recursive: true)) {
       if (FileSystemEntity.isFileSync(f.path)) {
         BlobsFileReader? reader;
         try {
@@ -187,7 +194,7 @@ class Fmap<T> extends MapBase<String, T?> {
   String _keyFilePrefix(String key) {
     String hash = this.keyToHash(key);
     assert(!hash.contains(paths.style.context.separator));
-    return paths.join(this.directory.path, hash);
+    return paths.join(this.innerDir.path, hash);
   }
 
   File _combine(String prefix, String suffix) {

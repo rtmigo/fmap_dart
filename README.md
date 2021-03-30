@@ -4,11 +4,12 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-А `Map` stored in the file system. Equally suitable for caching and persistent 
-storage.
+A `Map` collection that keeps all of its elements stored in files.
+
+This solution can be used as a **cache** or **persistent** key-value **storage**.
 
 ``` dart
-Map fmap = Fmap(directory);
+var fmap = Fmap(directory);
 
 fmap['keyA'] = 'my string';         // saved string into a file
 fmap['keyB'] = 777;                 // saved int into a file
@@ -16,9 +17,6 @@ fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 
 print(fmap['keyA']); // read from file
 ```
-
-The storage is most efficient for storing large objects: blobs and strings. 
-Although it can store small ones like `bool` or `int`.
 
 This object implements `Map`, so it can be used in the same way.
 
@@ -32,12 +30,15 @@ for (var entry in fmap.entries) {
 }
 ```
 
+Each item of the storage is kept in a separate file. This makes the storage 
+most efficient when large objects, such as strings or blobs.
+
 ## Basic types
 
 The storage can store such basic types as `String`, `int`, `double` and `bool`.
 
 
-They can be read as dynamic types ...
+They can be read as dynamic types
 
 ``` dart
 var objects = Fmap(directory);
@@ -45,13 +46,14 @@ var myJsonString = fmap['json']; // a dynamic type
 var myIntValue = fmap['number']; // a dynamic type
 ```
 
-Or more strictly, limiting to generic arguments:
+As with a regular `Map` class, an `Fmap` object can be created with 
+a generic type
 
 ``` dart
 var strings = Fmap<String>(directory);
 var myJsonString = strings['json'];  // definitely a string 
 
-// but beware of type errors:
+// but now only strings can be read or written
 var myIntValue = strings['number'];  // throws exception
 ```
 
