@@ -20,7 +20,7 @@ class FileAndStat {
   final File file;
 
   FileStat get stat {
-    if (_stat == null) _stat = file.statSync();
+    _stat ??= file.statSync();
     return _stat!;
   }
 
@@ -51,8 +51,8 @@ class FileAndStat {
     int sumSize = FileAndStat.sumSize(files);
 
     if (_DEBUG_LOGGING) {
-      print("ALL THE FILE LMTS");
-      for (var f in files) print("- " + f.file.lastModifiedSync().toString());
+      print('ALL THE FILE LMTS');
+      for (var f in files) { print('- ' + f.file.lastModifiedSync().toString()); }
     }
 
     DateTime? prevLastModified;
@@ -64,13 +64,16 @@ class FileAndStat {
       var item = files[i];
       // assert that the files are sorted from old to new
       assert(prevLastModified == null || item.stat.modified.isAfterOrSame(prevLastModified));
-      if (_DEBUG_LOGGING)
-        print("Deleting file ${item.file.path} LMT ${item.file.lastModifiedSync()}");
+      if (_DEBUG_LOGGING) {
+        print('Deleting file ${item.file.path} LMT ${item.file.lastModifiedSync()}');
+      }
 
-      if (deleteFile != null)
+      if (deleteFile != null) {
         deleteFile(item.file);
-      else
+      }
+      else {
         item.file.deleteSync();
+      }
 
       files.removeAt(i);
       assert(files.length == i);

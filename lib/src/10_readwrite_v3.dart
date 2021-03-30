@@ -124,7 +124,7 @@ class BlobsFileWriter {
 
   final File file;
   RandomAccessFile? _raf;
-  final _savedKeys = Set<String>();
+  final _savedKeys = <String>{};
 
   void _openAndWriteHeader() {
     assert(this._raf == null);
@@ -133,7 +133,7 @@ class BlobsFileWriter {
   }
 
   void write(String key, List<int> blob, int dataType) {
-    RangeError.checkValueInInterval(dataType, 0, 0xFE, "dataType");
+    RangeError.checkValueInInterval(dataType, 0, 0xFE, 'dataType');
 
     if (this._raf == null) {
       this._openAndWriteHeader();
@@ -142,13 +142,13 @@ class BlobsFileWriter {
 
     // we assume that we have a moderate amount of entries: we can keep all the keys in RAM
     if (_savedKeys.contains(key)) {
-      throw ArgumentError.value(key, "key", "The key already added");
+      throw ArgumentError.value(key, 'key', 'The key already added');
     }
 
     final List<int> keyBytes = utf8.encode(key);
 
     if (keyBytes.length > 0xFFFF) {
-      throw ArgumentError.value(keyBytes.length, "keyBytes.length", "The key is too long.");
+      throw ArgumentError.value(keyBytes.length, 'keyBytes.length', 'The key is too long.');
     }
 
     // ENTRY HEADER
@@ -243,11 +243,11 @@ class BlobsFileReader {
     return this._cachedPositionVal;
   }
 
-  void set _cachedPosition(x) {
+  set _cachedPosition(x) {
     this._cachedPositionVal = x;
     //print(this._raf!.positionSync());
     assert(this._cachedPositionVal == this._raf!.positionSync(),
-        "cached ${this._cachedPositionVal} real ${this._raf!.positionSync()}");
+        'cached ${this._cachedPositionVal} real ${this._raf!.positionSync()}');
   }
 
   int _cachedPositionVal = 0;
@@ -316,7 +316,7 @@ class BlobsFileReader {
     this._cachedPosition += blobBytes.length;
     if (blobBytes.length != this._currentEntryBlobSize) {
       throw FileFormatError(
-          "Unexpected count of bytes read: ${blobBytes.length} instead of ${this._currentEntryBlobSize}.");
+          'Unexpected count of bytes read: ${blobBytes.length} instead of ${this._currentEntryBlobSize}.');
     }
 
     // READING MARKER
@@ -324,7 +324,7 @@ class BlobsFileReader {
     final marker = _raf!.readByteSync();
     this._cachedPosition += 1;
     if (marker != ENTRY_END_MARKER) {
-      throw FileFormatError("Entry end marker not found.");
+      throw FileFormatError('Entry end marker not found.');
     }
 
     this._state = State.atEntryStart;
@@ -348,7 +348,7 @@ class BlobsFileReader {
     final marker = _raf!.readByteSync();
     this._cachedPosition += 1;
     if (marker != ENTRY_END_MARKER) {
-      throw FileFormatError("Entry end marker not found.");
+      throw FileFormatError('Entry end marker not found.');
     }
 
     this._state = State.atEntryStart;
@@ -364,7 +364,8 @@ class BlobsFileReader {
 
 class Replace {
   /// Created a copy with file with particular blob replaced or removed.
-  Replace(File source, File target, String newKey, List<int>? newBlob, int newDataType, {bool mustExist: true, bool wantOldData=false}) {
+  Replace(File source, File target, String newKey, List<int>? newBlob, int newDataType,
+      {bool mustExist = true, bool wantOldData = false}) {
     BlobsFileReader? reader;
     BlobsFileWriter? writer;
 
@@ -409,47 +410,4 @@ class Replace {
 
   int entriesWritten = 0;
   TypedBlob? oldData;
-  //bool entryWasFound = false;
 }
-
-// /// Created a copy with file with particular blob replaced or removed.
-// bool replaceBlobSync(File source, File target, String newKey, List<int>? newBlob,
-//     {bool mustExist: true}) {
-//   BlobsFileReader? reader;
-//   BlobsFileWriter? writer;
-//
-//   bool entryWasFound = false;
-//
-//   try {
-//     reader = BlobsFileReader(source, mustExist: mustExist);
-//     writer = BlobsFileWriter(target);
-//
-//     // the new data will become the first entry in the file.
-//     // Accessing the first record is faster than the others
-//
-//     if (newBlob != null) {
-//       writer.write(newKey, newBlob);
-//     } else {
-//       // not writing = deleting
-//     }
-//
-//
-//
-//     for (var oldKey = reader.readKey(); oldKey != null; oldKey = reader.readKey()) {
-//       if (oldKey == newKey) {
-//         reader.skipBlob(); // we don't need old data
-//         entryWasFound = true; // todo test
-//         continue;
-//       } else {
-//         // copying old data
-//         writer.write(oldKey, reader.readBlob());
-//       }
-//     }
-//
-//   } finally {
-//     reader?.closeSync();
-//     writer?.closeSync();
-//   }
-//
-//   return entryWasFound;
-// }

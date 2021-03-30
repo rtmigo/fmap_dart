@@ -16,7 +16,7 @@ import '10_file_and_stat.dart';
 import '10_files.dart';
 import '10_hashing.dart';
 
-typedef String HashFunc(String key);
+typedef HashFunc = String Function(String key);
 
 enum Policy { fifo, lru }
 
@@ -58,8 +58,8 @@ class Fmap<T> extends MapBase<String, T?> {
       entries = innerDir.listSync(recursive: true);
     } on FileSystemException catch (e) {
       throw FileSystemException(
-          "DiskCache failed to listSync directory $innerDir right after creation. "
-          "osError: ${e.osError}.");
+          'DiskCache failed to listSync directory $innerDir right after creation. '
+          'osError: ${e.osError}.');
     }
 
     for (final entry in entries) {
@@ -180,7 +180,7 @@ class Fmap<T> extends MapBase<String, T?> {
           file.setLastModifiedSync(DateTime.now());
         } on FileSystemException catch (e, _) {
           // not a big deal ...
-          print("WARNING: Failed set timestamp to file $file: $e");
+          print('WARNING: Failed set timestamp to file $file: $e');
         }
       }();
     }
@@ -196,7 +196,7 @@ class Fmap<T> extends MapBase<String, T?> {
 
   File _combine(String prefix, String suffix) {
     assert(suffix == DATA_SUFFIX || suffix == DIRTY_SUFFIX);
-    return File("$prefix$suffix");
+    return File('$prefix$suffix');
   }
 
   @visibleForTesting
