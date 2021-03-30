@@ -6,8 +6,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:fmap/src/10_readwrite_v3.dart';
 import 'package:file_errors/file_errors.dart';
+import 'package:fmap/src/10_readwrite_v3.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as paths;
 
@@ -16,27 +16,29 @@ import '10_file_and_stat.dart';
 import '10_files.dart';
 import '10_hashing.dart';
 
-typedef DeleteFile(File file);
-
 typedef String HashFunc(String key);
 
-enum Policy {
-  fifo,
-  lru
-}
+enum Policy { fifo, lru }
 
-
-
-/// Persistent data storage that provides access to [Uint8List] binary items by [String] keys.
+/// A [Map] implementation that stores its entries in files.
+///
+/// Dictionary keys are always of type `String`. These can be arbitrary strings, limited only by
+/// size: after encoding in UTF-8, the string must fit into 64 kilobytes.
+///
+/// Values can be of type `String`, `List<int>` (array of bytes), and also `int`, `double`
+/// or `bool`.
+///
+/// We can conventionally assume that each entry will be stored in a separate file. In fact,
+/// in the case of a hash collision, a file may include two or more entries. But collisions
+/// are rare.
 class Fmap<T> extends MapBase<String, T?> {
-  Fmap(this.directory, {Policy policy = Policy.fifo}):
-    updateTimestampsOnRead = policy == Policy.lru,
-    keyToHash = stringToMd5 {
-
+  Fmap(this.directory, {Policy policy = Policy.fifo})
+      : updateTimestampsOnRead = policy == Policy.lru,
+        keyToHash = stringToMd5 {
     this.innerDir = Directory(paths.join(directory.path, 'v1'));
   }
 
-  //super(directory, updateTimestampsOnRead);
+  // TODO Override 'containsKey' for speed
 
   @internal
   @visibleForTesting
@@ -83,7 +85,7 @@ class Fmap<T> extends MapBase<String, T?> {
   }
 
   T? _deserialize(TypedBlob? typedBlob) {
-    if (typedBlob==null) {
+    if (typedBlob == null) {
       return null;
     }
 
@@ -106,11 +108,10 @@ class Fmap<T> extends MapBase<String, T?> {
         }
       case TypedBlob.typeBool:
         {
-          return (typedBlob.bytes[0]!=0) as T;
+          return (typedBlob.bytes[0] != 0) as T;
           //#final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
           //return sl.ge(0) as T;
         }
-
 
       default:
         throw FallThroughError();
@@ -121,8 +122,7 @@ class Fmap<T> extends MapBase<String, T?> {
   void operator []=(String key, T? value) {
     if (value == null) {
       this.deleteSync(key);
-    }
-    else {
+    } else {
       if (value is List<int>) {
         writeSync(key, TypedBlob(TypedBlob.typeBytes, value));
       } else if (value is String) {
@@ -136,13 +136,11 @@ class Fmap<T> extends MapBase<String, T?> {
         bd.setFloat64(0, value);
         writeSync(key, TypedBlob(TypedBlob.typeDouble, bd.buffer.asUint8List()));
       } else if (value is bool) {
-        writeSync(key, TypedBlob(TypedBlob.typeBool, [value?1:0]));
+        writeSync(key, TypedBlob(TypedBlob.typeBool, [value ? 1 : 0]));
       } else {
         throw TypeError();
       }
-
     }
-
   }
 
   @override
@@ -190,7 +188,6 @@ class Fmap<T> extends MapBase<String, T?> {
 
   // KEYS AND FILES ////////////////////////////////////////////////////////////////////////////////
 
-
   String _keyFilePrefix(String key) {
     String hash = this.keyToHash(key);
     assert(!hash.contains(paths.style.context.separator));
@@ -234,7 +231,6 @@ class Fmap<T> extends MapBase<String, T?> {
   }
 
   TypedBlob? _writeOrDelete(String key, TypedBlob? data, {wantOldData = false}) {
-
     final prefix = this._keyFilePrefix(key);
     final cacheFile = _combine(prefix, DATA_SUFFIX);
     final dirtyFile = _combine(prefix, DIRTY_SUFFIX);
@@ -243,8 +239,8 @@ class Fmap<T> extends MapBase<String, T?> {
 
     bool renamed = false;
     try {
-      final replaceResult =
-          Replace(cacheFile, dirtyFile, key, data?.bytes, data?.type ?? 0, mustExist: false, wantOldData: wantOldData);
+      final replaceResult = Replace(cacheFile, dirtyFile, key, data?.bytes, data?.type ?? 0,
+          mustExist: false, wantOldData: wantOldData);
       assert(data == null || dirtyFile.existsSync());
 
       if (replaceResult.entriesWritten >= 1) {
