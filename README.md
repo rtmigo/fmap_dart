@@ -43,7 +43,7 @@ To store cached data in the system temporary directory
 var fmap = Fmap.temp();
 ```
 
-To store cached data in a specific subdirectory of a temporary directory
+To store cached data in a specific subdirectory of the temporary directory
 
 ``` dart
 var blobs = Fmap.temp(subdir: 'blobsCache');
