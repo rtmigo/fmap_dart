@@ -36,7 +36,7 @@ for (var entry in fmap.entries) {
 ## Types
 
 The object is intended primarily for storing values of type `String` 
-and `Uint8List`.
+and `Uint8List` (blobs).
 
 ``` dart
 var objects = Fmap(directory);
