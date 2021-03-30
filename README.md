@@ -4,9 +4,9 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-A `Map` collection that keeps all of its elements stored in files.
+Dart library with a `Map` collection that stores its elements in files.
 
-This solution can be used as a **cache** or **persistent** key-value **storage**.
+Can be used as a **cache** or **persistent** key-value **storage**.
 
 ``` dart
 var fmap = Fmap(directory);
