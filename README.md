@@ -33,7 +33,6 @@ for (var entry in fmap.entries) {
 }
 ```
 
-
 ## Types
 
 The object is intended primarily for storing values of type `String` 
