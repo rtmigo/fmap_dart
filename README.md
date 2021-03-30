@@ -21,7 +21,7 @@ fmap['keyC'] = [0x12, 0x34, 0x56];  // saved three-bytes into a file
 print(fmap['keyA']); // read from file
 ```
 
-This object implements `Map`, so it can be used in the same way.
+This object has the same API as ordinary `Map`.
 
 ``` dart
 Map fmap = Fmap(directory);
@@ -29,28 +29,47 @@ Map fmap = Fmap(directory);
 print('Count of items: ${fmap.length}');
 
 for (var entry in fmap.entries) {
-    print('Item ${entry.name} ${entry.value}'); 
+    print('Item ${entry.key} ${entry.value}'); 
 }
 ```
 
-Each item of the storage is kept in a separate file. This makes the storage 
-most efficient when large objects, such as strings or blobs.
+## Types
 
-## Basic types
-
-The storage can store such basic types as `String`, `int`, `double` and `bool`.
-
-
-They can be read as dynamic types
+The object is intended primarily for storing values of type `String` 
+and `Uint8List`.
 
 ``` dart
 var objects = Fmap(directory);
-var myJsonString = fmap['json']; // a dynamic type
-var myIntValue = fmap['number']; // a dynamic type
+fmap['myJson'] = httpGet('http://somewhere'); // String
+fmap['blob'] = myFile.readAsBytesSync(); // Uint8List
 ```
 
-As with a regular `Map` class, an `Fmap` object can be created with 
-a generic type
+Any `List<int>` will also be treated as list of bytes.
+
+``` dart
+fmap['blob2'] = [0x12, 0x34, 0x56];
+fmap['blob3'] = utf8.encode('my string'); // List<int>
+```
+
+When saving, each `int` inside a list will be truncated to the range 0..255.
+
+``` dart
+fmap['blob3'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
+```
+
+In addition to strings and bytes, you can also store simple values of the 
+`int`, `double`, and `bool` types. But keep in mind that each value is saved 
+in a separate file. Therefore, storing a lot of small values like `int` may 
+not be the most efficient approach.
+
+``` dart
+fmap['int'] = 5;
+fmap['double'] = 5.0; 
+fmap['bool'] = true;
+```
+
+When creating an Fmap object, you can also restrict the type of stored values 
+by using a generic argument.
 
 ``` dart
 var strings = Fmap<String>(directory);
@@ -59,27 +78,6 @@ var myJsonString = strings['json'];  // definitely a string
 // but now only strings can be read or written
 var myIntValue = strings['number'];  // throws exception
 ```
-
-## Blobs (binary data)
-
-All values with type derived from `List<int>` are treated as lists of bytes.
-This allows you to efficiently save and load **blobs** both in the `Uint8List` 
-format and in the more basic `List`. When saving, each `int` will be truncated to 
-the range 0..255.
-
-``` dart
-fmap['blob1'] = [0x12, 0x34, 0x56];
-fmap['blob2'] = myFile.readAsBytesSync();
-```
-
-When reading, we are always getting an `Uint8List`
-``` dart  
-Uint8List myBlob = fmap['blob1'];
-```
-
-
-
-
 
 ## Purge
 
@@ -104,7 +102,7 @@ not only create `Fmap(policy: Policy.lru)` before purging, but always
 create the object this way. It will cause `Fmap` to update the the last-used 
 timestamps every time an item is read.
 
-When you do not specify this argument, the timestamps are only updates on 
+When you do not specify this argument, the timestamps are only updated on 
 writes, but not on reads. The order of the elements becomes closer to the FIFO.
 
 
