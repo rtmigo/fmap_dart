@@ -93,7 +93,7 @@ fmap['double'] = 5.0;
 fmap['bool'] = true;
 ```
 
-## Purge
+## Purging
 
 If the storage has become too large, you can delete the oldest data.
 
