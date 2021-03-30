@@ -93,17 +93,6 @@ fmap['double'] = 5.0;
 fmap['bool'] = true;
 ```
 
-When creating an Fmap object, you can also restrict the type of stored values 
-by using generics.
-
-``` dart
-var strings = Fmap<String>(directory);
-var myJsonString = strings['json'];  // definitely a string 
-
-// but now only strings can be read or written
-var myIntValue = strings['number'];  // throws exception
-```
-
 ## Purge
 
 If the storage has become too large, you can delete the oldest data.
