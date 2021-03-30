@@ -1,5 +1,8 @@
-![Generic badge](https://img.shields.io/badge/status-draft-red.svg)
+![Generic badge](https://img.shields.io/badge/status-it_works-ok.svg)
+[![Pub Package](https://img.shields.io/pub/v/fmap.svg)](https://pub.dev/packages/fmap)
 ![Generic badge](https://img.shields.io/badge/testing_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
+[![pub points](https://badges.bar/fmap/pub%20points)](https://pub.dev/fmap/tabular/score)
+
 
 
 # [fmap](https://github.com/rtmigo/fmap)
