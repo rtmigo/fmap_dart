@@ -43,7 +43,6 @@ void main() {
 
 
     // TODO purge
-    // TODO compare to Map
 
     for (int i = 0; i < ACTIONS; ++i) {
       futures.add(Future.delayed(Duration(milliseconds: random.nextInt(MAX_DELAY))).then((_) {
