@@ -391,6 +391,7 @@ class Replace {
             reader.skipBlob();
           }
 
+
           //reader.skipBlob(); // we don't need old data
           //this.entryWasFound = true; // todo test
           continue;
