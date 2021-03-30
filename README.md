@@ -30,6 +30,10 @@ for (var entry in fmap.entries) {
 }
 ```
 
+Each item of the storage is kept in a separate file. This makes the storage 
+most efficient when storing larger objects, such as strings 
+or blobs.
+
 ## Basic types
 
 The storage can store such basic types as `String`, `int`, `double` and `bool`.
@@ -53,10 +57,6 @@ var myJsonString = strings['json'];  // definitely a string
 // but now only strings can be read or written
 var myIntValue = strings['number'];  // throws exception
 ```
-
-Each item of the storage is kept in a separate file. This makes the storage 
-most efficient when storing not ints, but larger objects, such as strings 
-or blobs.
 
 ## Blobs (binary data)
 
