@@ -29,7 +29,7 @@ Map fmap = Fmap(directory);
 print('Count of items: ${fmap.length}');
 
 for (var entry in fmap.entries) {
-    print('Item ${entry.key} ${entry.value}'); 
+    print('Item ${entry.key}: ${entry.value}'); 
 }
 ```
 
@@ -69,7 +69,7 @@ fmap['bool'] = true;
 ```
 
 When creating an Fmap object, you can also restrict the type of stored values 
-by using a generic argument.
+by using generics.
 
 ``` dart
 var strings = Fmap<String>(directory);
