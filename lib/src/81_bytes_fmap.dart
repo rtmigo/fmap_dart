@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:disk_cache/src/10_readwrite_v3.dart';
+import 'package:fmap/src/10_readwrite_v3.dart';
 import 'package:file_errors/file_errors.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as paths;

@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:disk_cache/disk_cache.dart';
+import 'package:fmap/fmap.dart';
 import 'package:path/path.dart' as pathlib;
 import 'dart:io';
 

@@ -1,6 +1,6 @@
-name: disk_cache
-description: Library for persistent storage or caching.
-version: 0.0.1+3
+name: fmap
+description: A `Map` implementation that stores its elements in files. Can be used as a cache or persistent key-value storage.
+version: 0.1.0
 author:
 homepage: https://github.com/rtmigo/fmap
 
@@ -10,10 +10,7 @@ environment:
 dependencies:
   file_errors: ^1.0.3
   path: ^1.8.0
-  #collection: ^1.15.0
-  #  path: ../file_errors
-  #file_errors:
-  #  path: ../file_errors
+
 
 dev_dependencies:
   xrandom: any

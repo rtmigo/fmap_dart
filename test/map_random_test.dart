@@ -3,11 +3,11 @@
 
 import 'dart:io';
 
-import 'package:disk_cache/disk_cache.dart';
-import 'package:disk_cache/src/81_bytes_fmap.dart';
+import 'package:fmap/fmap.dart';
+import 'package:fmap/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 import 'package:xrandom/xrandom.dart';
-import 'package:disk_cache/src/10_readwrite_v3.dart';
+import 'package:fmap/src/10_readwrite_v3.dart';
 
 import 'helper.dart';
 
