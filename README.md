@@ -31,7 +31,7 @@ for (var entry in fmap.entries) {
 
 ## Install
 
-Use [instructions from pub.dev](https://pub.dev/packages/fmap/install)
+Use [instructions from pub.dev](https://pub.dev/packages/fmap/install).
 
 ## Create
 
