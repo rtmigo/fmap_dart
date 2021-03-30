@@ -1,6 +1,6 @@
 name: fmap
 description: A `Map` implementation that stores its elements in files. Can be used as a cache or persistent key-value storage.
-version: 0.1.0
+version: 0.1.0+1
 author:
 homepage: https://github.com/rtmigo/fmap
 
@@ -11,10 +11,8 @@ dependencies:
   file_errors: ^1.0.3
   path: ^1.8.0
 
-
 dev_dependencies:
   xrandom: any
-
   test: ^1.5.1
 
 
