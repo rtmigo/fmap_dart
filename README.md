@@ -9,7 +9,7 @@ A `Map` collection that keeps all of its elements stored in files.
 This solution can be used as a **cache** or **persistent** key-value **storage**.
 
 ``` dart
-Map fmap = Fmap(directory);
+var fmap = Fmap(directory);
 
 fmap['keyA'] = 'my string';         // saved string into a file
 fmap['keyB'] = 777;                 // saved int into a file
