@@ -4,7 +4,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-Dart library with a `Map` collection that stores its elements in files.
+Dart library with a `Map` that stores its elements in files.
 
 Can be used as a **cache** or **persistent** key-value **storage**.
 
