@@ -1,5 +1,5 @@
 name: fmap
-description: A `Map` collection that stores its elements in files. Can be used as a cache or persistent key-value storage.
+description: A `Map` implementation that stores its elements in files. Can be used as a cache or persistent key-value storage.
 version: 0.1.0
 author:
 homepage: https://github.com/rtmigo/fmap

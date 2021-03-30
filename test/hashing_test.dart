@@ -3,7 +3,7 @@
 
 import 'dart:math';
 
-import 'package:disk_cache/src/10_hashing.dart';
+import 'package:fmap/src/10_hashing.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';

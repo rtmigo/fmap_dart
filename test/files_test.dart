@@ -3,7 +3,7 @@
 
 import 'dart:io';
 
-import 'package:disk_cache/src/10_files.dart';
+import 'package:fmap/src/10_files.dart';
 import 'package:path/path.dart' as path;
 import "package:test/test.dart";
 

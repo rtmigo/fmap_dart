@@ -5,10 +5,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:disk_cache/fmap.dart';
+import 'package:fmap/fmap.dart';
 import 'package:errno/errno.dart';
 import 'package:file_errors/file_errors.dart';
-import 'package:disk_cache/src/10_readwrite_v3.dart';
+import 'package:fmap/src/10_readwrite_v3.dart';
 
 void deleteTempDir(Directory d) {
   try {

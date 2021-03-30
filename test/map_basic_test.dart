@@ -5,7 +5,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:path/path.dart' as path;
 
-import 'package:disk_cache/src/81_bytes_fmap.dart';
+import 'package:fmap/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
 import 'helper.dart';
