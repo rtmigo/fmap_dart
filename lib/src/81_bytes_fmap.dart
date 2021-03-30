@@ -44,6 +44,10 @@ class Fmap<T> extends MapBase<String, T?> {
     this.innerDir = Directory(paths.join(directory.path, 'v1'));
   }
 
+  static Fmap temp({String subdir = 'fmap', Policy policy = Policy.fifo}) {
+    return Fmap(Directory(paths.join(Directory.systemTemp.path, subdir)), policy: policy);
+  }
+
   // TODO Override 'containsKey' for speed
 
   @internal
