@@ -68,7 +68,7 @@ void main() {
     //for (final d in allSubdirs) expect(d.existsSync(), isFalse);
     for (final f in allFiles) expect(f.existsSync(), isFalse);
 
-    expect(findEmptySubdirectory(tempDir), null); // no empty subdirs
+    expect(findEmptySubdirectory(cache.innerDir), null); // no empty subdirs
     //});
   });
 

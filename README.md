@@ -31,7 +31,7 @@ for (var entry in fmap.entries) {
 ```
 
 Each item of the storage is kept in a separate file. This makes the storage 
-most efficient when storing objects, such as strings or blobs.
+most efficient when large objects, such as strings or blobs.
 
 ## Basic types
 

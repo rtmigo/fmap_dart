@@ -3,6 +3,7 @@
 
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:path/path.dart' as path;
 
 import 'package:disk_cache/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
@@ -18,6 +19,32 @@ void runTests(String prefix, Fmap create(Directory d)) {
 
   tearDown(() {
     deleteTempDir(tempDir);
+  });
+
+  group("in non-existent dir", () {
+    test('write then read', () {
+      final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
+      map["A"] = [1, 2, 3];
+      expect(map["A"], [1, 2, 3]);
+    });
+
+    test('read then write', () {
+      final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
+      expect(map["A"], null);
+      map["A"] = [1, 2, 3];
+      expect(map["A"], [1, 2, 3]);
+    });
+
+    test('list', () {
+      final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
+      expect(map.entries.toList().length, 0);
+    });
+
+  });
+
+  test('All files are in v1 subdir', () {
+    final map = Fmap(tempDir);
+    expect(map.keyToFile('key').path.contains('v1'), isTrue);
   });
 
   test('$prefix write and read', () {

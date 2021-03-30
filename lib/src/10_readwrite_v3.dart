@@ -7,6 +7,7 @@ import 'dart:typed_data';
 import 'package:file_errors/file_errors.dart';
 import '00_common.dart';
 import 'byte_sequence.dart';
+import 'package:path/path.dart' as pathlib;
 
 const SIGNATURE_BYTE_1 = 0x4B;
 const SIGNATURE_BYTE_2 = 0x42;
@@ -63,6 +64,19 @@ class TypedBlob implements Comparable {
   }
 }
 
+RandomAccessFile openForWritingCreatingParent(File file) {
+  try {
+    return file.openSync(mode: FileMode.write);
+  } on FileSystemException catch (exc) {
+    if (!exc.isNoSuchFileOrDirectory) {
+      rethrow;
+    }
+  }
+  // creating parent directory and opening again
+  Directory(pathlib.dirname(file.path)).createSync(recursive: true);
+  return file.openSync(mode: FileMode.write);
+}
+
 /// The file is essentially an analog of the TAR format, but extremely minimized.
 ///
 /// Each record has a [String] key and bytes as as `List<int>`, nothing else.
@@ -114,7 +128,7 @@ class BlobsFileWriter {
 
   void _openAndWriteHeader() {
     assert(this._raf == null);
-    this._raf = this.file.openSync(mode: FileMode.write);
+    this._raf = openForWritingCreatingParent(this.file);
     this._raf!.writeFromSync([SIGNATURE_BYTE_1, SIGNATURE_BYTE_2, 0x03]);
   }
 
