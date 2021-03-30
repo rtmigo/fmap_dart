@@ -4,7 +4,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-This is a `Map` collection, but all of its elements are stored in files.
+A `Map` collection that keeps all of its elements stored in files.
 
 This solution can be used as a **cache** or **persistent** key-value **storage**.
 
