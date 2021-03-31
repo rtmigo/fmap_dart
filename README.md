@@ -85,16 +85,9 @@ Since numbers are bytes, each `int` inside a list is truncated to the range 0..2
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
-In addition to strings and bytes, you can also store simple values of the 
-`int`, `double`, and `bool` types. But keep in mind that each value is saved 
-in a separate file. Therefore, storing a lot of small values like `int` may 
-not be the most efficient approach.
+Keep in mind that each value is saved in a separate file. Therefore, storing 
+a lot of small values like `int` may not very efficient.
 
-``` dart
-fmap['int'] = 5;
-fmap['double'] = 5.0; 
-fmap['bool'] = true;
-```
 
 ## Purging
 
