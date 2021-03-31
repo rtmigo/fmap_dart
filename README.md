@@ -69,11 +69,12 @@ fmap['myJson'] = httpGet('http://somewhere'); // String
 fmap['myBlob'] = myFile.readAsBytesSync(); // Uint8List
 ```
 
-Any `List<int>` will also be treated as list of bytes.
+Any `List<int>` is treated as list of bytes.
 
 ``` dart
-fmap['blob2'] = [0x12, 0x34, 0x56];
-fmap['blob3'] = utf8.encode('my string'); // List<int>
+fmap['blob1'] = [0x12, 0x34, 0x56];
+fmap['blob2'] = utf8.encode('my string'); // List<int>
+fmap['blob3'] = myFile.readAsBytesSync(); // Uint8List derived from List<int> 
 ```
 
 Since numbers are bytes, each `int` inside a list is truncated to the range 0..255.
