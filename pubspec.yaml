@@ -1,5 +1,5 @@
 name: fmap
-description: Easy-to-use approach to caching or persistent blob storage. Key-value collection stored on the filesystem.
+description: A simple and efficient approach to caching or persistent blob storage. Map-like object for accessing data stored on the filesystem.
 version: 0.3.0+3
 repository: https://github.com/rtmigo/fmap
 
