@@ -98,7 +98,7 @@ If the storage has become too large, you can delete the oldest data.
 
 ``` dart
 // leave only the freshest 16 Mb
-fmap.purge˚(16*1024*1024);
+fmap.purge(16*1024*1024);
 ```
 
 Which elements are removed depends on the `policy` argument passed to the 
