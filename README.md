@@ -65,8 +65,10 @@ Supported types are `String`, `List<int>`, `int`, `double` and `bool`.
 
 ``` dart
 var fmap = Fmap(directory);
-fmap['myJson'] = httpGet('http://somewhere'); // String
-fmap['myBlob'] = myFile.readAsBytesSync(); // Uint8List
+fmap['string'] = '^_^';
+fmap['int'] = 5;
+fmap['double'] = 5.0; 
+fmap['bool'] = true;
 ```
 
 Any `List<int>` is treated as list of bytes.
@@ -80,7 +82,7 @@ fmap['blob3'] = myFile.readAsBytesSync(); // Uint8List implements List<int>
 Since numbers are bytes, each `int` inside a list is truncated to the range 0..255.
 
 ``` dart
-fmap['blob3'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
+fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
 In addition to strings and bytes, you can also store simple values of the 
