@@ -1,6 +1,6 @@
 [![Pub Package](https://img.shields.io/pub/v/fmap.svg)](https://pub.dev/packages/fmap)
 [![pub points](https://badges.bar/fmap/pub%20points)](https://pub.dev/fmap/tabular/score)
-![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_macOS_|_Ubuntu-blue.svg)
+![Generic badge](https://img.shields.io/badge/tested_on-macOS_|_Ubuntu_|_Windows-blue.svg)
 
 
 
