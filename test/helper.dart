@@ -5,10 +5,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:fmap/fmap.dart';
 import 'package:errno/errno.dart';
 import 'package:file_errors/file_errors.dart';
-import 'package:fmap/src/10_readwrite_v3.dart';
+import 'package:fmap/fmap.dart';
+import 'package:fmap/src/20_readwrite_v3.dart';
 
 void deleteTempDir(Directory d) {
   try {
@@ -85,8 +85,7 @@ const KEY_EARLIEST = "5_first";
 const KEY_LATEST = "10_first";
 
 /// Fills the map with [n] blobs named `[KEY_EARLIEST, "3", "20", "6" ... KEY_LATEST]`.
-Future<void> populate(Fmap theCache,
-    {lmtMatters = false, int n = 100, int sizeEach = 1024}) async {
+Future<void> populate(Fmap theCache, {lmtMatters = false, int n = 100, int sizeEach = 1024}) async {
   List<String> allKeys = <String>[];
 
   // last-modification times on FAT are rounded to nearest 2 seconds

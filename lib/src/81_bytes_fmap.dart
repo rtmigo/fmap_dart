@@ -7,7 +7,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:file_errors/file_errors.dart';
-import 'package:fmap/src/10_readwrite_v3.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as paths;
 
@@ -15,15 +14,18 @@ import '00_common.dart';
 import '10_file_and_stat.dart';
 import '10_files.dart';
 import '10_hashing.dart';
+import '20_readwrite_v3.dart';
 
 typedef HashFunc = String Function(String key);
 
+/// Determines which entries should be deleted first by [Fmap.purge].
 enum Policy {
-  // First in first out. The cache evicts the entries in the order they were added, without
-  // any regard to how often or how many times they were accessed before.
+  /// First in first out. The cache evicts the entries in the order they were added, without
+  /// any regard to how often or how many times they were accessed before.
   fifo,
-  // Least recently used. Discards the least recently used items first. This algorithm requires
-  // keeping track of what was used when.
+
+  /// Least recently used. Discards the least recently used items first. This algorithm requires
+  /// keeping track of what was used when.
   lru
 }
 
@@ -68,16 +70,9 @@ class Fmap<T> extends MapBase<String, T?> {
   void purge(int maxSizeBytes) {
     List<FileAndStat> files = <FileAndStat>[];
 
-    List<FileSystemEntity> entries;
-    try {
-      entries = innerDir.listSync(recursive: true);
-    } on FileSystemException catch (e) {
-      throw FileSystemException(
-          'DiskCache failed to listSync directory $innerDir right after creation. '
-          'osError: ${e.osError}.');
-    }
+    final dirEntries = innerDir.listSync(recursive: true);
 
-    for (final entry in entries) {
+    for (final entry in dirEntries) {
       if (entry.path.endsWith(DIRTY_SUFFIX)) {
         deleteSyncCalm(File(entry.path));
         continue;
@@ -104,8 +99,6 @@ class Fmap<T> extends MapBase<String, T?> {
       return null;
     }
 
-    //print("THE TYPE ${typedBlob.type}");
-
     switch (typedBlob.type) {
       case TypedBlob.typeBytes:
         return typedBlob.bytes as T;
@@ -124,10 +117,7 @@ class Fmap<T> extends MapBase<String, T?> {
       case TypedBlob.typeBool:
         {
           return (typedBlob.bytes[0] != 0) as T;
-          //#final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
-          //return sl.ge(0) as T;
         }
-
       default:
         throw FallThroughError();
     }
@@ -291,7 +281,8 @@ class Fmap<T> extends MapBase<String, T?> {
 
     bool renamed = false;
     try {
-      final replaceResult = Replace(cacheFile, dirtyFile, key, data?.bytes, data?.type ?? 0,
+      final replaceResult = createModifiedFile(
+          cacheFile, dirtyFile, key, data?.bytes, data?.type ?? 0,
           mustExist: false, wantOldData: wantOldData);
       assert(data == null || dirtyFile.existsSync());
 
@@ -299,7 +290,7 @@ class Fmap<T> extends MapBase<String, T?> {
         // at least one entry written to the new file. Replacing the old file
         dirtyFile.renameSync(cacheFile.path);
       } else {
-        // nothing is written, so no more data to keep in the file
+        // no entries written, no more data to keep in the file
         assert(replaceResult.entriesWritten == 0);
         deleteSyncCalm(cacheFile);
       }

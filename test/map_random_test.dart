@@ -4,10 +4,10 @@
 import 'dart:io';
 
 import 'package:fmap/fmap.dart';
+import 'package:fmap/src/20_readwrite_v3.dart';
 import 'package:fmap/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 import 'package:xrandom/xrandom.dart';
-import 'package:fmap/src/10_readwrite_v3.dart';
 
 import 'helper.dart';
 
@@ -39,8 +39,7 @@ void main() {
     final typesOfActionsPerformed = Set<int>();
     int maxKeysCountEver = 0;
 
-    Map<String,TypedBlob> reference = Map<String,TypedBlob>();
-
+    Map<String, TypedBlob> reference = Map<String, TypedBlob>();
 
     // TODO purge
 
