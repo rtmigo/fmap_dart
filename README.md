@@ -50,7 +50,7 @@ var images = Fmap.temp(subdir: 'images_cache'); // {temp}/images_cache
 var jsons  = Fmap.temp(subdir: 'jsons_cache');  // {temp}/jsons_cache
 ```
 
-If all the storage items have the same type, you can specify it with generics
+If all the storage items have the same type, you can set the type with generics
 
 ``` dart
 var strings1 = Fmap<String>(directory);
