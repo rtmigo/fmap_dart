@@ -116,6 +116,12 @@ timestamps every time an entry is read.
 When you do not specify this argument, the timestamps are only updated on 
 writes, but not on reads.
 
+## Compatibility
+
+The library is unit-tested on Linux, Windows and MacOS. Mobile systems such as 
+Android and iOS have the same kernels as their desktop relatives.
+
+
 
 
 
