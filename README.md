@@ -97,7 +97,7 @@ fmap['bool'] = true;
 If the storage has become too large, you can delete the oldest data.
 
 ``` dart
-// leave only the freshest 16 Mb
+// leave only the newest 16 megabytes
 fmap.purge(16*1024*1024);
 ```
 
