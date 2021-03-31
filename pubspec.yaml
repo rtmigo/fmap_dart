@@ -1,6 +1,6 @@
 name: fmap
 description: File-based key-value collection. Good for caching and blob storage.
-version: 0.3.0
+version: 0.3.0+1
 repository: https://github.com/rtmigo/fmap
 
 environment:
