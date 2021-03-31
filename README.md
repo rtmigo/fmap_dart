@@ -105,7 +105,7 @@ Which elements are removed depends on the `policy` argument passed to the
 constructor.
 
 ``` dart
-final fmap = Fmap(dir, policy: Policy.fifo);
+var fmap = Fmap(dir, policy: Policy.fifo);
 ```
 
 Two policies are supported: FIFO and LRU. By default, this is FIFO.
