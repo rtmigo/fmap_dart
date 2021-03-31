@@ -119,7 +119,7 @@ writes, but not on reads.
 ## Compatibility
 
 The library is unit-tested on Linux, Windows and MacOS. Mobile systems such as 
-Android and iOS have the same kernels as their desktop relatives.
+Android and iOS have the same kernels as their desktop relatives, therefore should work as well.
 
 
 
