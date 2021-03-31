@@ -34,7 +34,7 @@ for (var entry in fmap.entries) {
 For permanent data storage
 
 ``` dart
-var fmap = Fmap(Directory('/path/to/mydata'));
+var fmap = Fmap(Directory('/path/to/my_precious_data'));
 ```
 
 To cache temporary data in the system temporary directory
