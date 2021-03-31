@@ -3,7 +3,7 @@
 
 import 'dart:io';
 
-import 'package:fmap/src/10_readwrite_v3.dart';
+import 'package:fmap/src/20_readwrite_v3.dart';
 import "package:test/test.dart";
 import 'package:xrandom/xrandom.dart';
 
@@ -187,7 +187,7 @@ void main() {
     }
 
     // REPLACING
-    Replace(tempFile, otherTempFile, "two", [1, 50, 10], 0);
+    createModifiedFile(tempFile, otherTempFile, "two", [1, 50, 10], 0);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
@@ -217,7 +217,7 @@ void main() {
     }
 
     // REPLACING
-    Replace(tempFile, otherTempFile, "two", null, 0);
+    createModifiedFile(tempFile, otherTempFile, "two", null, 0);
 
     // READING
     final reader = BlobsFileReader(otherTempFile);
@@ -250,7 +250,7 @@ void main() {
       }
 
       // REPLACING
-      Replace(tempFile, otherTempFile, "one", null, 0);
+      createModifiedFile(tempFile, otherTempFile, "one", null, 0);
 
       expect(otherTempFile.existsSync(), false);
     });
@@ -259,7 +259,7 @@ void main() {
       // there is no source file
       expect(tempFile.existsSync(), false);
       // we we are "replacing" an entry in non-existent file
-      Replace(tempFile, otherTempFile, "one", [1, 2, 3], 0, mustExist: false);
+      createModifiedFile(tempFile, otherTempFile, "one", [1, 2, 3], 0, mustExist: false);
       // new file must be created
       expect(otherTempFile.existsSync(), true);
     });

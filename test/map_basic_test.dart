@@ -3,9 +3,9 @@
 
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:path/path.dart' as path;
 
 import 'package:fmap/src/81_bytes_fmap.dart';
+import 'package:path/path.dart' as path;
 import "package:test/test.dart";
 
 import 'helper.dart';
@@ -39,7 +39,6 @@ void runTests(String prefix, Fmap create(Directory d)) {
       final map = Fmap(Directory(path.join(tempDir.path, 'nonexistent')));
       expect(map.entries.toList().length, 0);
     });
-
   });
 
   group('in temp dir', () {
@@ -69,7 +68,6 @@ void runTests(String prefix, Fmap create(Directory d)) {
       final map = Fmap.temp();
       expect(map.updateTimestampsOnRead, isFalse);
     });
-
   });
 
   test('All files are in v1 subdir', () {
@@ -101,7 +99,6 @@ void runTests(String prefix, Fmap create(Directory d)) {
     // delete
     map.remove("A");
 
-
     // reading the item returns null again
     expect(map["A"], isNull);
 
@@ -117,7 +114,7 @@ void runTests(String prefix, Fmap create(Directory d)) {
     expect(map["A"], isNotNull);
 
     // deleting must return the removed item
-    expect(map.remove("A"), [1,2,3]);
+    expect(map.remove("A"), [1, 2, 3]);
     expect(map["A"], isNull);
 
     // deleting when the item does not exist returns null
@@ -160,7 +157,7 @@ void runTests(String prefix, Fmap create(Directory d)) {
     map["B"] = 'data';
     map["C"] = [5];
 
-    final entries = map.entries.toList()..sort((a,b)=>a.key.compareTo(b.key));
+    final entries = map.entries.toList()..sort((a, b) => a.key.compareTo(b.key));
 
     expect(entries.length, 3);
 
@@ -172,7 +169,6 @@ void runTests(String prefix, Fmap create(Directory d)) {
 
     expect(entries[2].key, 'C');
     expect(entries[2].value, [5]);
-
   });
 
   test('contains', () {
@@ -258,30 +254,27 @@ void runTests(String prefix, Fmap create(Directory d)) {
   });
 
   test('Type mix', () {
-
     final map = create(tempDir);
 
     map['a'] = 'hello';
-    map['b'] = [1,2,3];
+    map['b'] = [1, 2, 3];
     map['c'] = 'hi';
     map['d'] = [5];
 
     expect(map['a'], 'hello');
-    expect(map['b'], [1,2,3]);
+    expect(map['b'], [1, 2, 3]);
     expect(map['c'], 'hi');
     expect(map['d'], [5]);
 
     map['b'] = 'new string';
-    map['c'] = [7,7,7];
+    map['c'] = [7, 7, 7];
     expect(map['a'], 'hello');
     expect(map['b'], 'new string');
-    expect(map['c'], [7,7,7]);
+    expect(map['c'], [7, 7, 7]);
     expect(map['d'], [5]);
-
   });
 
   test('Generic string', () {
-
     final map = Fmap<String>(tempDir);
 
     map['a'] = 'hello';
@@ -292,16 +285,14 @@ void runTests(String prefix, Fmap create(Directory d)) {
   });
 
   test('Generic Uint8List', () {
-
     final map = Fmap<Uint8List>(tempDir);
 
-    map['a'] = Uint8List.fromList([1,2,3]);
-    map['c'] = Uint8List.fromList([4,5]);
+    map['a'] = Uint8List.fromList([1, 2, 3]);
+    map['c'] = Uint8List.fromList([4, 5]);
 
-    expect(map['a'], [1,2,3]);
-    expect(map['c'], [4,5]);
+    expect(map['a'], [1, 2, 3]);
+    expect(map['c'], [4, 5]);
   });
-
 }
 
 void main() {

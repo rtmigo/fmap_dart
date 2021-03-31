@@ -4,7 +4,7 @@
 import 'dart:io';
 
 import 'package:fmap/fmap.dart';
-import 'package:fmap/src/10_readwrite_v3.dart';
+import 'package:fmap/src/20_readwrite_v3.dart';
 import 'package:fmap/src/81_bytes_fmap.dart';
 import "package:test/test.dart";
 
@@ -21,7 +21,7 @@ void runTests(String prefix, Fmap createFmap(Directory d), bool mustUpdate) {
     deleteTempDir(tempDir);
   });
 
-  test('$prefix Disk cache: timestamp updated', () async {
+  test('$prefix reading updates timestamps', () async {
     const key = "key";
 
     final map = createFmap(tempDir);
@@ -41,7 +41,7 @@ void runTests(String prefix, Fmap createFmap(Directory d), bool mustUpdate) {
     }
   });
 
-  test('$prefix containsKey does not update timestamps', () async {
+  test('$prefix containsKey() does not update timestamps', () async {
     const key = "key";
 
     final map = createFmap(tempDir);
@@ -58,7 +58,7 @@ void runTests(String prefix, Fmap createFmap(Directory d), bool mustUpdate) {
     expect(map.keyToFile(key).lastModifiedSync(), equals(lmt));
   });
 
-  test('$prefix iterating entries updates timestamps', () async {
+  test('$prefix iterating entries with data updates timestamps', () async {
     final map = createFmap(tempDir);
 
     map['A'] = 1;

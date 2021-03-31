@@ -52,7 +52,9 @@ class FileAndStat {
 
     if (_DEBUG_LOGGING) {
       print('ALL THE FILE LMTS');
-      for (var f in files) { print('- ' + f.file.lastModifiedSync().toString()); }
+      for (var f in files) {
+        print('- ' + f.file.lastModifiedSync().toString());
+      }
     }
 
     DateTime? prevLastModified;
@@ -70,8 +72,7 @@ class FileAndStat {
 
       if (deleteFile != null) {
         deleteFile(item.file);
-      }
-      else {
+      } else {
         item.file.deleteSync();
       }
 

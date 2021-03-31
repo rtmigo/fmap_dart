@@ -4,10 +4,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
+
 import 'package:file_errors/file_errors.dart';
-import '00_common.dart';
-import 'byte_sequence.dart';
 import 'package:path/path.dart' as pathlib;
+
+import '00_common.dart';
+import '10_byte_sequence.dart';
 
 const SIGNATURE_BYTE_1 = 0x4B;
 const SIGNATURE_BYTE_2 = 0x42;
@@ -18,6 +20,7 @@ class TypedBlob implements Comparable {
   TypedBlob(this.type, this.bytes) {
     RangeError.checkValueInInterval(this.type, 0, 0xFE);
   }
+
   final List<int> bytes;
   final int type;
 
@@ -28,7 +31,7 @@ class TypedBlob implements Comparable {
   static const typeBool = 4;
 
   @override
-  bool operator ==(Object other) => this.compareTo(other)==0;
+  bool operator ==(Object other) => this.compareTo(other) == 0;
 
   static int _compareTwoLists(List<int> a, List<int> b) {
     // comparing length
@@ -271,17 +274,18 @@ class BlobsFileReader {
       throw StateError('Cannot read entry: current state is $_state');
     }
 
-    final entryHeaderBuffer = ByteSequence(ByteData.sublistView(_raf!.readSync(2+4+1)));
+    const entryHeaderSize = 2 + 4 + 1;
+
+    final entryHeaderBuffer = ByteSequence(ByteData.sublistView(_raf!.readSync(entryHeaderSize)));
     this._cachedPosition += entryHeaderBuffer.data.lengthInBytes;
 
     if (entryHeaderBuffer.data.lengthInBytes == 0) {
       // no more entries
-      //this._currentEntryKey = null;
       this._currentEntryBlobSize = -1;
       this._currentEntryType = -1;
       this._state = State.atFileEnd;
       return null;
-    } else if (entryHeaderBuffer.data.lengthInBytes != 2+4+1) {
+    } else if (entryHeaderBuffer.data.lengthInBytes != entryHeaderSize) {
       throw FileFormatError('Unexpected count of bytes at entry start.');
     }
 
@@ -296,7 +300,6 @@ class BlobsFileReader {
       throw FileFormatError('Failed to read entry key.');
     }
     this._cachedPosition += keySize;
-    //this._currentEntryKey = utf8.decode(keyBytes);
 
     this._state = State.atBlobStart;
     return utf8.decode(keyBytes);
@@ -362,9 +365,12 @@ class BlobsFileReader {
   }
 }
 
-class Replace {
-  /// Created a copy with file with particular blob replaced or removed.
-  Replace(File source, File target, String newKey, List<int>? newBlob, int newDataType,
+/// The [createModifiedFile] object creates a modified file with particular entry replaced or
+/// removed. All the work is done in constructor. The created object fields describe the result
+/// of the operation.
+class createModifiedFile {
+  /// Creates a file copy with particular entry replaced or removed.
+  createModifiedFile(File source, File target, String newKey, List<int>? newBlob, int newDataType,
       {bool mustExist = true, bool wantOldData = false}) {
     BlobsFileReader? reader;
     BlobsFileWriter? writer;
@@ -390,14 +396,9 @@ class Replace {
           } else {
             reader.skipBlob();
           }
-
-
-          //reader.skipBlob(); // we don't need old data
-          //this.entryWasFound = true; // todo test
           continue;
         } else {
           // copying old data
-          //final et = reader._currentEntryType;
           final tb = reader.readBlob();
           writer.write(oldKey, tb.bytes, tb.type);
           this.entriesWritten++;
