@@ -6,7 +6,8 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-Fmap is an easy-to-use approach to caching or persistent blob storage. `Fmap` is a key-value collection stored on filesystem. 
+Fmap is an easy-to-use approach to caching or persistent blob storage. `Fmap` 
+object is a key-value collection stored on filesystem. 
 
 ``` dart
 var fmap = Fmap(directory);
