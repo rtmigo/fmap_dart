@@ -67,7 +67,7 @@ The object is intended primarily for storing values of type `String`
 and `Uint8List` (blobs).
 
 ``` dart
-var objects = Fmap(directory);
+var fmap = Fmap(directory);
 fmap['myJson'] = httpGet('http://somewhere'); // String
 fmap['blob'] = myFile.readAsBytesSync(); // Uint8List
 ```
