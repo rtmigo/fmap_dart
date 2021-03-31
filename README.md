@@ -28,7 +28,7 @@ for (var entry in fmap.entries) {
 }
 ```
 
-Entries are stored in separate files. Therefore, reading an entry is about as fast as reading a file with a known exact name. But unlike direct file access, `Fmap` has no restrictions on the content of `String` keys, it takes care of finding unique file names, resolving hash collisions, and serialization.
+Entries are stored in separate files. Therefore, reading/writing an entry is about as fast as reading/writing a file with a known exact name. But unlike direct file access, `Fmap` has no restrictions on the content of `String` keys, it takes care of finding unique file names, resolving hash collisions, and serialization.
 
 ## Creating
 
