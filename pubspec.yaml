@@ -17,5 +17,3 @@ dev_dependencies:
   xrandom: any
   test: ^1.5.1
   pedantic: ^1.9.0
-
-
