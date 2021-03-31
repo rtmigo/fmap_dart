@@ -40,7 +40,7 @@ var fmap = Fmap(Directory('/path/to/mydata'));
 To cache temporary data in the system temporary directory
 
 ``` dart
-var fmap = Fmap.temp(); // will be placed into "<temp>/fmap" dir
+var fmap = Fmap.temp(); // will be placed into <temp>/fmap dir
 ```
 
 To cache temporary data in a specific subdirectory of the system temporary directory
@@ -112,12 +112,12 @@ final fmap = Fmap(dir, policy: Policy.fifo);
 Two policies are supported: FIFO and LRU. By default, this is FIFO.
 
 If you want the `purgeSync` method to purge storage with LRU policy, you must
-not only create `Fmap(policy: Policy.lru)` before purging, but always
-create the object this way. It will cause `Fmap` to update the the last-used 
+not only create `Fmap(policy: Policy.lru)` before purging but always
+create the object this way. It will force `Fmap` to update the last-used 
 timestamps every time an item is read.
 
 When you do not specify this argument, the timestamps are only updated on 
-writes, but not on reads. The order of the elements becomes closer to the FIFO.
+writes, but not on reads.
 
 
 
