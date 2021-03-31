@@ -6,8 +6,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-Easy-to-use approach to caching or persistent blob storage. Key-value 
-collection accessed with a Map-like object.
+Easy-to-use approach to caching or persistent blob storage. Map-like object for accessing data stored on the filesystem.
 
 ``` dart
 var fmap = Fmap(directory);
