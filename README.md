@@ -63,13 +63,10 @@ var strings2 = Fmap.temp<String>();
 The collection allows you to store only values of certain types. 
 Supported types are `String`, `List<int>`, `int`, `double` and `bool`.
 
-The object is intended primarily for storing values of type `String` 
-and `Uint8List` (blobs).
-
 ``` dart
 var fmap = Fmap(directory);
 fmap['myJson'] = httpGet('http://somewhere'); // String
-fmap['blob'] = myFile.readAsBytesSync(); // Uint8List
+fmap['myBlob'] = myFile.readAsBytesSync(); // Uint8List
 ```
 
 Any `List<int>` will also be treated as list of bytes.
