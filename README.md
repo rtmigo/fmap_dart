@@ -120,7 +120,7 @@ writes, but not on reads.
 
 The library is unit-tested on Linux, Windows and MacOS. Mobile systems such as 
 Android and iOS have the same kernels as their desktop relatives, so will
- also work as long as you have access to the files.
+ also work as long as you have access to the files and the file system supports standards. 
 
 
 
