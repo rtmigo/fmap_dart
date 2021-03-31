@@ -1,6 +1,6 @@
 [![Pub Package](https://img.shields.io/pub/v/fmap.svg)](https://pub.dev/packages/fmap)
 [![pub points](https://badges.bar/fmap/pub%20points)](https://pub.dev/fmap/tabular/score)
-![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
+![Generic badge](https://img.shields.io/badge/tested_on-macOS_|_Ubuntu_|_Windows-blue.svg)
 
 
 
@@ -74,7 +74,7 @@ fmap['bool'] = true;
 Any `List<int>` is treated as list of bytes.
 
 ``` dart
-fmap['blob1'] = [0x12, 0x34, 0x56];
+fmap['blob1'] = [0x12, 0x34, 0x56]; // List<int>
 fmap['blob2'] = utf8.encode('my string'); // List<int>
 fmap['blob3'] = myFile.readAsBytesSync(); // Uint8List implements List<int> 
 ```
@@ -85,7 +85,8 @@ Since numbers are bytes, each `int` inside a list is truncated to the range 0..2
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
-Keep in mind that each value is saved in a separate file. Therefore, storing a lot of small values like `double` may not be very practical. Conversely, saving large objects such as strings or blobs is efficient. It's almost like writing directly to files, but without restrictions on key names.
+Keep in mind that each entry is saved in a separate file. Therefore, storing a lot of atomic values like `double` 
+associated  with different keys may not be very practical. Conversely, saving large objects such as `String`s or `List<int>` is efficient. It's almost like writing directly to files, but without restrictions on key names.
 
 
 
@@ -114,6 +115,13 @@ timestamps every time an entry is read.
 
 When you do not specify this argument, the timestamps are only updated on 
 writes, but not on reads.
+
+## Compatibility
+
+The library is unit-tested on Linux, Windows, and macOS. Mobile systems such as 
+Android and iOS have the same kernels as their desktop relatives, so will
+ also work as long as you have access to the files and the file system supports standards. 
+
 
 
 
