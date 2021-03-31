@@ -39,14 +39,14 @@ var fmap = Fmap(Directory('/path/to/mydata'));
 To cache temporary data in the system temporary directory
 
 ``` dart
-var fmap = Fmap.temp(); // will be placed into <temp>/fmap dir
+var fmap = Fmap.temp(); // will be placed into {temp}/fmap dir
 ```
 
 To cache temporary data in a specific subdirectory of the system temporary directory
 
 ``` dart
-var blobs = Fmap.temp(subdir: 'blobsCache'); // <temp>/blobsCache
-var texts = Fmap.temp(subdir: 'textsCache'); // <temp>/textsCache
+var images = Fmap.temp(subdir: 'images_cache'); // {temp}/images_cache
+var jsons  = Fmap.temp(subdir: 'jsons_cache');  // {temp}/jsons_cache
 ```
 
 If all the storage items have the same type, you can specify it with generics
