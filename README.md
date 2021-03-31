@@ -6,7 +6,8 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-`Fmap` is a file-based key-value collection. Good for caching and blob storage.
+`Fmap` is a file-based key-value collection. An easy-to-use approach to caching 
+or persistent blob storage.
 
 ``` dart
 var fmap = Fmap(directory);
