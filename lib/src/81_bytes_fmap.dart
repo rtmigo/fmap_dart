@@ -24,7 +24,8 @@ enum Policy {
   fifo,
   // Least recently used. Discards the least recently used items first. This algorithm requires
   // keeping track of what was used when.
-  lru }
+  lru
+}
 
 /// A [Map] implementation that stores its entries in files.
 ///
@@ -51,7 +52,6 @@ class Fmap<T> extends MapBase<String, T?> {
   @internal
   @visibleForTesting
   late Directory innerDir;
-
 
   /// The directory inside which the data is stored. The directory can be non-existent
   /// when the object is created.
@@ -163,14 +163,20 @@ class Fmap<T> extends MapBase<String, T?> {
     this.innerDir.deleteSync(recursive: true);
   }
 
-  Iterable<RET> _iterAll<RET>(RET Function(BlobsFileReader blf, String key) itemToRet) sync* {
+  Iterable<TResult> _iterate<TResult>(TResult Function(BlobsFileReader blf, String key) toResult,
+      bool maybeUpdateTimestamps) sync* {
     for (final f in listSyncOrEmpty(this.innerDir, recursive: true)) {
       if (FileSystemEntity.isFileSync(f.path) && f.path.endsWith(DATA_SUFFIX)) {
         BlobsFileReader? reader;
         try {
           reader = BlobsFileReader(File(f.path));
+          bool timestampUpdated = false;
           for (var key = reader.readKey(); key != null; key = reader.readKey()) {
-            yield itemToRet(reader, key);
+            if (maybeUpdateTimestamps && !timestampUpdated) {
+              maybeUpdateTimestampAsync(File(f.path));
+              timestampUpdated = true;
+            }
+            yield toResult(reader, key);
             // yield key;
             // reader.skipBlob();
           }
@@ -179,17 +185,20 @@ class Fmap<T> extends MapBase<String, T?> {
         }
       }
     }
-
   }
 
   @override
   Iterable<String> get keys {
-    return _iterAll((blf, key) { blf.skipBlob(); return key; });
+    return _iterate((blf, key) {
+      blf.skipBlob();
+      return key;
+    }, false);
   }
 
   @override
   Iterable<MapEntry<String, T>> get entries {
-    return _iterAll((reader, key) => MapEntry<String, T>(key, _deserialize(reader.readBlob())!));
+    return _iterate(
+        (reader, key) => MapEntry<String, T>(key, _deserialize(reader.readBlob())!), true);
   }
 
   @override
@@ -198,7 +207,7 @@ class Fmap<T> extends MapBase<String, T?> {
   }
 
   @internal
-  void maybeUpdateTimestampOnRead(File file) {
+  void maybeUpdateTimestampAsync(File file) {
     if (this.updateTimestampsOnRead) {
       // scheduling async timestamp modification
       () async {
@@ -236,7 +245,7 @@ class Fmap<T> extends MapBase<String, T?> {
   @visibleForTesting
   @internal
   TypedBlob? readSync(String key) {
-    return _readOne<TypedBlob>(key, (reader, key) => reader.readBlob());
+    return _readOne<TypedBlob>(key, (reader, key) => reader.readBlob(), true);
   }
 
   @override
@@ -244,17 +253,20 @@ class Fmap<T> extends MapBase<String, T?> {
     if (!(key is String)) {
       return false;
     }
-    return _readOne<bool>(key, (reader, key) => true) ?? false;
+    return _readOne<bool>(key, (reader, key) => true, false) ?? false;
   }
 
-  RET? _readOne<RET>(String key, RET Function(BlobsFileReader reader, String key) toResult) {
+  TResult? _readOne<TResult>(String key,
+      TResult Function(BlobsFileReader reader, String key) toResult, bool maybeUpdateTimestamps) {
     final file = keyToFile(key);
     BlobsFileReader? reader;
     try {
-      maybeUpdateTimestampOnRead(file); // calling async func without waiting
       reader = BlobsFileReader(file);
       for (var storedKey = reader.readKey(); storedKey != null; storedKey = reader.readKey()) {
         if (storedKey == key) {
+          if (maybeUpdateTimestamps) {
+            maybeUpdateTimestampAsync(file);
+          }
           return toResult(reader, storedKey);
         } else {
           reader.skipBlob();
