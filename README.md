@@ -85,10 +85,8 @@ Since numbers are bytes, each `int` inside a list is truncated to the range 0..2
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
-Keep in mind that each value is saved in a separate file. Therefore, storing 
-a lot of small values like `double` may not be very efficient. Conversely, saving 
-large objects such as strings or blobs is effective. It's almost like writing directly to files, but 
-without restrictions on key names.
+Keep in mind that each value is saved in a separate file. Therefore, storing a lot of small values like `double` may not be very practical. Conversely, saving large objects such as strings or blobs is efficient. It's almost like writing directly to files, but without restrictions on key names.
+
 
 
 ## Purging
