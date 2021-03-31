@@ -28,7 +28,7 @@ for (var entry in fmap.entries) {
 }
 ```
 
-Each entry is stored in a separate file. Therefore, the speed of searching for an entry is approximately equal to the speed of reading a file.
+Each entry is stored in a separate file. Therefore, the speed of searching for an entry is approximately equal to the speed of reading a file with a known exact name.
 
 ## Creating
 
