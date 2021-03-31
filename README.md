@@ -28,6 +28,8 @@ for (var entry in fmap.entries) {
 }
 ```
 
+Each entry is stored in a separate file. Therefore, the speed of searching for a entry is approximately equal to the speed of accessing a file.
+
 ## Creating
 
 For permanent data storage
