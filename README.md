@@ -76,7 +76,7 @@ fmap['blob2'] = [0x12, 0x34, 0x56];
 fmap['blob3'] = utf8.encode('my string'); // List<int>
 ```
 
-When saving, each `int` inside a list will be truncated to the range 0..255.
+Since numbers are bytes, each `int` inside a list is truncated to the range 0..255.
 
 ``` dart
 fmap['blob3'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
