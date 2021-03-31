@@ -87,7 +87,7 @@ fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9
 
 Keep in mind that each value is saved in a separate file. Therefore, storing 
 a lot of small values like `double` may not be very efficient. Conversely, saving 
-large objects is effective. It's almost like writing directly to files, but 
+large objects such as strings or blobs is effective. It's almost like writing directly to files, but 
 without restrictions on key names.
 
 
