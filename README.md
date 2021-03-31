@@ -1,6 +1,6 @@
 [![Pub Package](https://img.shields.io/pub/v/fmap.svg)](https://pub.dev/packages/fmap)
 [![pub points](https://badges.bar/fmap/pub%20points)](https://pub.dev/fmap/tabular/score)
-![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_MacOS_|_Ubuntu-blue.svg)
+![Generic badge](https://img.shields.io/badge/tested_on-Windows_|_macOS_|_Ubuntu-blue.svg)
 
 
 
@@ -118,7 +118,7 @@ writes, but not on reads.
 
 ## Compatibility
 
-The library is unit-tested on Linux, Windows and MacOS. Mobile systems such as 
+The library is unit-tested on Linux, Windows, and macOS. Mobile systems such as 
 Android and iOS have the same kernels as their desktop relatives, so will
  also work as long as you have access to the files and the file system supports standards. 
 
