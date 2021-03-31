@@ -6,7 +6,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-A simple and efficient approach to caching or persistent blob storage. A Map-like object for accessing data stored on the filesystem.
+A simple and efficient approach to caching or persistent blob storage. Map-like object for accessing data stored on the filesystem.
 
 ``` dart
 var fmap = Fmap(directory);
