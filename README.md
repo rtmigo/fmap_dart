@@ -37,13 +37,13 @@ For permanent data storage
 var fmap = Fmap(Directory('/path/to/my_precious_data'));
 ```
 
-To cache temporary data in the system temporary directory
+To cache data in the system temporary directory
 
 ``` dart
 var fmap = Fmap.temp(); // will be placed into {temp}/fmap dir
 ```
 
-To cache temporary data in a specific subdirectory of the system temporary directory
+To cache data in a specific subdirectory of the system temporary directory
 
 ``` dart
 var images = Fmap.temp(subdir: 'images_cache'); // {temp}/images_cache
