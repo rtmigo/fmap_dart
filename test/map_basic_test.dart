@@ -124,22 +124,73 @@ void runTests(String prefix, Fmap create(Directory d)) {
     expect(map.remove("A"), isNull);
   });
 
+  test('keys and entries when empty', () {
+    final map = create(tempDir);
 
+    expect(map.keys.toList(), isEmpty);
+    expect(map.entries.toList(), isEmpty);
+    expect(map.length, 0);
+  });
 
-  test('$prefix list items', () {
+  test('keys', () {
     final map = create(tempDir);
 
     expect(map.keys.toSet(), isEmpty);
+    expect(map.length, 0);
 
     map["A"] = [1, 2, 3];
     map["B"] = [4, 5];
     map["C"] = [5];
 
     expect(map.keys.toSet(), {"A", "B", "C"});
+    expect(map.length, 3);
 
     map["B"] = null;
 
     expect(map.keys.toSet(), {"A", "C"});
+    expect(map.length, 2);
+  });
+
+  test('entries', () {
+    final map = create(tempDir);
+
+    expect(map.length, 0);
+
+    map["A"] = 1.0;
+    map["B"] = 'data';
+    map["C"] = [5];
+
+    final entries = map.entries.toList()..sort((a,b)=>a.key.compareTo(b.key));
+
+    expect(entries.length, 3);
+
+    expect(entries[0].key, 'A');
+    expect(entries[0].value, 1.0);
+
+    expect(entries[1].key, 'B');
+    expect(entries[1].value, 'data');
+
+    expect(entries[2].key, 'C');
+    expect(entries[2].value, [5]);
+
+  });
+
+  test('contains', () {
+    final map = create(tempDir);
+
+    expect(map.containsKey('A'), isFalse);
+    expect(map.containsKey('B'), isFalse);
+    expect(map.containsKey('C'), isFalse);
+    expect(map.containsKey('D'), isFalse);
+
+    map["A"] = [1, 2, 3];
+    map["B"] = [4, 5];
+    map["C"] = [5];
+
+    expect(map.containsKey('A'), isTrue);
+    expect(map.containsKey('B'), isTrue);
+    expect(map.containsKey('C'), isTrue);
+    expect(map.containsKey('D'), isFalse);
   });
 
   test('$prefix Disk cache: clear', () {

@@ -45,11 +45,8 @@ class Fmap<T> extends MapBase<String, T?> {
   }
 
   static Fmap temp<TYPE>({String subdir = 'fmap', Policy policy = Policy.fifo}) {
-    // TODO unittest
     return Fmap<TYPE>(Directory(paths.join(Directory.systemTemp.path, subdir)), policy: policy);
   }
-
-  // TODO Override 'containsKey' for speed
 
   @internal
   @visibleForTesting
@@ -166,22 +163,33 @@ class Fmap<T> extends MapBase<String, T?> {
     this.innerDir.deleteSync(recursive: true);
   }
 
-  @override
-  Iterable<String> get keys sync* {
+  Iterable<RET> _iterAll<RET>(RET Function(BlobsFileReader blf, String key) itemToRet) sync* {
     for (final f in listSyncOrEmpty(this.innerDir, recursive: true)) {
-      if (FileSystemEntity.isFileSync(f.path)) {
+      if (FileSystemEntity.isFileSync(f.path) && f.path.endsWith(DATA_SUFFIX)) {
         BlobsFileReader? reader;
         try {
           reader = BlobsFileReader(File(f.path));
           for (var key = reader.readKey(); key != null; key = reader.readKey()) {
-            yield key;
-            reader.skipBlob();
+            yield itemToRet(reader, key);
+            // yield key;
+            // reader.skipBlob();
           }
         } finally {
           reader?.closeSync();
         }
       }
     }
+
+  }
+
+  @override
+  Iterable<String> get keys {
+    return _iterAll((blf, key) { blf.skipBlob(); return key; });
+  }
+
+  @override
+  Iterable<MapEntry<String, T>> get entries {
+    return _iterAll((reader, key) => MapEntry<String, T>(key, _deserialize(reader.readBlob())!));
   }
 
   @override
@@ -228,6 +236,18 @@ class Fmap<T> extends MapBase<String, T?> {
   @visibleForTesting
   @internal
   TypedBlob? readSync(String key) {
+    return _readOne<TypedBlob>(key, (reader, key) => reader.readBlob());
+  }
+
+  @override
+  bool containsKey(Object? key) {
+    if (!(key is String)) {
+      return false;
+    }
+    return _readOne<bool>(key, (reader, key) => true) ?? false;
+  }
+
+  RET? _readOne<RET>(String key, RET Function(BlobsFileReader reader, String key) toResult) {
     final file = keyToFile(key);
     BlobsFileReader? reader;
     try {
@@ -235,7 +255,7 @@ class Fmap<T> extends MapBase<String, T?> {
       reader = BlobsFileReader(file);
       for (var storedKey = reader.readKey(); storedKey != null; storedKey = reader.readKey()) {
         if (storedKey == key) {
-          return reader.readBlob();
+          return toResult(reader, storedKey);
         } else {
           reader.skipBlob();
         }
