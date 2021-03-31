@@ -61,7 +61,7 @@ var strings2 = Fmap.temp<String>();
 ## Types
 
 The collection allows you to store only values of certain types. 
-Namely: `String`, `List<int>`, `int`, `double` and `bool`.
+Supported types are `String`, `List<int>`, `int`, `double` and `bool`.
 
 The object is intended primarily for storing values of type `String` 
 and `Uint8List` (blobs).
