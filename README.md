@@ -6,8 +6,7 @@
 
 # [fmap](https://github.com/rtmigo/fmap)
 
-Easy-to-use approach to caching or persistent blob storage. Key-value 
-collection stored on the filesystem. 
+A simple and efficient approach to caching or persistent blob storage. Map-like object for accessing data stored on the filesystem.
 
 ``` dart
 var fmap = Fmap(directory);
@@ -28,6 +27,8 @@ for (var entry in fmap.entries) {
     print('Item ${entry.key}: ${entry.value}'); 
 }
 ```
+
+Entries are stored in separate files. Therefore, reading/writing an entry is about as fast as reading/writing a file with a known exact name. But unlike direct file access, `Fmap` has no restrictions on the content of `String` keys, it takes care of finding unique file names, resolving hash collisions, and serialization.
 
 ## Creating
 
