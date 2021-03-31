@@ -86,7 +86,7 @@ fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9
 ```
 
 Keep in mind that each value is saved in a separate file. Therefore, storing 
-a lot of small values like `int` may not very efficient.
+a lot of small values like `int` may not be very efficient.
 
 
 ## Purging
