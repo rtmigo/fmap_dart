@@ -1,4 +1,4 @@
-# 0.3.0+2
+# 0.3.0+3
 
 - Fmap.containsKey works faster
 - Fmap.entries works faster
