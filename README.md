@@ -93,6 +93,13 @@ Since numbers are bytes, each `int` inside a list is truncated to the range
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
+Lists of bytes always return `Uint8List` when read.
+
+``` dart
+Uint8List bytes = fmap['blob4']; // was List<int>, now Uint8List  
+```
+
+
 ### String lists
 
 Lists of strings, when stored, can be specified by any object that implements 
