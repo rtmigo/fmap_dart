@@ -76,6 +76,8 @@ fmap['double'] = 5.0;
 fmap['bool'] = true;
 ```
 
+### Bytes
+
 Any `List<int>` is treated as list of bytes.
 
 ``` dart
@@ -91,9 +93,35 @@ Since numbers are bytes, each `int` inside a list is truncated to the range
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
+Lists of bytes always return `Uint8List` when read.
+
+``` dart
+Uint8List bytes = fmap['blob4']; // was List<int>, now Uint8List  
+```
+
+
+### String lists
+
+Lists of strings, when stored, can be specified by any object that implements 
+`Iterable <String>`, not necessarily a `List`.
+
+``` dart
+fmap['saved_list'] = ['ordered', 'strings', 'in', 'list'];
+fmap['saved_iterable'] = {'unordered', 'strings', 'in', 'a', 'set'}; 
+```
+
+However, when read, they will definitely return as `List<String>`.
+
+``` dart
+List<String> a = fmap['saved_list'];
+List<String> b = fmap['saved_iterable'];
+```
+
+### Entry ~ file
+
 Keep in mind that each entry is saved in a separate file. Therefore, storing a
 lot of atomic values like `double` associated  with different keys may not be
-very practical. Conversely, saving large objects such as `String`s, `List<int>`,
+very practical. Conversely, saving large objects such as `String`, `List<int>`,
 or `List<String>` is efficient. It's almost like writing directly to files, but
 without restrictions on key names.
 

@@ -255,16 +255,29 @@ void runTests(String prefix, Fmap create(Directory d)) {
     expect(map['B'], 2.7183);
   });
 
-  test('string list', () {
+  test('string list or iterable', () {
     final map = create(tempDir);
     map['key1'] = ['aaa', 'bbb', 'ccc'];
     map['key3'] = <String>[];
     map['key2'] = ['one', 'two', 'three'];
-
+    map['iter'] = ['one', 'two', 'three', 'four'].toSet();
 
     expect(map['key2'], ['one', 'two', 'three']);
     expect(map['key1'], ['aaa', 'bbb', 'ccc']);
     expect(map['key3'], []);
+    expect(map['iter'].toSet(), {'one', 'two', 'three', 'four'});
+  });
+
+  test('bytes list', () {
+    final map = create(tempDir);
+
+    map["A"] = [1, 2, 3];
+    map["B"] = <int>[];
+    map["C"] = [1, 10, -1, 777];
+
+    expect(map['A'], [1, 2, 3]);
+    expect(map['B'], []);
+    expect(map['C'], [1, 10, 255, 9]);
   });
 
 
