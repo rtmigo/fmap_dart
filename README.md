@@ -2,11 +2,10 @@
 [![pub points](https://badges.bar/fmap/pub%20points)](https://pub.dev/fmap/tabular/score)
 ![Generic badge](https://img.shields.io/badge/tested_on-macOS_|_Ubuntu_|_Windows-blue.svg)
 
-
-
 # [fmap](https://github.com/rtmigo/fmap)
 
-A simple and efficient approach to caching or persistent blob storage. Map-like object for accessing data stored on the filesystem.
+A simple and efficient approach to caching or persistent blob storage. Map-like
+object for accessing data stored on the filesystem.
 
 ``` dart
 var fmap = Fmap(directory);
@@ -28,11 +27,15 @@ for (var entry in fmap.entries) {
 }
 ```
 
-Entries are stored in separate files. Therefore, reading/writing an entry is about as fast as reading/writing a file with a known exact name. But unlike direct file access, `Fmap` has no restrictions on the content of `String` keys, it takes care of finding unique file names, resolving hash collisions, and serialization.
+Entries are stored in separate files. Therefore, reading/writing an entry is
+about as fast as reading/writing a file with a known exact name. But unlike
+direct file access, `Fmap` has no restrictions on the content of `String` keys,
+it takes care of finding unique file names, resolving hash collisions, and
+serialization.
 
 ## Creating
 
-For permanent data storage
+For persistent data storage
 
 ``` dart
 var fmap = Fmap(Directory('/path/to/my_precious_data'));
@@ -66,7 +69,7 @@ Supported types are `String`, `List<int>`, `int`, `double` and `bool`.
 
 ``` dart
 var fmap = Fmap(directory);
-fmap['string'] = '^_^';
+fmap['string'] = 'abcd';
 fmap['int'] = 5;
 fmap['double'] = 5.0; 
 fmap['bool'] = true;
@@ -80,15 +83,18 @@ fmap['blob2'] = utf8.encode('my string'); // List<int>
 fmap['blob3'] = myFile.readAsBytesSync(); // Uint8List implements List<int> 
 ```
 
-Since numbers are bytes, each `int` inside a list is truncated to the range 0..255.
+Since numbers are bytes, each `int` inside a list is truncated to the range
+0..255.
 
 ``` dart
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
-Keep in mind that each entry is saved in a separate file. Therefore, storing a lot of atomic values like `double` 
-associated  with different keys may not be very practical. Conversely, saving large objects such as `String`s or `List<int>` is efficient. It's almost like writing directly to files, but without restrictions on key names.
-
+Keep in mind that each entry is saved in a separate file. Therefore, storing a
+lot of atomic values like `double` associated  with different keys may not be
+very practical. Conversely, saving large objects such as `String`s or
+`List<int>` is efficient. It's almost like writing directly to files, but
+without restrictions on key names.
 
 
 ## Purging
@@ -121,8 +127,3 @@ writes, but not on reads.
 
 The library is unit-tested on Linux, Windows, and macOS. Mobile systems such as 
 Android and iOS have the same kernels as their desktop relatives. 
-
-
-
-
-

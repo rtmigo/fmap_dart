@@ -96,9 +96,9 @@ void main() {
     final reader = BlobsFileReader(tempFile);
     try {
       expect(reader.readKey(), "one");
-      reader.skipBlob();
+      //reader.skipBlob();
       expect(reader.readKey(), "two");
-      reader.skipBlob();
+      //reader.skipBlob();
       expect(reader.readKey(), "three");
       expect(reader.readBlob(), TypedBlob(0, [3, 4, 5]));
     } finally {
@@ -130,24 +130,15 @@ void main() {
       expect(() => reader.readBlob(), throwsStateError);
       expect(reader.readKey(), "one");
 
-      expect(() => reader.readKey(), throwsStateError);
       expect(reader.readBlob(), TypedBlob(0, [1, 2]));
 
       expect(() => reader.readBlob(), throwsStateError);
-      expect(() => reader.skipBlob(), throwsStateError);
       expect(reader.readKey(), "two");
 
-      expect(() => reader.readKey(), throwsStateError);
-      expect(() => reader.readKey(), throwsStateError);
-      reader.skipBlob();
-
+      reader.readBlob();
       expect(() => reader.readBlob(), throwsStateError);
-      expect(() => reader.skipBlob(), throwsStateError);
-      expect(() => reader.readBlob(), throwsStateError);
-      expect(() => reader.skipBlob(), throwsStateError);
       expect(reader.readKey(), "three");
 
-      expect(() => reader.readKey(), throwsStateError);
       expect(reader.readBlob(), TypedBlob(0, [3]));
 
       expect(reader.readKey(), null);
@@ -306,7 +297,7 @@ void main() {
               foundCount++;
               sumKeysRandomlyRead++;
             } else {
-              reader.skipBlob();
+              //reader.skipBlob();
             }
           }
           expect(foundCount, keysToRead.length);
