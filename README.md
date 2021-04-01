@@ -96,6 +96,14 @@ fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9
 
 ### String lists
 
+Lists of strings, when stored, can be specified by any object that implements 
+`Iterable <String>`, not necessarily a `List`.
+
+``` dart
+fmap['strings1'] = ['ordered', 'strings', 'in', 'list'];
+fmap['strings2'] = {'unordered', 'strings', 'in', 'a', 'set'}; 
+```
+
 ### Entry ~ file
 
 Keep in mind that each entry is saved in a separate file. Therefore, storing a
