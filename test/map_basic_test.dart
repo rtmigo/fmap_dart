@@ -225,8 +225,10 @@ void runTests(String prefix, Fmap create(Directory d)) {
     final map = create(tempDir);
     map["A"] = "hello";
     map["B"] = "good bye";
+    map["C"] = "";
     expect(map['A'], 'hello');
     expect(map['B'], 'good bye');
+    expect(map['C'], '');
   });
 
   test('int', () {
@@ -252,6 +254,19 @@ void runTests(String prefix, Fmap create(Directory d)) {
     expect(map['A'], 3.1415);
     expect(map['B'], 2.7183);
   });
+
+  test('string list', () {
+    final map = create(tempDir);
+    map['key1'] = ['aaa', 'bbb', 'ccc'];
+    map['key3'] = <String>[];
+    map['key2'] = ['one', 'two', 'three'];
+
+
+    expect(map['key2'], ['one', 'two', 'three']);
+    expect(map['key1'], ['aaa', 'bbb', 'ccc']);
+    expect(map['key3'], []);
+  });
+
 
   test('Type mix', () {
     final map = create(tempDir);

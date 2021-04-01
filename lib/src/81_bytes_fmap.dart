@@ -16,6 +16,8 @@ import '10_files.dart';
 import '10_hashing.dart';
 import '20_readwrite_v3.dart';
 
+//class FileFormatError
+
 typedef HashFunc = String Function(String key);
 
 /// Determines which entries should be deleted first by [Fmap.purge].
@@ -66,7 +68,7 @@ class Fmap<T> extends MapBase<String, T?> {
   @internal
   HashFunc keyToHash = stringToMd5;
 
-  /// Removes old data from storage, reducing the maximum total file size to [maxSizeBytes].
+  /// Removes old data from storage, reducing the maximum total directory size to [maxSizeBytes].
   void purge(int maxSizeBytes) {
     List<FileAndStat> files = <FileAndStat>[];
 
@@ -95,6 +97,26 @@ class Fmap<T> extends MapBase<String, T?> {
     }
     else if (value is List<int>) {
       return TypedBlob(TypedBlob.typeBytes, value);
+    }
+    else if (value is List<String>) {
+
+      final allBytes = BytesBuilder();
+
+      for (var s in value) {
+
+        final utfBytes = utf8.encode(s);
+        if (utfBytes.length>0xFFFFFFFF) {
+          throw ArgumentError('String is too long');
+        }
+
+        final lenBytes = ByteData(4);
+        lenBytes.setUint32(0, utfBytes.length);
+
+        allBytes.add(lenBytes.buffer.asUint8List());
+        allBytes.add(utfBytes);
+      }
+      return TypedBlob(TypedBlob.typeStringList, allBytes.toBytes());
+
     } else if (value is String) {
       return TypedBlob(TypedBlob.typeString, utf8.encode(value));
     } else if (value is int) {
@@ -122,6 +144,18 @@ class Fmap<T> extends MapBase<String, T?> {
         return typedBlob.bytes as T;
       case TypedBlob.typeString:
         return utf8.decode(typedBlob.bytes) as T;
+      case TypedBlob.typeStringList:
+        {
+          final result = <String>[];
+          for (int pos = 0; pos<typedBlob.bytes.length;) {
+            final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
+            int len = sl.getUint32(pos);
+            pos += 4;
+            result.add(utf8.decode(sl.buffer.asUint8List(pos, len)));
+            pos += len;
+          }
+          return result as T;
+        }
       case TypedBlob.typeInt:
         {
           final sl = ByteData.sublistView(typedBlob.bytes as Uint8List);
@@ -137,7 +171,8 @@ class Fmap<T> extends MapBase<String, T?> {
           return (typedBlob.bytes[0] != 0) as T;
         }
       default:
-        throw FallThroughError();
+        throw FileFormatError('Unexpected data type: ${typedBlob.type}');
+        //throw FallThroughError();
     }
   }
 

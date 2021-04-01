@@ -65,7 +65,8 @@ var strings2 = Fmap.temp<String>();
 ## Types
 
 The collection allows you to store only values of certain types. 
-Supported types are `String`, `List<int>`, `int`, `double` and `bool`.
+Supported types are `String`, `List<int>`, `List<String>`, `int`, `double` 
+and `bool`.
 
 ``` dart
 var fmap = Fmap(directory);
@@ -92,8 +93,8 @@ fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9
 
 Keep in mind that each entry is saved in a separate file. Therefore, storing a
 lot of atomic values like `double` associated  with different keys may not be
-very practical. Conversely, saving large objects such as `String`s or
-`List<int>` is efficient. It's almost like writing directly to files, but
+very practical. Conversely, saving large objects such as `String`s, `List<int>`,
+or `List<String>` is efficient. It's almost like writing directly to files, but
 without restrictions on key names.
 
 
