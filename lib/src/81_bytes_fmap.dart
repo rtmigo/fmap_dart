@@ -167,8 +167,6 @@ class Fmap<T> extends MapBase<String, T?> {
               timestampUpdated = true;
             }
             yield toResult(reader, key);
-            // yield key;
-            // reader.skipBlob();
           }
         } finally {
           reader?.closeSync();
@@ -180,7 +178,7 @@ class Fmap<T> extends MapBase<String, T?> {
   @override
   Iterable<String> get keys {
     return _iterate((blf, key) {
-      blf.skipBlob();
+      //blf.skipBlob();
       return key;
     }, false);
   }
@@ -259,7 +257,7 @@ class Fmap<T> extends MapBase<String, T?> {
           }
           return toResult(reader, storedKey);
         } else {
-          reader.skipBlob();
+          //reader.skipBlob();
         }
       }
     } on FileSystemException catch (e) {
@@ -295,7 +293,7 @@ class Fmap<T> extends MapBase<String, T?> {
         deleteSyncCalm(cacheFile);
       }
       renamed = true;
-      return replaceResult.oldData;
+      return replaceResult.oldBlob;
     } finally {
       if (!renamed) {
         deleteSyncCalm(dirtyFile);

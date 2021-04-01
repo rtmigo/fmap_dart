@@ -199,8 +199,6 @@ enum State { other, atEntryStart, atBlobStart, atFileEnd }
 ///
 ///   if (weLikeKey(key)) {
 ///     yield reader.readBlob();
-///   } else {
-///     reader.skipBlob();
 ///   }
 /// }
 ///
@@ -266,12 +264,16 @@ class BlobsFileReader {
   String? readKey() {
     // read everything except the blob
 
-    if (_state == State.atFileEnd) {
-      return null;
-    }
-
-    if (_state != State.atEntryStart) {
-      throw StateError('Cannot read entry: current state is $_state');
+    switch (_state) {
+      case State.atEntryStart:
+        break;
+      case State.atBlobStart:
+        this._skipBlob();
+        break;
+      case State.atFileEnd:
+        return null;
+      default:
+        throw StateError('Cannot read entry: current state is $_state');
     }
 
     const entryHeaderSize = 2 + 4 + 1;
@@ -335,7 +337,7 @@ class BlobsFileReader {
     return TypedBlob(this._currentEntryType, blobBytes);
   }
 
-  void skipBlob() {
+  void _skipBlob() {
     if (_state != State.atBlobStart) {
       throw StateError('Cannot read entry: current state is $_state');
     }
@@ -392,9 +394,9 @@ class createModifiedFile {
       for (var oldKey = reader.readKey(); oldKey != null; oldKey = reader.readKey()) {
         if (oldKey == newKey) {
           if (wantOldData) {
-            this.oldData = reader.readBlob();
+            this.oldBlob = reader.readBlob();
           } else {
-            reader.skipBlob();
+            reader._skipBlob();
           }
           continue;
         } else {
@@ -411,5 +413,5 @@ class createModifiedFile {
   }
 
   int entriesWritten = 0;
-  TypedBlob? oldData;
+  TypedBlob? oldBlob;
 }
