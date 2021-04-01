@@ -77,6 +77,8 @@ fmap['bool'] = true;
 fmap['strings'] = ['first', 'second', 'third'];
 ```
 
+### Bytes
+
 Any `List<int>` is treated as list of bytes.
 
 ``` dart

@@ -98,7 +98,7 @@ class Fmap<T> extends MapBase<String, T?> {
     else if (value is List<int>) {
       return TypedBlob(TypedBlob.typeBytes, value);
     }
-    else if (value is List<String>) {
+    else if (value is Iterable<String>) {
 
       final allBytes = BytesBuilder();
 
