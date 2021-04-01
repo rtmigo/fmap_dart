@@ -74,6 +74,7 @@ fmap['string'] = 'abcd';
 fmap['int'] = 5;
 fmap['double'] = 5.0; 
 fmap['bool'] = true;
+fmap['strings'] = ['first', 'second', 'third'];
 ```
 
 Any `List<int>` is treated as list of bytes.
