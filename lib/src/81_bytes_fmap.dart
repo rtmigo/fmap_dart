@@ -89,9 +89,27 @@ class Fmap<T> extends MapBase<String, T?> {
         deleteFile: (file) => file.deleteSync());
   }
 
-  @override
-  T? operator [](Object? key) {
-    return _deserialize(readSync(key as String));
+  TypedBlob? _serialize(T? value) {
+    if (value == null) {
+      return null;
+    }
+    else if (value is List<int>) {
+      return TypedBlob(TypedBlob.typeBytes, value);
+    } else if (value is String) {
+      return TypedBlob(TypedBlob.typeString, utf8.encode(value));
+    } else if (value is int) {
+      final bd = ByteData(8);
+      bd.setInt64(0, value);
+      return TypedBlob(TypedBlob.typeInt, bd.buffer.asUint8List());
+    } else if (value is double) {
+      final bd = ByteData(8);
+      bd.setFloat64(0, value);
+      return TypedBlob(TypedBlob.typeDouble, bd.buffer.asUint8List());
+    } else if (value is bool) {
+      return TypedBlob(TypedBlob.typeBool, [value ? 1 : 0]);
+    } else {
+      throw TypeError();
+    }
   }
 
   T? _deserialize(TypedBlob? typedBlob) {
@@ -125,27 +143,12 @@ class Fmap<T> extends MapBase<String, T?> {
 
   @override
   void operator []=(String key, T? value) {
-    if (value == null) {
-      this.deleteSync(key);
-    } else {
-      if (value is List<int>) {
-        writeSync(key, TypedBlob(TypedBlob.typeBytes, value));
-      } else if (value is String) {
-        writeSync(key, TypedBlob(TypedBlob.typeString, utf8.encode(value)));
-      } else if (value is int) {
-        final bd = ByteData(8);
-        bd.setInt64(0, value);
-        writeSync(key, TypedBlob(TypedBlob.typeInt, bd.buffer.asUint8List()));
-      } else if (value is double) {
-        final bd = ByteData(8);
-        bd.setFloat64(0, value);
-        writeSync(key, TypedBlob(TypedBlob.typeDouble, bd.buffer.asUint8List()));
-      } else if (value is bool) {
-        writeSync(key, TypedBlob(TypedBlob.typeBool, [value ? 1 : 0]));
-      } else {
-        throw TypeError();
-      }
-    }
+    this._writeOrDelete(key, _serialize(value), wantOldData: false);
+  }
+
+  @override
+  T? operator [](Object? key) {
+    return _deserialize(readSync(key as String));
   }
 
   @override
