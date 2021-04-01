@@ -104,6 +104,8 @@ fmap['strings1'] = ['ordered', 'strings', 'in', 'list'];
 fmap['strings2'] = {'unordered', 'strings', 'in', 'a', 'set'}; 
 ```
 
+However, when read, they will definitely return as `List<String>`.
+
 ### Entry ~ file
 
 Keep in mind that each entry is saved in a separate file. Therefore, storing a
