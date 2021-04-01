@@ -29,6 +29,7 @@ class TypedBlob implements Comparable {
   static const typeInt = 2;
   static const typeDouble = 3;
   static const typeBool = 4;
+  static const typeStringList = 5;
 
   @override
   bool operator ==(Object other) => this.compareTo(other) == 0;

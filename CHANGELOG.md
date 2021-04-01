@@ -1,3 +1,7 @@
+# 0.4.0
+
+- Added List<String> data type
+
 # 0.3.0+4
 
 - Fmap.containsKey works faster
