@@ -100,11 +100,16 @@ Lists of strings, when stored, can be specified by any object that implements
 `Iterable <String>`, not necessarily a `List`.
 
 ``` dart
-fmap['strings1'] = ['ordered', 'strings', 'in', 'list'];
-fmap['strings2'] = {'unordered', 'strings', 'in', 'a', 'set'}; 
+fmap['saved_list'] = ['ordered', 'strings', 'in', 'list'];
+fmap['saved_iterable'] = {'unordered', 'strings', 'in', 'a', 'set'}; 
 ```
 
 However, when read, they will definitely return as `List<String>`.
+
+``` dart
+List<String> a = fmap['saved_list'];
+List<String> b = fmap['saved_iterable'];
+```
 
 ### Entry ~ file
 
