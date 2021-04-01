@@ -94,6 +94,8 @@ Since numbers are bytes, each `int` inside a list is truncated to the range
 fmap['blob4'] = [1, 10, -1, 777]; // saves 1, 10, 255, 9 
 ```
 
+### String lists
+
 ### Entry ~ file
 
 Keep in mind that each entry is saved in a separate file. Therefore, storing a
