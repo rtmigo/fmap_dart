@@ -35,7 +35,7 @@ serialization.
 
 ## Creating
 
-For permanent data storage
+For persistent data storage
 
 ``` dart
 var fmap = Fmap(Directory('/path/to/my_precious_data'));
